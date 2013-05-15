@@ -1,0 +1,2480 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.com/"/>
+  <updated>2013-05-14T18:49:15+08:00</updated>
+  <id>http://kumu-Linux.github.com/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/14/ping-dns/"/>
+    <updated>2013-05-14T17:54:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/14/ping-dns</id>
+    <content type="html"><![CDATA[<p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
+
+<!--more-->
+
+
+<h3>问题重现</h3>
+
+<p>解析正常</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># nslookup mail.server1.test.com</span>
+</span><span class='line'>Server:       192.168.0.8
+</span><span class='line'>Address:  192.168.0.8#53
+</span><span class='line'>
+</span><span class='line'>Name: mail.server1.test.com
+</span><span class='line'>Address: 192.168.0.8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是域名ping不通 【strace尝试追踪问题，使用的是公司内网DNS，但是获取到地址】</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ping mail.intra.knownsec.com</span>
+</span><span class='line'>ping: unknown host mail.intra.knownsec.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>问题解决</h3>
+
+<p>1、查看/etc/nsswitch.conf内容，解析顺序如下，文件没有问题</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep ^hosts:  /etc/nsswitch.conf </span>
+</span><span class='line'>hosts:      files dns
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>2、重启nscd【Dns Server Cache】，尝试清空缓存，问题依然存在</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/nscd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8230; &#8230;</p>
+
+<p>期间N种方式的尝试，无解。后来同事发现把之前的<strong>外网DNS注释</strong>，<strong>重启<code>nscd</code></strong>，问题解决。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/nscd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[rsync备份之ssh篇]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh/"/>
+    <updated>2013-05-06T20:19:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh</id>
+    <content type="html"><![CDATA[<p><code>rsync</code>是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下：</p>
+
+<!--more-->
+
+
+<ul>
+<li>1、可以镜像保存整个目录树和文件系统。</li>
+<li>2、可以很容易做到保持原来文件的权限、时间、软硬链接等等。</li>
+<li>3、无须特殊权限即可安装。</li>
+<li>4、优化的流程，文件传输效率高。</li>
+<li>5、可以使用rsh、ssh等方式来传输文件，当然也可以通过直接的socket连接。</li>
+<li>6、支持匿名传输。</li>
+</ul>
+
+
+<p>在使用rsync 进行远程同步时，可以使用两种方式：<strong>远程Shell方式</strong>（用户验证由 ssh 负责）和 <strong>C/S 方式</strong>（即客户连接远程rsync服务器，用户验证由rsync服务器负责）。</p>
+
+<p>无论本地同步目录还是远程同步数据，首次运行时将会把全部文件拷贝一次，以后再运行时将只拷贝有变化的文件（对于新文件）或文件的变化部分（对于原有文件）。</p>
+
+<h2>rsync+ssh</h2>
+
+<p>在常驻模式（daemon mode）下，rsync默认监听TCP端口873。SSH情况下，rsync用户端执行程式必须同时在本地和远程机器上安装。</p>
+
+<p>rsync在首次复制时没有速度优势，速度不如tar，因此当数据量很大时您可以考虑先使用tar 进行首次复制，然后再使用rsync进行数据同步。</p>
+
+<p>另外，无法实现实时更新，如果想实现实时更新rsync需要借助lsyncd工具</p>
+
+<p>rsync一些选项：</p>
+
+<ul>
+<li>&#8211;delete : delete files that don&#8217;t exist on sender (system)     删除DST中SRC没有的文件</li>
+<li>-v : Verbose (try -vv for more detailed information)    详细模式显示</li>
+<li>-e &#8220;ssh options&#8221; : specify the ssh as remote shell  指定ssh作为远程shell</li>
+<li>-a : archive mode   归档模式，表示以递归方式传输文件，并保持所有文件属性，等于-rlptgoD
+
+<ul>
+<li>-l(&#8211;links) 保留软链接</li>
+<li>-p(&#8211;perms) 保留文件权限</li>
+<li>-t(&#8211;times) 保留文件时间信息</li>
+<li>-g(&#8211;group) 保留属组信息</li>
+<li>-o(&#8211;owner) 保留文件属主信息</li>
+<li>-D(&#8211;devices)   保留设备文件信息</li>
+</ul>
+</li>
+<li>-r : recurse into directories 递归</li>
+<li>-z : compress file data 压缩文件</li>
+</ul>
+
+
+<h3>增量备份</h3>
+
+<p><strong>A&#8211;>B 同步  本地到远端:</strong></p>
+
+<p><code>rsync -av /src_dir/ user@IP_Addres:/dest_dir/</code></p>
+
+<p><strong>B&#8211;>A 同步   远端到本地:</strong></p>
+
+<p><code>rsync -av user@IP_Addres:/src_dir/  /dest_dir/</code></p>
+
+<h3>镜像备份</h3>
+
+<p><strong>A&#8211;>B 同步  本地到远端:</strong></p>
+
+<p><code>rsync -av --delete /src_dir/ user@IP_Addres:/dest_dir/</code></p>
+
+<p><strong>B&#8211;>A 同步  远端到本地:</strong></p>
+
+<p><code>rsync -av --delete user@IP_Addres:/src_dir/  /dest_dir/</code></p>
+
+<h2>举例：</h2>
+
+<h3>常规增量备份</h3>
+
+<p>A:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c"># ls</span>
+</span><span class='line'>a  b  c  d
+</span><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c"># rsync -av /www/ root@10.1.1.95:/www/</span>
+</span><span class='line'>root@10.1.1.95<span class="err">&#39;</span>s password:
+</span><span class='line'>building file list ... <span class="k">done</span>
+</span><span class='line'>./
+</span><span class='line'>a
+</span><span class='line'>b
+</span><span class='line'>c
+</span><span class='line'>d
+</span><span class='line'>
+</span><span class='line'>sent 262 bytes  received 114 bytes  107.43 bytes/sec
+</span><span class='line'>total size is 0  speedup is 0.00
+</span><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>B:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@localhost www<span class="o">]</span><span class="c"># ls   //发现同步成功</span>
+</span><span class='line'>a  b  c  d
+</span><span class='line'><span class="o">[</span>root@localhost www<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>镜像备份</h3>
+
+<p>A：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c"># rm -rf *</span>
+</span><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c"># rsync -av --delete /www/ root@10.1.1.95:/www/</span>
+</span><span class='line'>root@10.1.1.95<span class="err">&#39;</span>s password:
+</span><span class='line'>building file list ... <span class="k">done</span>
+</span><span class='line'>deleting d
+</span><span class='line'>deleting c
+</span><span class='line'>deleting b
+</span><span class='line'>deleting a
+</span><span class='line'>./
+</span><span class='line'>
+</span><span class='line'>sent 62 bytes  received 26 bytes  35.20 bytes/sec
+</span><span class='line'>total size is 0  speedup is 0.00
+</span><span class='line'><span class="o">[</span>root@server www<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>B：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@localhost www<span class="o">]</span><span class="c"># ls   </span>
+</span><span class='line'><span class="o">[</span>root@localhost www<span class="o">]</span><span class="c">#</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>使用增量备份后就会删除同步另一端的文件保持两者相同，即镜像同步，而增量备份则不会出现这种现象。推荐在使用过程中使用<code>-n</code>选项先测试一遍再真实操作，以防误操作</strong></p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2-2、Global Flag (g flag)[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/05/sed-7/"/>
+    <updated>2013-05-05T09:15:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/05/sed-7</id>
+    <content type="html"><![CDATA[<p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
+
+<!--more-->
+
+
+<p><strong>替换每行的第一个<code>a</code>变为<code>A</code></strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,JAson Smith,IT Manager
+</span><span class='line'>103,RAj Reddy,Sysadmin
+</span><span class='line'>104,AnAnd Ram,Developer
+</span><span class='line'>105,JAne Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>替换每行所有的<code>a</code>变为<code>A</code></strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/g&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,JAson Smith,IT MAnAger
+</span><span class='line'>103,RAj Reddy,SysAdmin
+</span><span class='line'>104,AnAnd RAm,Developer
+</span><span class='line'>105,JAne Miller,SAles MAnAger
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>:因为没有指定地址范围，所以以上例子都是针对文件所有行的</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2-1、Sed Substitute Command[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/04/sed-6/"/>
+    <updated>2013-05-04T23:29:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/04/sed-6</id>
+    <content type="html"><![CDATA[<h2>Sed 替换命令语法</h2>
+
+<p>Sed替换命令语法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;[address-range|pattern-range] s/originalstring/</span>
+</span><span class='line'><span class="s1">replacement-string/[substitute-flags]&#39;</span> inputfile
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p>在上面的sed语法中:</p>
+
+<ul>
+<li>地址范围或者模式范围是可选的，如果你没有指定任何一个，那么sed会在所有的行中执行替换命令</li>
+<li><code>s</code>&#8211;告诉sed执行替换命令</li>
+<li>原始字符串&#8211;这个字符串将会在输入文件中被搜索。原始字符串也可以是一个正则表达式</li>
+<li>替换字符串&#8211;Sed将会通过这个字符串替换原始字符串</li>
+</ul>
+
+
+<p><strong>注</strong>:记住源文件不改变;替换是在模式空间的buffer中完成并且打印输出。</p>
+
+<h2>以下是几个简单的sed替代的例子</h2>
+
+<p><strong>更换所有出现的Director:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/Manager/Director/&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Director
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Director
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>只替换行中含有关键词&#8217;Sales&#8217;行中的Manager为Director:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Sales/s/Manager/Director/&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Director
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>:使用地址范围造成只替换了一个，而之前例子显示是替换两个</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[通过sysfs获取dmi硬件信息]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/02/hardware/"/>
+    <updated>2013-05-02T22:27:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/02/hardware</id>
+    <content type="html"><![CDATA[<p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
+</span><span class='line'>/sys/class/dmi/id
+</span><span class='line'><span class="c"># ls </span>
+</span><span class='line'>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
+</span><span class='line'>bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
+</span><span class='line'>bios_version     board_vendor   chassis_type       power            product_version  uevent
+</span><span class='line'>board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</span>
+</span><span class='line'>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16
+</span><span class='line'><span class="c"># cat product_name </span>
+</span><span class='line'>VMware Virtual Platform
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-5. Write Pattern Space to File[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/02/sed-5/"/>
+    <updated>2013-05-02T00:06:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/02/sed-5</id>
+    <content type="html"><![CDATA[<p>使用sed <code>w</code>命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。</p>
+
+<!--more-->
+
+
+<p>接下来的是一些例子。</p>
+
+<p><strong>把employee.txt文件内容写入到output.txt（并且打印到屏幕）:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;w output.txt&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>把employee.txt文件内容写入到output.txt，但是不打印到屏幕：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>只写入第二行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入1到4行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1,4 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入第二行到最后一行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2,$ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>只写入奇数行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1~2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配词”Jane”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jane/ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>从第一行开始写入匹配”Jason”的行到第四行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,4 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：如果1到4行没有匹配到”Jason”，这条命令只写入第四行后匹配”Jason”的行</p>
+
+<p><strong>写入行从第一行开始匹配”Raj”的行到结束行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,$ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配”Raj”行开始直到匹配到“Jane”行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,/Jane/ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配“Jason”的行和其之后的2行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,+2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：你可能不经常使用w命令，大多数人使用UNIX输出重定向，来保存sed输出到一个文件，如: sed ‘p’ exployee.txt > output.txt</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-4、Delete Lines[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/29/sed-4/"/>
+    <updated>2013-04-29T23:29:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/29/sed-4</id>
+    <content type="html"><![CDATA[<p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
+
+<!--more-->
+
+
+<p>默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;d&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定删除的地址范围是非常有用的。接下来有很多类似的例子：</p>
+
+<p><strong>仅删除第二行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2 d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除1到4行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1,4 d&#39;</span> employee.txt
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除行2到最后一行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2,$ d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>仅删除奇数行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1~2 d&#39;</span> employee.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除匹配词“Manager”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Manager/ d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除匹配有”Jason”的行到第四行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,4 d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：如果这儿没有匹配“Jason“的行在1到4行中，这条命令只删除第四行后匹配”Jason“的行</p>
+
+<p><strong>删除匹配“Raj“的行到最后一行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,$ d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除匹配”Raj”的行到匹配“Jane“的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,/Jane/ d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除匹配”Jason”的行和其之后的两行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,+2 d&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>有用的删除实例</h2>
+
+<p>下面的实例在日常操作中是非常有用的</p>
+
+<p><strong>删除所有的空行</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^$/ d&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>grep实现过滤空行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^$&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>删除所有注释的行(假设注释行以#号开头)</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^#/ d&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>grep实现过滤注释行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^#&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：当你使用多个sed命令时，此时sed遇到&#8217;d&#8217;命令，整个匹配的匹配行将被删除，并且之后的命令对于删除的行将不会执行。</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-3、Print Pattern Space[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/28/sed-3/"/>
+    <updated>2013-04-28T00:25:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/28/sed-3</id>
+    <content type="html"><![CDATA[<p>使用sed的p命令，你可以打印当前模式空间中的行。</p>
+
+<p>你也许会好奇为什么需要p命令，默认的sed会在执行完命令后输出模式空间的缓存。</p>
+
+<p>其实这是有原因的，等会你将看到，这个命令将允许你专门控制打印到标准输出。通常来说，你应该使用-n选项来抑制作为标准sed流一部分的默认输出。否则，当执行p命令的时候，该行会输出两次。</p>
+
+<!--more-->
+
+
+<p>接下来的例子employee.txt文件中的行将输出两次：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;p&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>打印每行一次(作用和’cat expolyee.txt’相同)：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;p&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>特定的地址范围</h2>
+
+<p>如果你在使用sed命令前不指定地址范围，那么默认会匹配所有的行，接下来的一些例子是在使用sed命令前指定一个范围</p>
+
+<p><strong>只打印第二行</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2 p&#39;</span> employee.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>打印1到2行</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1,2 p&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>打印第2行到结尾($表示到最后一行)</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2,$ p&#39;</span> employee.txt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修改地址范围</h2>
+
+<p>你可以通过逗号、+和~修改地址范围。</p>
+
+<ul>
+<li>,在上面的例子中，我们看到了使用逗号(,)修改地址范围规范的一部分。它的意义很明了：n,m显示n到m的值。</li>
+<li>+号可以和逗号结合，指定的是行数而不是绝对的行号。例如，n,+m意味着从n开始往后m行。</li>
+<li>~号也可用于修好地址范围。它的特殊的意思表示跳过命令之间的行。例如，地址范围n~m表面sed从第n行开始并且每次跳过m行。
+
+<ul>
+<li>1~2 匹配1,3,5,7,等。</li>
+<li>2~2 匹配 2,4,6,8,等。</li>
+<li>1~3 匹配 1,4,7,10,等。</li>
+<li>2~3 匹配 2,5,8,11,等。</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>只打印奇数行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1~2 p&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>词匹配</h2>
+
+<p>正如你可以指定一定数量地址（或者地址范围），你也可以指定一个特定的词(或者词的范围)匹配，在接下来的例子中将会演示。</p>
+
+<p><strong>打印匹配有“Jane”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n ‘/Jane/ p’ employee.txt
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>打印从第一行到第四行匹配“Jason”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,4 p&#39;</span> employee.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>注：如果这里再1到4行没有匹配到”Jason”，那么这条命令会打印出包含“Jason”之后的行。
+</code></pre>
+
+<p><strong>打印从第一行到最后一行匹配”Raj”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,$ p&#39;</span> employee.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>打印匹配行”Raj”直到匹配到”Jane”行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,/Jane/ p&#39;</span> employee.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<pre><code>注：如果没有匹配到Jane，则打印“Raj“行到最后一行
+</code></pre>
+
+<p><strong>打印匹配“Jason”的行并且打印“Jason”行后的两行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,+2 p&#39;</span> employee.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[dmidecode]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/"/>
+    <updated>2013-04-27T07:39:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/27/dmidecode</id>
+    <content type="html"><![CDATA[<p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
+
+<!--more-->
+
+
+<p><code>dmidecode</code>的作用则是将DMI表中的信息用人可以读懂的方式显示出来。</p>
+
+<p>最简单的使用方法，它将显示dmidecode所能获取到的全部dmi信息：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是显示所有的信息不便于我们获取想要获取的信息，那么就需要结合其它选项获取信息</p>
+
+<p><strong>常用参数:</strong></p>
+
+<ul>
+<li>-q 或 &#8211;quiet
+
+<ul>
+<li>不显示太多信息，比如某条数据是从哪里读来的等等，为了得到简洁的信息，此条很有用</li>
+</ul>
+</li>
+<li>-t 或 &#8211;type TYPE
+
+<ul>
+<li>指定要显示类型的信息</li>
+</ul>
+</li>
+<li>-s 或 &#8211;string KEYWORD
+
+<ul>
+<li>显示特定的关键字</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>-t或&#8211;type后的文本参数</strong></p>
+
+<pre><code>bios        bios的各项信息
+system      系统信息，在我的笔记本上可以看到版本、型号、序号等信息。
+baseboard   主板信息
+chassis     底板信息
+processor   CPU的详细信息
+memory      内存信息，包括目前插的内存条数及大小，支持的单条最大内存和总内存大小等
+cache       缓存信息
+connector   PCI设备信息
+slot        插槽信息 
+</code></pre>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -t </span>
+</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;t&#39;</span>
+</span><span class='line'>Type number or keyword expected
+</span><span class='line'>Valid <span class="nb">type </span>keywords are:
+</span><span class='line'>  bios
+</span><span class='line'>  system
+</span><span class='line'>  baseboard
+</span><span class='line'>  chassis
+</span><span class='line'>  processor
+</span><span class='line'>  memory
+</span><span class='line'>  cache
+</span><span class='line'>  connector
+</span><span class='line'>  slot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>dmidecode -s</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -s</span>
+</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;s&#39;</span>
+</span><span class='line'>String keyword expected
+</span><span class='line'>Valid string keywords are:
+</span><span class='line'>  bios-vendor
+</span><span class='line'>  bios-version
+</span><span class='line'>  bios-release-date
+</span><span class='line'>  system-manufacturer
+</span><span class='line'>  system-product-name
+</span><span class='line'>  system-version
+</span><span class='line'>  system-serial-number
+</span><span class='line'>  system-uuid
+</span><span class='line'>  baseboard-manufacturer
+</span><span class='line'>  baseboard-product-name
+</span><span class='line'>  baseboard-version
+</span><span class='line'>  baseboard-serial-number
+</span><span class='line'>  baseboard-asset-tag
+</span><span class='line'>  chassis-manufacturer
+</span><span class='line'>  chassis-type
+</span><span class='line'>  chassis-version
+</span><span class='line'>  chassis-serial-number
+</span><span class='line'>  chassis-asset-tag
+</span><span class='line'>  processor-family
+</span><span class='line'>  processor-manufacturer
+</span><span class='line'>  processor-version
+</span><span class='line'>  processor-frequency
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>常用命令举例</strong></p>
+
+<ul>
+<li>1、查看服务器型号：dmidecode | grep &#8216;Product Name&#8217;</li>
+<li>2、查看系统序列号：dmidecode -s system-serial-number</li>
+<li>3、查看内存信息：dmidecode -t memory</li>
+<li>4、查看OEM信息：dmidecode -t 11</li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-2、Sed Scripting Flow[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/26/sed-2/"/>
+    <updated>2013-04-26T16:28:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/26/sed-2</id>
+    <content type="html"><![CDATA[<p>Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用<code>REPE</code>首字母缩写来记住sed的执行流程。</p>
+
+<!--more-->
+
+
+<p>我们来看这个序列的步骤。Sed将会：</p>
+
+<ul>
+<li><strong>Read</strong> 读取一行到模式空间(一个内部sed的缓冲池，被用来存放从输入文件的读取行)</li>
+<li><strong>Execute</strong> sed命令在sed的模式空间中执行。如果有一个以上的sed命令，无论通过sed脚本、-e选项或者是{}，它会在模式空间中按照行的顺序执行所有的命令</li>
+<li><strong>Print</strong> 从模式空间中输出行。当输出该行以后，模式空间就会变成空的状态</li>
+<li><strong>Repeat</strong> 一直重复直到到达输入文件的行尾结束</li>
+</ul>
+
+
+<p>下图为以上四步的一个示意图：</p>
+
+<center><img src="http://kumu-Linux.github.com/images/sed-2.png" alt="sed-flow" title="sed-flow" width="600" /></center>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Github Drinkup]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/25/github-drinkup/"/>
+    <updated>2013-04-25T19:52:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/25/github-drinkup</id>
+    <content type="html"><![CDATA[<p>昨天晚上在北京贝塔咖啡参加了InfoQ主办的GitHub首届中国Drinkup活动，作为一个伪码农能够参加这样的晚会感觉还是非常荣幸的。首先自己之前也从未参加类似的活动，其次这样的活动会有技术圈内很多技术达人，再次是这样的活动可以说是一个学习交流的好机会。</p>
+
+<!--more-->
+
+
+<p>其实自己从一开始也只是抱着侥幸的心理去报名的，因为报名的时候需要提供自己的Github账号，而自己的账号就只有一个新建Octopress搭建的博客，心想估计也没有什么戏了。可是有些事往往是意想不到的，4月23号查收邮件收到了InfoQ Drinkup的确认函。后来到会后听到现场主持人的解说之后才明白我选中的原因，报名的人一共有200多个，而InfoQ是根据Github贡献值排名取前80位的，而博客这个时候就沾了不少光了，所以说一切都很偶然。</p>
+
+<p>话说偶然的事情很多，之前一直和<code>lazycai</code>在Gtalk上聊天，也没有见过面，没想到昨晚还能在Drinkup活动见上一面。其实参会者那么多，可能面对面也不一定能认出，但是她居然还偶然的存了我的号码，而我来北京也没有换号，呃，好吧，我承认真的很偶然。lazycai是一个好妹子，当然好妹子也肯定有一个好男朋友，听说她的这个男朋友还是Linux内核开发的大咖。</p>
+
+<p>作为参会为数不多的运维者来说，很高兴的是Github的两位嘉宾都和运维相关，虽然他们在会场的讲话我很认真很认真地听，可是依然没有听明白几句。说到英文，我突然想到了和冯的简单对话。能够在贝塔见到冯也是我始料未及的，关键还那么近。当主持人说现场有多少人关注微信<code>小道消息</code>的，很多人举起了手，然后主持人说今天<code>小道消息</code>的作者也到现场了，现场立刻鼓起了掌声。我突然觉得技术就是一个江湖，而冯因为这么多年的积累，在业界也算得上一位大侠了，值得尊敬。在会上很想问冯一些问题，可是只能在旁边听他们交流也插不上什么，后来说到英文的时候，我插了一句说“老外讲话挺快的”，冯说“还好吧”。仅此而已，这好比我说“今天天气不错”这样没有营养的话。我想下次见到之后应该说“其实老外讲话也挺慢的”，然后冯说“还好吧”，英文其实算是技术的一个必修课。</p>
+
+<p>2个多小时的晚会中间很多小插曲，喝了两杯啤酒，吃了一份三文治。会中感触颇深的是遇到了5个年纪和我相仿的创业团队，听其中的一个队员说他们一起成立了一家小公司，开发自己的游戏，然后现在拿到风投了，创业初期，现在什么事情都要做。我很佩服他们的勇气，虽然时间有限，聊的不多。我想每一个创业者都值得尊敬，因为只有他们自己才知道自己的艰辛。</p>
+
+<p>另外，想说的是，国内这种类型的活动的气氛活跃度还是差一点的。印象比较深刻的是，同一公司或者是认识的一伙聚在一起，而不去接触一些新面孔的朋友，这样就导致过于分散。还有一个就是很多人都围着两位Github的嘉宾了，估计他们被围的也很累。不过总而言之，个人觉得这种活动是一个很好的尝试，努力让自己的技术和思维的层次更高，Fighting！</p>
+
+<p>附上Github的小礼物照片</p>
+
+<center><img src="http://kumu-Linux.github.com/images/github.png" alt="github" title="github" width="600" /></center>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-1、sed Command Syntax[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/24/sed-1/"/>
+    <updated>2013-04-24T23:33:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/24/sed-1</id>
+    <content type="html"><![CDATA[<p>本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
+基本的语法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> <span class="o">{</span>sed-commands<span class="o">}</span> <span class="o">{</span>input-file<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<!--more-->
+
+
+<p>Sed在同一个时间点从输入处理文件{input-file}中读取一行内容并在特定的行上执行sed的命令选项。也就是说sed从输入处理文件中读取第一行并且在第一行执行sed命令选项。然后读取第二行并且在第二行执行sed命令选项。sed重复这个过程直到文件读取结束。</p>
+
+<p>对于sed，这里当然也有一些可选的命令行选项通过[options]表示。</p>
+
+<p>接下来的例子演示了sed的基本用法，这个简单的sed例子将打印/etc/passwd中所有的行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -n <span class="s1">&#39;p&#39;</span> /etc/passwd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里主要的一个点在{sed-commands}，它可以是一个单个的sed命令或者多个sed命令。你也可以结合多个sed-commands写入到一个文件当中，并让sed使用-f选项调用，如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> -f <span class="o">{</span>sed-commands-in-a-file<span class="o">}</span> <span class="o">{</span>input-file<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接下来的例子演示了基本的sed语法。这个例子从/etc/passwd文件中打印以root和nobody开头的行。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat test-script.sed </span>
+</span><span class='line'>/^root/ p
+</span><span class='line'>/^nobody/ p
+</span><span class='line'><span class="c"># sed -n -f test-script.sed /etc/passwd</span>
+</span><span class='line'>root:x:0:0:root:/root:/bin/bash
+</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当执行多个sed命令的时候，你也可以通过-e选项直接在命令行上使用它们。
+基本的sed -e用法: sed [options] -e {sed-command-1} -e {sed-command-2} {input-file}
+接下来的行就演示了-e的基本使用方法。它打印/etc/passwd文件中所有以root和nobody开头的行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n -e &#39;/^root/p&#39; -e &#39;/^nobody/p&#39; /etc/passwd </span>
+</span><span class='line'>root:x:0:0:root:/root:/bin/bash
+</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你要在单个的命令行上通过-e选项执行多个命令，你可以使用\换行让命令分行显示，这样将会更利于阅读，如下:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n \</span>
+</span><span class='line'>&gt; -e <span class="s1">&#39;/^root/ p&#39;</span> <span class="se">\</span>
+</span><span class='line'>&gt; -e <span class="s1">&#39;/^nobody/ p&#39;</span> <span class="se">\</span>
+</span><span class='line'>&gt; /etc/passwd
+</span><span class='line'>root:x:0:0:root:/root:/bin/bash
+</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然你也可以使用{}选项实现如上相同的功能：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> <span class="s1">&#39;{</span>
+</span><span class='line'><span class="s1">sed-command-1</span>
+</span><span class='line'><span class="s1">sed-command-2</span>
+</span><span class='line'><span class="s1">}&#39;</span> input-file
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>接下来的例子演示了{}的基本使用方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n &#39;{</span>
+</span><span class='line'>&gt; /^root/ p
+</span><span class='line'>&gt; /^nobody/ p
+</span><span class='line'>&gt; <span class="o">}</span><span class="err">&#39;</span> /etc/passwd
+</span><span class='line'>root:x:0:0:root:/root:/bin/bash
+</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：Sed的以上选项都不会更改源文件，它打印输出到标准输出。如果你想保存文件，可以使用-i选项或者使用重定向输出，这个之后的章节将会介绍。</p>
+
+<p>&#8211;EOF&#8211;</p>
+
+<p><strong>扯一句</strong>:本系列文章主要翻译自sed and awk 101 hacks一书，争取每日一篇，确保每两日一篇</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[LogAnalyzer网页日志分析之安装篇]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer/"/>
+    <updated>2013-04-23T14:50:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer</id>
+    <content type="html"><![CDATA[<h2>LogAnalyzer简介</h2>
+
+<p>LogAnalyzer 是一个syslog和其他网络事件数据的Web前端工具，提供简单易用的日志浏览、搜索和基本分析以及图表显示，PHP语言开发。<a href="http://loganalyzer.adiscon.com/">官方地址</a></p>
+
+<!--more-->
+
+
+<h2>LogAnalyzer在RHEL6上的安装</h2>
+
+<p>RHEL系列从RHEL6开始日志服务器，缺省的由原来RHEL5的syslog改为rsyslog。关于rsyslog和syslog的优缺点可以查看<a href="http://www.rsyslog.com/doc/rsyslog_ng_comparison.html">链接</a>，ryslog有很多优势，因此本文以rsyslog为例。rsyslog支持TCP/UDP协议，并且可以将日志直接写入到数据库中，如Mongodb、MySQL，本文将以MySQL为例。</p>
+
+<p>ryslog优势：</p>
+
+<ul>
+<li>支持Multi-threading功能，处理效率比传统的syslog服务器更高</li>
+<li>提供SSL加密功能，提高syslog传输安全性</li>
+<li>提供数据库输出功能&lt;MySQL、Mongodb &#8230; &#8230;></li>
+<li>提供过滤功能，可自定义相关的过滤条件</li>
+</ul>
+
+
+<h3>中心日志服务器配置</h3>
+
+<h4>Log Server端配置</h4>
+
+<p>安装<code>rsyslog</code>、<code>rsyslog-mysql</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog rsyslog-mysql -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装<code>MySQL</code>和<code>Apache</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install mysql-server
+</span><span class='line'>yum install httpd php php-mysyql php-gd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>导入rsyslog写入数据需要的MySQL库文件，默认安装好之后会在目录/usr/share/doc/rsyslog-mysql-x.x.x/createDB.sql有该文件，rsyslog-mysql的版本不同，具体的位置也相应的不同</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span> <span class="o">-</span><span class="n">u</span> <span class="n">root</span> <span class="o">-</span><span class="n">p</span> <span class="o">&lt;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">rsyslog</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">10</span><span class="o">/</span><span class="n">createDB</span><span class="p">.</span><span class="k">sql</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果导入正常的话，MySQL会生成Syslog库</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">use</span> <span class="n">Syslog</span>
+</span><span class='line'><span class="n">Reading</span> <span class="k">table</span> <span class="n">information</span> <span class="k">for</span> <span class="n">completion</span> <span class="n">of</span> <span class="k">table</span> <span class="k">and</span> <span class="k">column</span> <span class="n">names</span>
+</span><span class='line'><span class="n">You</span> <span class="n">can</span> <span class="n">turn</span> <span class="n">off</span> <span class="n">this</span> <span class="n">feature</span> <span class="k">to</span> <span class="n">get</span> <span class="n">a</span> <span class="n">quicker</span> <span class="n">startup</span> <span class="k">with</span> <span class="o">-</span><span class="n">A</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">Database</span> <span class="n">changed</span>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">show</span> <span class="kp">tables</span><span class="p">;</span>
+</span><span class='line'><span class="o">+------------------------+</span>
+</span><span class='line'><span class="o">|</span> <span class="n">Tables_in_Syslog</span>       <span class="o">|</span>
+</span><span class='line'><span class="o">+------------------------+</span>
+</span><span class='line'><span class="o">|</span> <span class="n">SystemEvents</span>           <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">SystemEventsProperties</span> <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">charts</span>                 <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">config</span>                 <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">dbmappings</span>             <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">fields</span>                 <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">groupmembers</span>           <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">groups</span>                 <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">savedreports</span>           <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">searches</span>               <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">sources</span>                <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">users</span>                  <span class="o">|</span>
+</span><span class='line'><span class="o">|</span> <span class="n">views</span>                  <span class="o">|</span>
+</span><span class='line'><span class="o">+------------------------+</span>
+</span><span class='line'><span class="mi">13</span> <span class="n">rows</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>赋权，这里新增用户给insert权限即可，可参考<a href="http://www.rsyslog.com/doc/rsyslog_mysql.html">rsyslog_mysql</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">insert</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">08</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,添加mysql支持</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> ommysql.so
+</span><span class='line'>*.*       :ommysql:localhost,Syslog,sysloguser,123321
+</span><span class='line'><span class="c">#*.*       :ommysql:database-server,database-name,database-userid,database-password</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,配置udp和tcp接受监听</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> imudp
+</span><span class='line'><span class="nv">$UDPServerRun</span> 514
+</span><span class='line'><span class="nv">$ModLoad</span> imtcp
+</span><span class='line'><span class="nv">$InputTCPServerRun</span> 514
+</span><span class='line'><span class="nv">$AllowedSender</span> UDP, 127.0.0.1, 10.2.0.0/16  <span class="c">#10.2.0.0为接受某个网段发来的IP</span>
+</span><span class='line'><span class="nv">$AllowedSender</span> TCP, 127.0.0.1, 10.2.0.0/16
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完成以上步骤之后重新启动rsyslog即可</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/etc/init.d/rsyslog restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这时登陆MySQL执行<code>mysql&gt; select * from Syslog.SystemEvents;</code>就可以看到rsyslog日志内容了</p>
+
+<h4>Log Client端配置</h4>
+
+<p>安装<code>rsyslog</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,添加如下内容</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.* @@Server_ip <span class="c">#Server_ip为Log Server端的ip</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完成以上步骤之后重新启动rsyslog即可</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/etc/init.d/rsyslog restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>安装LogAnalyzer</h3>
+
+<p>下载解压</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://download.adiscon.com/loganalyzer/loganalyzer-3.6.3.tar.gz
+</span><span class='line'>tar xf loganalyzer-3.6.3.tar.gz
+</span><span class='line'><span class="nb">cd </span>loganalyzer-3.6.3
+</span><span class='line'>mkdir /var/www/html/rsyslog
+</span><span class='line'>cp -r contrib/* src/* /var/www/html/rsyslog <span class="c">#拷贝到web家目录下</span>
+</span><span class='line'>chown apache:apache -R /var/www/html/rsyslog
+</span><span class='line'>bash /var/www/html/rsyslog/configure.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>浏览器打开http://web_url/rsyslog</p>
+
+<p>Next1，点击here执行安装</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer1.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next2</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer2.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next3</p>
+
+<p>在Server端创建一个用户管理库和一个用户,然后输入到web中，开启使用数据库管理用户选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">create</span> <span class="k">database</span> <span class="n">loganalyzer</span><span class="p">;</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="n">row</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">loganalyzer</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;loganalyzer&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer4.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next4</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer5.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next5</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer6.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next6</p>
+
+<p>添加登陆用户</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer7.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next7</p>
+
+<p>选择数据库类型，并且添加相关数据库用户，修改用户权限如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果只是日志写入到数据库中，那么只需要insert权限即可。如果使用loganlyzer，那么安装过程需要额外的权限，可以新增用户，也可先给sysloguser所有的权限，安装完成之后，再次恢复权限如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">insert</span><span class="p">,</span><span class="k">select</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span> <span class="c1">#loganlyzer安装完成后需要使用select权限查询输出到页面，因此这里赋予select权限</span>
+</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer8.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>Next8安装成功</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer9.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>登陆，输入之前的用户名和密码即可：</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer10.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>登陆之后页面如下：</p>
+
+<center><img src="http://kumu-Linux.github.com/images/loganlyzer11.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+
+
+<p>&#8211;EOF&#8211;</p>
+
+<p>未完待续</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2013-04-22 我所理解的生活]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/22/life/"/>
+    <updated>2013-04-22T22:27:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/22/life</id>
+    <content type="html"><![CDATA[<blockquote><p>人，其实不需要太多东西，只要健康活着，真诚爱着，也不失为一种富有。</p></blockquote>
+
+<p>最近几天新闻、微博都是关于雅安地震的消息，看到新闻中的报道，触动着身体的每一处神经。突然想想，其实相对灾区的人们来说，我们已经很幸福了。可是人总是不知足的，得到想得到的，又向着更好的看去。然后等到失去后才懂得珍惜，可是有些逝去的也就永远逝去了，我们总是在这种圈子中不停的恶性循环，不断的犯错。</p>
+
+<!--more-->
+
+
+<p>人总是太容易迷失自己了，在北京的这些日子里，总是感觉找不到自我。每天3个小时的来来回回，时常感到心力交瘁。我想有时候对自己期望太高了，做一件事总是想一下子做好，做技术总想一下子达到某种高度。有时，抱怨生活的各种不公，总是不能安安静静的放下自己好好思量。现在回想起来，又是觉得那么可笑。其实我想只需要看准方向，每天坚持一点点，不断的积累，这比无病呻吟来说要好的多。</p>
+
+<p>好好的做自己，好好的活着。为雅安人民祈福，我们遭受了很多，但我们还是要坚强的活下去，雅安加油！</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[RHEL6修改snmpd日志输出]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/16/snmpd/"/>
+    <updated>2013-04-16T10:52:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/16/snmpd</id>
+    <content type="html"><![CDATA[<h3>需求和现象</h3>
+
+<p>默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。</p>
+
+<!--more-->
+
+
+<h3>解决方法</h3>
+
+<p>第一反应就是想到snmp的配置文件，但是发现配置文件/etc/snmp/snmpd.conf中没有关于log的日志定义，ps -ef | grep snmp[d] 得到如下结果</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ps -ef | grep snmp[d]</span>
+</span><span class='line'>root     59108     1  0 22:12 ?        00:00:00 /usr/sbin/snmpd -LS0-6d -Lf /dev/null -p /var/run/snmpd.pid
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上启动命令中就有关于日志的选项，关于snmp日志的警告级别如下</p>
+
+<ul>
+<li>0 or ! for LOG_EMERG,</li>
+<li>1 or a for LOG_ALERT,</li>
+<li>2 or c for LOG_CRIT,</li>
+<li>3 or e for LOG_ERR,</li>
+<li>4 or w for LOG_WARNING,</li>
+<li>5 or n for LOG_NOTICE,</li>
+<li>6 or i for LOG_INFO,</li>
+<li>7 or d for LOG_DEBUG.</li>
+</ul>
+
+
+<p>默认的时0-6级别的日志都会被记录，查看/etc/init.d/snmpd启动文件，有以下定义</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; -A3 /etc/init.d/snmpd </span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -e /etc/sysconfig/snmpd <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'>  . /etc/sysconfig/snmpd
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>snmpd启动文件定义了OPTIONS，启动文件中提到了/etc/sysconfig/snmpd，查看内容默认如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
+</span><span class='line'><span class="c"># snmpd command line options</span>
+</span><span class='line'><span class="c"># OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为/etc/sysconfig/snmpd优先级高于OPTIONS，所以可以直接修改配置文件即可，取消OPTIONS注释，修改如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
+</span><span class='line'><span class="c"># snmpd command line options</span>
+</span><span class='line'> <span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-3d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span> <span class="c">#只记录0-3级别的日志即可</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然也可以直接修改/etc/init.d/snmpd启动文件中的OPTIONS</p>
+
+<p>最后重启snmpd，使修改生效，就会发现messages的snmp的信息就相对少很多了，完成实际的需求。</p>
+
+<p>参考文档:<a href="http://dgz.dyndns.org/mediawiki/index.php/%28RHEL%29_HOWTO_stop_snmpd_spamming_/var/log/messages">dyndns.org</a></p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sed -i修改链接文件注意问题]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed-link/"/>
+    <updated>2013-04-09T23:23:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed-link</id>
+    <content type="html"><![CDATA[<h2>问题重现</h2>
+
+<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p>我们发现链接文件不再是链接文件了，后来查看sed man选项时发现如下选项说明</p>
+
+<ul>
+<li><p>&#8211;follow-symlinks</p>
+
+<ul>
+<li>follow symlinks when processing in place; hard links will still be broken.</li>
+</ul>
+</li>
+<li><p>-i[SUFFIX], &#8211;in-place[=SUFFIX]</p>
+
+<ul>
+<li>edit  files  in  place (makes backup if extension supplied).  The default operation mode is to break symbolic and hard links.  This can be changed with &#8211;follow-symlinks and &#8211;copy.</li>
+</ul>
+</li>
+<li><p>-c, &#8211;copy</p>
+
+<ul>
+<li>use copy instead of rename when shuffling files in -i mode.  While this  will  avoid  breaking links  (symbolic  or hard), the resulting editing operation is not atomic.  This is rarely the desired mode;</li>
+</ul>
+</li>
+<li><p>&#8211;follow-symlinks is usually enough, and it is both faster and more secure.</p></li>
+</ul>
+
+
+<p>以上说明就不作过多解释了，说的很明显，看下面实例</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test  </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft  </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard  </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard   </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft   </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271656</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">05</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271657</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">06</span> <span class="n">test_soft</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>很明显如man中所说-i选项对软链接和硬链接都会使受到破坏,而-c选项则不会</p>
+
+<h2>问题解决</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># rm -rf test*</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard </span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;follow-symlinks选项只对软链接有效，硬链接还是会被破坏，建议使用-c选项，这里就不举例了</p>
+
+<h2>问题延伸</h2>
+
+<p>后来发现在RHEL5上运行相同的操作居然没有出现类似的现象，运行结果如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">echo</span> <span class="s">&quot;test&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">test</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">~/</span><span class="n">test</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&quot;s/test/test1/g&quot;</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>经查是sed的版本不同造成的影响，RHEL5系列的还是使用老版本的sed，没有&#8211;follow-symlinks类似的选项，笔者之前实验的版本是RHEL6.3，所以出现之前的一系列问题了</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sed远程替换的一个错误]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed/"/>
+    <updated>2013-04-09T15:17:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed</id>
+    <content type="html"><![CDATA[<p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
+
+<!--more-->
+
+
+<h2>问题出现</h2>
+
+<p>以下为本地执行sed替换，本地替换没有什么问题</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span><span class='line'><span class="c"># sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39; snmpd</span>
+</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>尝试远程替换，发现ssh直接后接命令替换失败</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span><span class='line'><span class="c"># ssh root@localhost sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39; ~/snmpd </span>
+</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>问题解决</h2>
+
+<p>之后使用\转义命令中的&#8221;，再把远程命令加到&#8221;&#8220;中,远程替换成功</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
+</span><span class='line'><span class="c"># grep &quot;OPTIONS=&quot; ~/snmpd</span>
+</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[lsof在Linux中的10个例子<译>]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/08/lsof/"/>
+    <updated>2013-04-08T10:19:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/08/lsof</id>
+    <content type="html"><![CDATA[<p>本文主要是介绍lsof相关使用方法，原文主要是10个例子的讲解，笔者又新增了一些实用案例，<a href="http://www.tecmint.com/10-lsof-command-examples-in-linux/">原文地址</a> 。</p>
+
+<p>lsof的意思是&#8217;列出打开的文件&#8217;，用于找出哪些文件被哪些进程打开或是占用。我们都知道Linux/UNIX的理念就是一切皆文件(包括pipes管道、sockets、directories目录、devices设备等等)。使用lsof命令的原因之一就是，当一个磁盘不能被卸载时，借助lsof这个命令我们可以轻易的识别哪些文件正在被占用。</p>
+
+<!--more-->
+
+
+<h2>1、通过lsof命令列出所有打开的文件</h2>
+
+<p>在下面的例子中，它会以长列表的形式显示打开的文件，为了便于理解，它以Command、PID、USER、FD、TYPE分类</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof</span>
+</span><span class='line'><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>      <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>       <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">cwd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">rtd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span>     <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
+</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">mem</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>     <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
+</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>    <span class="mi">0u</span>      <span class="n">CHR</span>                <span class="mi">1</span><span class="p">,</span><span class="mi">3</span>      <span class="mi">0</span><span class="n">t0</span>       <span class="mi">4021</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>若不指定条件默认将显示所有进程打开的所有文件,lsof输出各列信息的意义如下：</p>
+
+<ul>
+<li>COMMAND：进程的名称</li>
+<li>PID：进程标识符</li>
+<li>USER：进程所有者</li>
+<li>FD：文件描述符，应用程序通过文件描述符识别该文件。如cwd、txt等
+
+<ul>
+<li>cwd 表示应用程序的当前工作目录</li>
+<li>RTD 根目录</li>
+<li>txt txt类型文件是程序代码，应用程序二进制文件本身或共享库</li>
+<li>MEM 内存映射文件</li>
+<li>u 表示该文件被打开并处于读取/写入模式，而不是只读 ® 或只写 (w) 模式。</li>
+<li>W 表示该应用程序具有对整个文件的写锁。该文件描述符用于确保每次只能打开一个应用程序实例。</li>
+<li>R 读访问</li>
+<li>初始打开每个应用程序时，都具有三个文件描述符，从 0 到 2，分别表示标准输入、输出和错误流。所以大多数应用程序所打开的文件的FD都是从3开始。</li>
+</ul>
+</li>
+<li>TYPE：文件类型，如DIR、REG等
+
+<ul>
+<li>DIR 目录</li>
+<li>REG 基本文件</li>
+<li>CHR 字符特殊文件</li>
+<li>FIFO 先进先出</li>
+<li>UNIX unix域套接字</li>
+</ul>
+</li>
+<li>DEVICE：指定磁盘的名称</li>
+<li>SIZE：文件的大小</li>
+<li>NODE：索引节点（文件在磁盘上的标识）</li>
+<li>NAME：打开文件的确切名称</li>
+</ul>
+
+
+<h2>2、列出特定用户打开的文件</h2>
+
+<p>使用-u选项后接用户指定某个用户打开文件</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -u apache</span>
+</span><span class='line'><span class="n">COMMAND</span>  <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">cwd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">rtd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
+</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>  <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3、查找特定端口运行的进程</h2>
+
+<p>使用-i选项来查找正在运行特定端口的进程</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i TCP:53</span>
+</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="cp"># lsof -i UDP:53</span>
+</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span>
+</span><span class='line'><span class="cp"># lsof -i:53</span>
+</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>4、列出ipv4和ipv6的文件</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i 4</span>
+</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>  <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="cp"># lsof -i 6</span>
+</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>5、列出TCP端口范围1-1024端口</h2>
+
+<p>列出打开1-1024端口所有正在运行的程序</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i TCP:1-1024</span>
+</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="n">httpd</span>    <span class="mi">2142</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">13337</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">http</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>6、通过脱字符排除某个用户</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -u^root</span>
+</span><span class='line'><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>7、查找特定用户使用文件和命令</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i -u apache </span>
+</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
+</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">9488</span>  <span class="mi">271645</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">apr</span><span class="o">-</span><span class="n">util</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">apr_ldap</span><span class="o">-</span><span class="mf">1.</span><span class="n">so</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>8、列出所有网络连接</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i</span>
+</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>9、采用pid搜索</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -p 1</span>
+</span><span class='line'><span class="n">COMMAND</span> <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>   <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
+</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">txt</span>    <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span> <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>10、杀死某个特定用户的所有活动</h2>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># kill -9 `lsof -t -u named`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>补充:</h3>
+
+<p>查看谁在使用文件系统,在卸载文件系统时，如果某个文件系统中有任何打开文件，操作一般会失败</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof /mnt/</span>
+</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
+</span><span class='line'><span class="n">bash</span>    <span class="mi">16672</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
+</span><span class='line'><span class="n">lsof</span>    <span class="mi">17041</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
+</span><span class='line'><span class="n">lsof</span>    <span class="mi">17042</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查看被删除的文件</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof | grep deleted --color</span>
+</span><span class='line'><span class="n">console</span><span class="o">-</span><span class="n">k</span>  <span class="mi">1291</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">155008</span>    <span class="mi">1577669</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">console</span><span class="o">-</span><span class="n">kit</span><span class="o">-</span><span class="n">daemon</span><span class="p">.</span><span class="err">#</span><span class="n">prelink</span><span class="err">#</span><span class="p">.</span><span class="n">bXthE2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+</span><span class='line'><span class="n">tail</span>      <span class="mi">17553</span>   <span class="n">root</span>    <span class="mi">3</span><span class="n">r</span>      <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>        <span class="mi">6</span>     <span class="mi">523317</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">test2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>应用实例</h2>
+
+<p>以下两个实例分别引用其它博主的实例，笔者也在实际过程中遇到过，作用很大，所以引用过来</p>
+
+<h3>实例1 恢复删除的文件</h3>
+
+<ul>
+<li>实例引用<a href="http://www.turbolinux.com.cn/turbo/wiki/doku.php?id=%E6%94%B6%E9%9B%86%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF:lsof">turbolinux</a></li>
+</ul>
+
+
+<p>当Linux计算机受到入侵时，常见的情况是日志文件被删除，以掩盖攻击者的踪迹。管理错误也可能导致意外删除重要的文件，比如在清理旧日志时，意外地删除了数据库的活动事务日志。有时可以通过lsof来恢复这些文件。</p>
+
+<p>当进程打开了某个文件时，只要该进程保持打开该文件，即使将其删除，它依然存在于磁盘中。这意味着，进程并不知道文件已经被删除，它仍然可以向打开该文件时提供给它的文件描述符进行读取和写入。除了该进程之外，这个文件是不可见的，因为已经删除了其相应的目录索引节点。</p>
+
+<p>在/proc 目录下，其中包含了反映内核和进程树的各种文件。/proc目录挂载的是在内存中所映射的一块区域，所以这些文件和目录并不存在于磁盘中，因此当我们对这些文件进行读取和写入时，实际上是在从内存中获取相关信息。大多数与 lsof 相关的信息都存储于以进程的 PID 命名的目录中，即/proc/1234 中包含的是PID为1234 的进程的信息。每个进程目录中存在着各种文件，它们可以使得应用程序简单地了解进程的内存空间、文件描述符列表、指向磁盘上的文件的符号链接和其他系统信息。lsof 程序使用该信息和其他关于内核内部状态的信息来产生其输出。所以lsof 可以显示进程的文件描述符和相关的文件名等信息。也就是我们通过访问进程的文件描述符可以找到该文件的相关信息。</p>
+
+<p>当系统中的某个文件被意外地删除了，只要这个时候系统中还有进程正在访问该文件，那么我们就可以通过lsof从/proc目录下恢复该文件的内容。 假如由于误操作将/var/log/messages文件删除掉了，那么这时要将/var/log/messages文件恢复的方法如下：</p>
+
+<p>首先使用lsof来查看当前是否有进程打开/var/logmessages文件，如下:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof |grep /var/log/messages</span>
+</span><span class='line'><span class="n">syslogd</span>   <span class="mi">1283</span>      <span class="n">root</span>    <span class="mi">2</span><span class="n">w</span>      <span class="n">REG</span>        <span class="mi">3</span><span class="p">,</span><span class="mi">3</span>  <span class="mi">5381017</span>    <span class="mi">1773647</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从上面的信息可以看到 PID 1283（syslogd）打开文件的文件描述符为 2。同时还可以看到/var/log/messages已经标记被删除了。因此我们可以在 /proc/1283/fd/2 （fd下的每个以数字命名的文件表示进程对应的文件描述符）中查看相应的信息，如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># head -n 10 /proc/1283/fd/2</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="n">syslogd</span> <span class="mf">1.4.1</span><span class="o">:</span> <span class="n">restart</span><span class="p">.</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">klogd</span> <span class="mf">1.4.1</span><span class="p">,</span> <span class="n">log</span> <span class="n">source</span> <span class="o">=</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">kmsg</span> <span class="n">started</span><span class="p">.</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">Linux</span> <span class="n">version</span> <span class="mf">2.6.22.1</span><span class="o">-</span><span class="mi">8</span> <span class="p">(</span><span class="n">root</span><span class="err">@</span><span class="n">everestbuilder</span><span class="p">.</span><span class="n">linux</span><span class="o">-</span><span class="n">ren</span><span class="p">.</span><span class="n">org</span><span class="p">)</span> <span class="p">(</span><span class="n">gcc</span> <span class="n">version</span> <span class="mf">4.2.0</span><span class="p">)</span> <span class="err">#</span><span class="mi">1</span> <span class="n">SMP</span> <span class="n">Wed</span> <span class="n">Jul</span> <span class="mi">18</span> <span class="mi">11</span><span class="o">:</span><span class="mi">18</span><span class="o">:</span><span class="mi">32</span> <span class="n">EDT</span> <span class="mi">2007</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">BIOS</span><span class="o">-</span><span class="n">provided</span> <span class="n">physical</span> <span class="n">RAM</span> <span class="nl">map:</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000000000</span> <span class="o">-</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="o">-</span> <span class="mo">00000000000</span><span class="n">a0000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000100000</span> <span class="o">-</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="o">-</span> <span class="mo">0000000020000000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000e0000000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">0007000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
+</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="mi">8000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="n">c000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从上面的信息可以看出，查看 /proc/1283/fd/2 就可以得到所要恢复的数据。如果可以通过文件描述符查看相应的数据，那么就可以使用 I/O 重定向将其复制到文件中，如:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">cat</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="mi">1283</span><span class="o">/</span><span class="n">fd</span><span class="o">/</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>对于许多应用程序，尤其是日志文件和数据库，这种恢复删除文件的方法非常有用。</p>
+
+<h3>应用实例2 磁盘剩余空间和du显示相差太大</h3>
+
+<ul>
+<li>实例引用：<a href="http://chenxu.yo2.cn/articles/lsof.html">orz DBA</a></li>
+</ul>
+
+
+<p>今天一同事说文件系统/tmp目录下空间用满了，当时du统计目录所有文件的时候却很小。听到这个现象，第一感觉就是应该有大文件被删除，但是这个文件可能依然被其他程序打开，导致这个文件不能被清除。登上服务器使用lsof看了一下，果然如此，具体排查过程如下：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
+</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
+</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span> <span class="mf">8.7</span><span class="n">G</span> <span class="mf">7.9</span><span class="n">G</span> <span class="mi">407</span><span class="n">M</span> <span class="mi">96</span><span class="o">%</span> <span class="o">/</span><span class="n">tmp</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">lsof</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">/</span><span class="n">tmp</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">-</span><span class="n">k7</span> <span class="o">-</span><span class="n">nr</span>  <span class="c">#注：其实直接lsof | grep deleted 即可</span>
+</span><span class='line'><span class="n">sleep</span> <span class="mi">18833</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+</span><span class='line'><span class="n">netstat_2</span> <span class="mi">13571</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面lsof输出结果的第二列是PID,倒数第三列是占用空间大小</p>
+
+<p>可以看到文件/tmp/netstat.log (deleted)占用7个多G的空间，虽然被删除了，但是还是有进程打开它。</p>
+
+<p>然后，用PID看看是哪个程序占用这个文件：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">ps</span> <span class="o">-</span><span class="n">ef</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">13571</span>
+</span><span class='line'><span class="mi">51717</span> <span class="mi">13571</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">2011</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mo">00</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat_20110829</span><span class="o">.</span><span class="n">sh</span>
+</span><span class='line'><span class="mi">51717</span> <span class="mi">21456</span> <span class="mi">13571</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">sleep</span> <span class="mi">10</span>
+</span><span class='line'><span class="n">zhuxu</span> <span class="mi">21458</span> <span class="mi">17014</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="n">pts</span><span class="o">/</span><span class="mi">0</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">grep</span> <span class="mi">13571</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>将这个进程KILL掉后，就OK了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">kill</span> <span class="o">-</span><span class="mi">9</span> <span class="mi">13571</span>
+</span><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
+</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
+</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span>  <span class="mf">8.7</span><span class="n">G</span> <span class="mi">56</span><span class="n">M</span>  <span class="mf">8.2</span><span class="n">G</span> <span class="mi">1</span><span class="o">%</span>  <span class="o">/</span><span class="n">tmp</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress Windows环境搭建]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/06/octopress-plus-github/"/>
+    <updated>2013-04-06T17:09:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/06/octopress-plus-github</id>
+    <content type="html"><![CDATA[<p>关于Octopress+GitHub+Markdown环境的搭建其实已经有很多写的很好的教程了，这里算是作一个总结吧，把遇到的一些问题说明注解一下。</p>
+
+<p><strong>优点</strong>：</p>
+
+<pre><code>1. 用文件方式储存数据，无需数据库
+2. 以静态方式发布，直接托管github
+3. 用markdown格式写博客，可轻松配置和发布
+</code></pre>
+
+<!--more-->
+
+
+<h2>安装</h2>
+
+<p>本文主要讲解在Windows上的安装方法,Linux可参考<a href="http://octopress.org/docs/">官方文档</a></p>
+
+<h3>准备软件</h3>
+
+<ul>
+<li>git
+
+<ul>
+<li>下载地址： <a href="https://code.google.com/p/msysgit/downloads/detail?name=Git-1.8.1.2-preview20130201.exe&amp;can=2&amp;q=">Git-1.8.1.2</a></li>
+</ul>
+</li>
+<li>ruby
+
+<ul>
+<li>下载地址：<a href="http://rubyforge.org/frs/download.php/75127/rubyinstaller-1.9.2-p290.exe">ruby-1.9.2</a> <strong>推荐使用ruby-1.9.2</strong> ,最新2.0版结合Octopress会有些问题</li>
+</ul>
+</li>
+<li>gem
+
+<ul>
+<li>下载地址：<a href="https://github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe">DevKit-tdm-32-4.5.2</a> ,64位下载相关软件，本文中使用32位环境，<a href="http://rubyinstaller.org/downloads/">官网</a></li>
+</ul>
+</li>
+<li>python
+
+<ul>
+<li>下载地址：<a href="http://www.activestate.com/activepython/downloads/thank-you?dl=http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi">Activepython-2.7.2.5</a> ,博客代码加亮模块需要python环境支持</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>安装软件</h3>
+
+<h4>注：</h4>
+
+<hr />
+
+<p>ruby安装选项时选择<code>Add Ruby exectutables to your path</code>，如果安装时没有选择，则可以使用 <code>我的电脑</code> &#8211; <code>属性</code> &#8211; <code>高级系统设置</code> &#8211; <code>环境变量</code>，添加<strong>ruby命令路径</strong>到系统环境变量即可，另外也要加入<strong>git的命令路径</strong>。</p>
+
+<p>对于Gem下载完成后，将其解压，如 D:\DevKit，然后在cmd窗口中执行如下命令安装：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="nl">D:</span>
+</span><span class='line'><span class="n">cd</span> <span class="n">DevKit</span>
+</span><span class='line'><span class="n">ruby</span> <span class="n">dk</span><span class="p">.</span><span class="n">rb</span> <span class="n">init</span>
+</span><span class='line'><span class="n">ruby</span> <span class="n">dk</span><span class="p">.</span><span class="n">rb</span> <span class="n">instal</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>python安装完后执行如下安装</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">easy_install</span> <span class="n">pygments</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Octopress和相关插件安装</h4>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">git</span> <span class="n">clone</span> <span class="nl">git:</span><span class="c1">//github.com/imathis/octopress.git </span>
+</span><span class='line'><span class="n">cd</span> <span class="n">octopress</span>
+</span><span class='line'><span class="n">ruby</span> <span class="o">--</span><span class="n">version</span>  <span class="err">#确保</span><span class="n">ruby</span><span class="err">安装版本为</span><span class="mf">1.9.2</span>
+</span><span class='line'><span class="n">gem</span> <span class="n">install</span> <span class="n">bundler</span> <span class="n">rdoc</span>
+</span><span class='line'><span class="n">bundle</span> <span class="n">install</span>
+</span><span class='line'><span class="n">rake</span> <span class="n">install</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行rake install时可能出现如下错误</p>
+
+<pre><code>You have already activated rake 0.9.2.2, 
+but your Gemfile requires rake 0.9.2. 
+Using bundle exec may solve this.
+</code></pre>
+
+<p>可以在<code>rake install</code>命令前添加<code>bundle exec</code>或者直接修改octopress目录文件<code>Gemfile</code>,修改rake版本为当前版本</p>
+
+<h3>Github创建库(省略)</h3>
+
+<pre><code>注册 &lt;USERNAME&gt; 的账号
+创建 &lt;USERNAME&gt;.github.com 的仓库
+</code></pre>
+
+<h3>相关操作</h3>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">rake</span> <span class="n">setup_github_pages</span> <span class="err">#</span> <span class="err">配置</span> <span class="n">octopress</span> <span class="err">与</span> <span class="n">github</span> <span class="err">的连接</span>
+</span><span class='line'><span class="n">rake</span> <span class="n">generate</span>           <span class="err">#</span> <span class="err">生成静态文件</span>
+</span><span class='line'><span class="n">rake</span> <span class="n">preview</span>            <span class="err">#</span> <span class="err">在本机</span><span class="mi">4000</span><span class="err">端口生成访问内容</span>
+</span><span class='line'><span class="n">rake</span> <span class="n">deploy</span>             <span class="err">#</span> <span class="err">发布文件到</span> <span class="n">github</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行rake generate可能产生如下错误</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">Liquid</span> <span class="nl">Exception:</span> <span class="n">invalid</span> <span class="n">byte</span> <span class="n">sequence</span> <span class="n">in</span> <span class="n">GBK</span> <span class="n">in</span> <span class="n">page</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>解决方法</strong>： CMD命令窗口执行如下操作</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">set</span> <span class="n">LANG</span><span class="o">=</span><span class="n">zh_CN</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
+</span><span class='line'><span class="n">set</span> <span class="n">LC_ALL</span><span class="o">=</span><span class="n">zh_CN</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考</h3>
+
+<ul>
+<li><a href="http://sinosmond.github.io/blog/2012/03/12/install-and-deploy-octopress-to-github-on-windows7-from-scratch/">sinosmond.github.io</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">ruanyifeng.com</a></li>
+<li><a href="http://zjun.github.io/2012/09/23/blog-in-octopress-on-github/">zjun.github.io</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[用Markdown写日志]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/05/hello/"/>
+    <updated>2013-04-05T22:30:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/05/hello</id>
+    <content type="html"><![CDATA[<h3>始末</h3>
+
+<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
+
+<!--more-->
+
+
+<p>在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子，也曾多次迁居。个人突然觉得孟母三迁和我搬博客的目的还是很类似了，2年内我经历了新浪博客&#8211;网易博客&#8211;51CTO&#8211;CSDN。基本上国内主流的博客我都体验过，后来还是决定在Github长久居住。阮一峰在 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog&#8212;-github Pages和Jekyll入门</a> 一文中描述说喜欢写Blog的人，会经历三个阶段：</p>
+
+<pre><code>第一阶段，刚接触Blog，觉得很新鲜，试着选择一个免费空间来写。  
+第二阶段，发现免费空间限制太多，就自己购买域名和空间，搭建独立博客。
+第三阶段，觉得独立博客的管理太麻烦，最好在保留控制权的前提下，让别人来管，自己只负责写文章。
+</code></pre>
+
+<p>以上的三个阶段我只经历过第一和第三个阶段，很多次换博客主要还是限制的问题，现在在Github相对自由了，当然这是在不会被墙的情况下。对于国内的几个博客还是简要介绍下我个人的体验:</p>
+
+<ul>
+<li>新浪博客</li>
+</ul>
+
+
+<p>先说说新浪博客吧，之前因为比较关注韩寒，所以对于新浪博客还是很熟悉的，所以我第一站选择了新浪博客。怎么说呢，关于新浪博客只能说仅仅是一个抒情的地方，对于技术来说就很不适合了，不过自己还是坚持了很长一段时间，算是一种情愫吧。</p>
+
+<ul>
+<li>网易博客</li>
+</ul>
+
+
+<p>对于网易，基本上和新浪是同一类型的，不适合写技术博客。但是网易的很多用户体验做的感觉还是比新浪好很多，无奈还是需要搬家。</p>
+
+<ul>
+<li>51CTO</li>
+</ul>
+
+
+<p>对于从事Linux运维相关技术的技术人来说，还是一个很不错的技术交流平台。特别对于新手来说，还是能够学到很多东西的。但是51CTO后台博客的体验相对来说还是差很多的，博客界面的设计和后台管理个人感觉也较为简陋。不过，有一点是要非常肯定的，51CTO的小编都很热情，相对CSDN会好很多。</p>
+
+<ul>
+<li>CSDN</li>
+</ul>
+
+
+<p>CSDN可以说是一个大杂烩吧，融合了各种类型的技术人，博客界面设计和后台管理看起来很极简，很舒服，博客体验相对较好。所以在CSDN上我坚持了很长一段时间，但是后来CSDN的恶劣行为，让我还是决定离开了，上面的博客只能有时间慢慢搬过来了。</p>
+
+<p>基本上国内博客的体验就这么多了吧，如果作为一个技术人，我还是建议在Github上搭建Octopress，利用Markdown书写技术Blog。因为这里有无限的自由度，最关键的是Github还会帮你管理，你只需要想和写。关于Github+Octopress的优点我就不多说了，Google、百度很多解释，我只想说 <em>像黑客一样写作</em> ，这就足够了。如果想做，那么 <em>Just do it！</em>。</p>
+
+<p>文章附：
+<a href="http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html">Blogging Like a Hacker</a></p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+</feed>

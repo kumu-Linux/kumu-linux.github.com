@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://kumu-Linux.github.com/sitemap.xml 

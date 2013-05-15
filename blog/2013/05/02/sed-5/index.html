@@ -1,0 +1,461 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>1-5. Write Pattern Space to File[译] - Linux SA Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="使用sed w命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。 接下来的是一些例子。 把employee.txt文件内容写入到output.txt（并且打印到屏幕）: 1
+2
+3
+4
+5
+6
+7
+8 &hellip;">
+  <meta name="keywords" content="sed,枯木">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/05/02/sed-5">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux SA Notes By 枯木</a></h1>
+  
+    <h2>Linux、Python、MySQL -- 像黑客一样写作</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kumu-Linux.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">关于我</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">1-5. Write Pattern Space to File[译]</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-02T00:06:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>使用sed <code>w</code>命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。</p>
+
+<!--more-->
+
+
+<p>接下来的是一些例子。</p>
+
+<p><strong>把employee.txt文件内容写入到output.txt（并且打印到屏幕）:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;w output.txt&#39;</span> employee.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …   
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>把employee.txt文件内容写入到output.txt，但是不打印到屏幕：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>只写入第二行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入1到4行:</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1,4 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入第二行到最后一行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2,$ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>只写入奇数行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1~2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>101,John Doe,CEO
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配词”Jane”的行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jane/ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>从第一行开始写入匹配”Jason”的行到第四行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,4 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：如果1到4行没有匹配到”Jason”，这条命令只写入第四行后匹配”Jason”的行</p>
+
+<p><strong>写入行从第一行开始匹配”Raj”的行到结束行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,$ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配”Raj”行开始直到匹配到“Jane”行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,/Jane/ w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span><span class='line'>105,Jane Miller,Sales Manager
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>写入匹配“Jason”的行和其之后的2行：</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,+2 w output.txt&#39;</span> employee.txt
+</span><span class='line'><span class="nv">$ </span>cat output.txt
+</span><span class='line'>102,Jason Smith,IT Manager
+</span><span class='line'>103,Raj Reddy,Sysadmin
+</span><span class='line'>104,Anand Ram,Developer
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：你可能不经常使用w命令，大多数人使用UNIX输出重定向，来保存sed输出到一个文件，如: sed ‘p’ exployee.txt > output.txt</p>
+
+<p>&#8211;EOF&#8211;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-02T00:06:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sed-slash-awk/'>SED/AWK</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/04/29/sed-4/" title="Previous Post: 1-4、Delete Lines[译]">&laquo; 1-4、Delete Lines[译]</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/02/hardware/" title="Next Post: 通过sysfs获取dmi硬件信息">通过sysfs获取dmi硬件信息 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Sina Weibo</h1>
+  <iframe id="sina_widget_1912914742" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1912914742&height=500&skin=wd_02&showpic=1">
+  </iframe>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/05/14/ping-dns/">ping和dns的一个小插曲</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/06/rsync-ssh/">rsync备份之ssh篇</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/05/sed-7/">2-2、Global Flag (g flag)[译]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/04/sed-6/">2-1、Sed Substitute Command[译]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/02/hardware/">通过sysfs获取dmi硬件信息</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/02/sed-5/">1-5. Write Pattern Space to File[译]</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (4)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (2)</a></li></ul>
+</section><section>
+  <h1>Cool Links</h1>
+  <ul>
+    <li>
+      <a href="http://coolshell.cn/">【 酷壳 CoolShell 】</a> 
+	</li>
+	<li>
+      <a href="http://dbanotes.net/">【  Fenng 闲思录  】</a>
+	</li>
+	<li>
+      <a href="http://www.ruanyifeng.com/blog/">【阮一峰网络日志】</a>
+    </li>
+	<li>
+	  <a href="http://blog.linuxhonker.com/">【服务器架构研究】</a>
+    </li>
+	<li>
+	<a href="http://blog.csdn.net/kumu_Linux">【 枯木CSDN Blog 】</a>
+	</li>
+	<li>
+	<a href="http://lin-credible.github.io/">【Lin-credible blog】</a>
+	</li>
+  </ul>
+</section><section id="comment_sidebar">
+<h1>Recent Conmments</h1>
+  <script type="text/javascript" src="http://kumusanotes.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=20"></script><a href="http://disqus.com/">Powered by Disqus</a>
+</section><section>
+<h1>Just Douban</h1>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/39084560/?show=collection&amp;n=8&amp;columns=2" ></script> 
+</div>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/05/02/sed-5/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/05/02/sed-5/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

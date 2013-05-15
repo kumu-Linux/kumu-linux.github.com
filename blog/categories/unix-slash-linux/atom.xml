@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.com/"/>
+  <updated>2013-05-14T18:49:15+08:00</updated>
+  <id>http://kumu-Linux.github.com/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/14/ping-dns/"/>
+    <updated>2013-05-14T17:54:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/14/ping-dns</id>
+    <content type="html"><![CDATA[<p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
+
+<!--more-->
+
+
+<h3>问题重现</h3>
+
+<p>解析正常
+``` bash</p>
+
+<h1>nslookup mail.server1.test.com</h1>
+
+<p>Server:     192.168.0.8
+Address:    192.168.0.8#53</p>
+
+<p>Name:   mail.server1.test.com
+Address: 192.168.0.8
+```</p>
+
+<p>但是域名ping不通 【strace尝试追踪问题，使用的是公司内网DNS，但是获取到地址】
+``` bash</p>
+
+<h1>ping mail.intra.knownsec.com</h1>
+
+<p>ping: unknown host mail.intra.knownsec.com
+```</p>
+
+<h3>问题解决</h3>
+
+<p>1、查看/etc/nsswitch.conf内容，解析顺序如下，文件没有问题
+``` bash</p>
+
+<h1>grep ^hosts:  /etc/nsswitch.conf</h1>
+
+<p>hosts:      files dns
+```</p>
+
+<p>2、重启nscd【Dns Server Cache】，尝试清空缓存，问题依然存在
+``` bash</p>
+
+<h1>/etc/init.d/nscd restart</h1>
+
+<p>```</p>
+
+<p>... ...</p>
+
+<p>期间N种方式的尝试，无解。后来同事发现把之前的<strong>外网DNS注释</strong>，<strong>重启<code>nscd</code></strong>，问题解决。
+``` bash</p>
+
+<h1>/etc/init.d/nscd restart</h1>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[通过sysfs获取dmi硬件信息]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/02/hardware/"/>
+    <updated>2013-05-02T22:27:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/02/hardware</id>
+    <content type="html"><![CDATA[<p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
+
+<!--more-->
+
+
+<p>``` bash</p>
+
+<h1>pwd</h1>
+
+<p>/sys/class/dmi/id</p>
+
+<h1>ls</h1>
+
+<p>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
+bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
+bios_version     board_vendor   chassis_type       power            product_version  uevent
+board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
+```</p>
+
+<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下
+``` bash</p>
+
+<h1>cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</h1>
+
+<p>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16</p>
+
+<h1>cat product_name</h1>
+
+<p>VMware Virtual Platform
+```</p>
+
+<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sed -i修改链接文件注意问题]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed-link/"/>
+    <updated>2013-04-09T23:23:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed-link</id>
+    <content type="html"><![CDATA[<h2>问题重现</h2>
+
+<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux &lt;br/&gt;</span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux&lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux &lt;br/&gt;</span>
+</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># &lt;br/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<!--more-->
+
+
+<p>我们发现链接文件不再是链接文件了，后来查看sed man选项时发现如下选项说明</p>
+
+<ul>
+<li><p>--follow-symlinks</p>
+
+<ul>
+<li>follow symlinks when processing in place; hard links will still be broken.</li>
+</ul>
+</li>
+<li><p>-i[SUFFIX], --in-place[=SUFFIX]</p>
+
+<ul>
+<li>edit  files  in  place (makes backup if extension supplied).  The default operation mode is to break symbolic and hard links.  This can be changed with --follow-symlinks and --copy.</li>
+</ul>
+</li>
+<li><p>-c, --copy</p>
+
+<ul>
+<li>use copy instead of rename when shuffling files in -i mode.  While this  will  avoid  breaking links  (symbolic  or hard), the resulting editing operation is not atomic.  This is rarely the desired mode;</li>
+</ul>
+</li>
+<li><p>--follow-symlinks is usually enough, and it is both faster and more secure.</p></li>
+</ul>
+
+
+<p>以上说明就不作过多解释了，说的很明显，看下面实例
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test&lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft&lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard&lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;em&gt;&lt;br/&gt;</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_hard</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard &lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft &lt;br/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;/em&gt;&lt;br/&gt;</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="mi">271656</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">05</span> <span class="n">test_hard</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="mi">271657</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">06</span> <span class="n">test_soft</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># &lt;br/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+很明显如man中所说-i选项对软链接和硬链接都会使受到破坏,而-c选项则不会</p>
+
+<h2>问题解决</h2>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># rm -rf test&lt;em&gt;</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;/em&gt;</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard</span>
+</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test</span>
+</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test_hard</span>
+</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+--follow-symlinks选项只对软链接有效，硬链接还是会被破坏，建议使用-c选项，这里就不举例了</p>
+
+<h2>问题延伸</h2>
+
+<p>后来发现在RHEL5上运行相同的操作居然没有出现类似的现象，运行结果如下：
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">echo</span> <span class="s">&quot;test&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">test</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">~/</span><span class="n">test</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
+</span><span class='line'><span class="err">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&quot;s/test/test1/g&quot;</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
+</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>经查是sed的版本不同造成的影响，RHEL5系列的还是使用老版本的sed，没有--follow-symlinks类似的选项，笔者之前实验的版本是RHEL6.3，所以出现之前的一系列问题了</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[sed远程替换的一个错误]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed/"/>
+    <updated>2013-04-09T15:17:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed</id>
+    <content type="html"><![CDATA[<p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
+
+<!--more-->
+
+
+<h2>问题出现</h2>
+
+<p>以下为本地执行sed替换，本地替换没有什么问题
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39;</span> <span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>尝试远程替换，发现ssh直接后接命令替换失败
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ssh</span> <span class="n">root</span><span class="nd">@localhost</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2>问题解决</h2>
+
+<p>之后使用\转义命令中的"，再把远程命令加到""中,远程替换成功
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ssh</span> <span class="n">root</span><span class="nd">@localhost</span> <span class="s">&quot;sed -i &#39;s:OPTIONS=</span><span class="se">\&quot;</span><span class="s">-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid</span><span class="se">\&quot;</span><span class="s">:OPTIONS=</span><span class="se">\&quot;</span><span class="s">-Lf /dev/null/snmpd.pid</span><span class="se">\&quot;</span><span class="s">:g&#39; ~/snmpd&quot;</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&quot;OPTIONS=&quot;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+</feed>

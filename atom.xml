@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-15T22:59:05+08:00</updated>
+  <updated>2013-05-20T14:26:13+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -77,6 +77,8 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/nscd restart</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

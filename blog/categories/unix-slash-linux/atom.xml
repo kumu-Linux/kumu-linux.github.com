@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-20T14:32:52+08:00</updated>
+  <updated>2013-05-21T17:55:47+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,214 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/21/named-chroot/"/>
+    <updated>2013-05-21T10:53:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/21/named-chroot</id>
+    <content type="html"><![CDATA[<h2>问题描述</h2>
+
+<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
+
+<p>环境： DNS查询日志存放独立分区/data/目录下</p>
+
+<!--more-->
+
+
+<h2>问题解决</h2>
+
+<p>``` bash</p>
+
+<h1>ps -ef | grep name[d]</h1>
+
+<p>named     9960     1  0 May20 ?        00:02:09 /usr/sbin/named-sdb -u named -t /var/named/chroot</p>
+
+<h1>strace -fp 9960</h1>
+
+<h1>使用strace跟踪named进程，在其它终端使用dig查询，截取到如下信息</h1>
+
+<p>... ...
+[pid  9966] connect(6, {sa_family=AF_FILE, path="/dev/log"}, 110 <unfinished ...>
+[pid  9963] recvmsg(537,  <unfinished ...>
+[pid  9962] futex(0x7f520dc26028, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid  9963] &lt;... recvmsg resumed> 0x7f5205eaec00, 0) = -1 EAGAIN (Resource temporarily unavailable)
+[pid  9970] &lt;... epoll_ctl resumed> )   = 0
+[pid  9966] &lt;... connect resumed> )     = -1 ENOENT (No such file or directory)</p>
+
+<h1>信息显示没有/dev/log该文件</h1>
+
+<p>... ...
+```</p>
+
+<p>Google搜索<code>named chroot /dev/log</code>相关获得[CentOS 6: Configure bind logging with bind-chroot] (http://floriancrouzat.net/2011/09/centos-6-configure-bind-logging-bind-chroot-rsyslog/)</p>
+
+<p>修改配置文件<code>/etc/rsyslog.conf</code>添加
+<code>
+$AddUnixListenSocket /var/named/chroot/dev/log
+</code></p>
+
+<p>重启rsyslog,dig查询测试，DNS查询日志接收正常</p>
+
+<p>``` bash</p>
+
+<h1>ll /var/named/chroot/dev/log</h1>
+
+<p>srw-rw-rw- 1 root root 0 May 21 11:30 /var/named/chroot/dev/log
+```</p>
+
+<h2>lsof查看效果</h2>
+
+<p>未添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试，使用lsof查看rsyslog重启前后named程序占用/dev/log文件对比</p>
+
+<p>``` bash</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/log</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c10b1840      0t0 14544315 /dev/log</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/log</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
+```</p>
+
+<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试后测试rsyslog重启前后named程序占用情况</p>
+
+<p>``` bash</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bedac0      0t0 14605223 /dev/log
+rsyslogd   5883    root    1u  unix 0xffff8801b39c0840      0t0 14605225 /var/named/chroot/dev/log</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c0913300      0t0 14630150 /dev/log
+rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/named/chroot/dev/log
+```</p>
+
+<p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NTP服务]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/20/ntp/"/>
+    <updated>2013-05-20T14:53:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/20/ntp</id>
+    <content type="html"><![CDATA[<h2>简介</h2>
+
+<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
+
+<!--more-->
+
+
+<p>NTP提供准确时间，首先需要一个准确的UTC时间来源，NTP获得UTC的时间来源可以从原子钟、天文台、卫星，也可从Internet上获取。时间服务器按照NTP服务器的等级传播，根据离外部UTC源的远近将所有服务器归入不用的层(Stratum)中。Stratum-1在顶层由外部UTC接入，stratum-1的时间服务器为整个系统的基础，Stratum的总数限制在15以内。下图为NTP层次图：</p>
+
+<center><img src="http://kumu-Linux.github.com/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
+
+
+<h2>NTP Server安装配置</h2>
+
+<p>关于NTP服务器的安装，根据不同版本安装方法也不同。REDHAT系统则可以使用yum安装，Ubuntu系列可以使用apt-get安装，这里不做具体的介绍，主要详细介绍配置文件的信息。</p>
+
+<p>对于Centos过滤注释和空行后，ntp配置文件内容如下
+``` bash</p>
+
+<h1>grep -vE '<sup>#|<sup>$'</sup></sup> /etc/ntp.conf</h1>
+
+<p>driftfile /var/lib/ntp/drift
+restrict default kod nomodify notrap nopeer noquery
+restrict -6 default kod nomodify notrap nopeer noquery
+restrict 127.0.0.1
+restrict -6 ::1
+server 0.centos.pool.ntp.org
+server 1.centos.pool.ntp.org
+server 2.centos.pool.ntp.org
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
+```</p>
+
+<h3>配置选项说明</h3>
+
+<ul>
+<li><code>driftfile</code>选项， 则指定了用来保存系统时钟频率偏差的文件。 ntpd程序使用它来自动地补偿时钟的自然漂移， 从而使时钟即使在切断了外来时源的情况下， 仍能保持相当的准确度。另外，driftfile 选项也保存上一次响应所使用的 NTP 服务器的信息。 这个文件包含了 NTP 的内部信息， 它不应被任何其他进程修改。<code>无需更改</code></li>
+<li><code>restrict default kod nomodify notrap nopeer noquery</code>  默认拒绝所有NTP客户端的操作【restrict <IP 地址> &lt;子网掩码>|&lt;网段> [ignore|nomodiy|notrap|notrust|nknod]】 指定可以通信的IP地址和网段。如果没有指定选项，表示客户端访问NTP服务器没有任何限制
+
+<ul>
+<li>ignore    关闭所有NTP服务</li>
+<li>nomodiy   表示客户端不能更改NTP服务器的时间参数，但可以通过NTP服务器进行时间同步</li>
+<li>notrust   拒绝没有通过认证的客户端</li>
+<li>knod      kod技术科阻止"Kiss of Death"包（一种DOS攻击）对服务器的破坏，使用knod开启功能</li>
+<li>nopeer    不与其它同一层的NTP服务器进行同步</li>
+</ul>
+</li>
+<li><code>server 【IP|FQDN|prefer】</code>指该服务器上层NTP Server，使用prefer的优先级最高，没有使用prefer则按照配置文件顺序由高到低，默认情况下至少15min和上层NTP服务器进行时间校对</li>
+<li><code>fudge</code>可以指定本地NTP Server层，如<code>fudge 127.0.0.1 stratum 9</code></li>
+<li><code>broadcast 网段 子网掩码</code>指定NTP进行时间广播的网段，如<code>broadcast 192.168.1.255</code></li>
+<li><code>logfile</code> 可以指定NTP Server日志文件</li>
+</ul>
+
+
+<p>几个与NTP相关的配置文件:<code>/usr/share/zoneinfo/</code>、<code>/etc/sysconfig/clock</code>、<code>/etc/localtime</code>
+* /usr/share/zoneinfo/ 存放时区文件目录
+* /etc/sysconfig/clock 指定当前系统时区信息
+* /etc/localtime 相应的时区文件</p>
+
+<p>如果需要修改当前时区，则可以从/usr/share/zoneinfo/目录拷贝相应时区文件覆盖/etc/localtime并修改/etc/sysconfig/clock 即可
+<code>bash
+cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+sed -i 's:ZONE=.*:ZONE="Asia/Shanghai":g' /etc/sysconfig/clock
+</code></p>
+
+<h2>相关命令</h2>
+
+<p><code>ntpstat</code>查看同步状态
+``` bash</p>
+
+<h1>ntpstat</h1>
+
+<p>synchronised to NTP server (192.168.0.18) at stratum 4
+   time correct to within 88 ms     #表面时间校正88ms
+   polling server every 1024 s      #每隔1024s更新一次
+```</p>
+
+<p><code>ntpq</code>列出上层状态
+``` bash</p>
+
+<h1>ntpq -np</h1>
+
+<pre><code> remote           refid      st t when poll reach   delay   offset  jitter
+</code></pre>
+
+<p>==============================================================================
+*192.168.0.18       202.112.31.197   3 u  101 1024  377   14.268    0.998   0.143
+```</p>
+
+<p>输出说明：</p>
+
+<ul>
+<li><code>remote</code>  NTP Server</li>
+<li><code>refid</code>   参考的上层ntp地址</li>
+<li><code>st</code>  层次</li>
+<li><code>when</code>    上次更新时间距离现在时常</li>
+<li><code>poll</code>    下次更新时间</li>
+<li><code>reach</code>   更新次数</li>
+<li><code>delay</code>   延迟</li>
+<li><code>offset</code>  时间补偿结果</li>
+<li><code>jitter</code>  与BIOS硬件时间差异</li>
+</ul>
+
+
+<h2>参考文档</h2>
+
+<p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
+<a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
+鸟哥Linux私房菜</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
@@ -252,91 +460,6 @@ board_asset_tag  board_version  chassis_vendor     product_name     smbios_versi
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>经查是sed的版本不同造成的影响，RHEL5系列的还是使用老版本的sed，没有--follow-symlinks类似的选项，笔者之前实验的版本是RHEL6.3，所以出现之前的一系列问题了</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sed远程替换的一个错误]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed/"/>
-    <updated>2013-04-09T15:17:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed</id>
-    <content type="html"><![CDATA[<p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
-
-<!--more-->
-
-
-<h2>问题出现</h2>
-
-<p>以下为本地执行sed替换，本地替换没有什么问题
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39;</span> <span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>尝试远程替换，发现ssh直接后接命令替换失败
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ssh</span> <span class="n">root</span><span class="nd">@localhost</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&#39;OPTIONS=&#39;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<h2>问题解决</h2>
-
-<p>之后使用\转义命令中的"，再把远程命令加到""中,远程替换成功
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ssh</span> <span class="n">root</span><span class="nd">@localhost</span> <span class="s">&quot;sed -i &#39;s:OPTIONS=</span><span class="se">\&quot;</span><span class="s">-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid</span><span class="se">\&quot;</span><span class="s">:OPTIONS=</span><span class="se">\&quot;</span><span class="s">-Lf /dev/null/snmpd.pid</span><span class="se">\&quot;</span><span class="s">:g&#39; ~/snmpd&quot;</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">grep</span> <span class="s">&quot;OPTIONS=&quot;</span> <span class="o">~/</span><span class="n">snmpd</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>--EOF--</p>
 ]]></content>

@@ -5,19 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>通过sysfs获取dmi硬件信息 - Linux SA Notes By 枯木</title>
+  <title>NTP服务 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="获取dmi系统硬件信息的方法有很多，之前笔者在Dmidecode 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科sysfs 1
-2
-3
-4
-5
-6
-7
-# pwd &hellip;">
-  <meta name="keywords" content="枯木,linux,hardware">
+  <meta name="description" content="简介 Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用UDP &hellip;">
+  <meta name="keywords" content="ntp,linux">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -25,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/05/02/hardware">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/05/20/ntp">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -88,7 +81,7 @@
   
   <header>
     
-      <h1 class="entry-title">通过sysfs获取dmi硬件信息</h1>
+      <h1 class="entry-title">NTP服务</h1>
     
     
       <p class="meta">
@@ -104,7 +97,7 @@
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+<time datetime="2013-05-20T14:53:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -113,12 +106,23 @@
   </header>
 
 
-<div class="entry-content"><p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
+<div class="entry-content"><h2>简介</h2>
+
+<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
 
 <!--more-->
 
 
+<p>NTP提供准确时间，首先需要一个准确的UTC时间来源，NTP获得UTC的时间来源可以从原子钟、天文台、卫星，也可从Internet上获取。时间服务器按照NTP服务器的等级传播，根据离外部UTC源的远近将所有服务器归入不用的层(Stratum)中。Stratum-1在顶层由外部UTC接入，stratum-1的时间服务器为整个系统的基础，Stratum的总数限制在15以内。下图为NTP层次图：</p>
 
+<center><img src="/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
+
+
+<h2>NTP Server安装配置</h2>
+
+<p>关于NTP服务器的安装，根据不同版本安装方法也不同。REDHAT系统则可以使用yum安装，Ubuntu系列可以使用apt-get安装，这里不做具体的介绍，主要详细介绍配置文件的信息。</p>
+
+<p>对于Centos过滤注释和空行后，ntp配置文件内容如下</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -127,32 +131,107 @@
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/sys/class/dmi/id
-</span><span class='line'><span class="c"># ls </span>
-</span><span class='line'>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
-</span><span class='line'>bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
-</span><span class='line'>bios_version     board_vendor   chassis_type       power            product_version  uevent
-</span><span class='line'>board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^#|^$&#39; /etc/ntp.conf </span>
+</span><span class='line'>driftfile /var/lib/ntp/drift
+</span><span class='line'>restrict default kod nomodify notrap nopeer noquery
+</span><span class='line'>restrict -6 default kod nomodify notrap nopeer noquery
+</span><span class='line'>restrict 127.0.0.1
+</span><span class='line'>restrict -6 ::1
+</span><span class='line'>server 0.centos.pool.ntp.org
+</span><span class='line'>server 1.centos.pool.ntp.org
+</span><span class='line'>server 2.centos.pool.ntp.org
+</span><span class='line'>includefile /etc/ntp/crypto/pw
+</span><span class='line'>keys /etc/ntp/keys
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下</p>
+<h3>配置选项说明</h3>
+
+<ul>
+<li><code>driftfile</code>选项， 则指定了用来保存系统时钟频率偏差的文件。 ntpd程序使用它来自动地补偿时钟的自然漂移， 从而使时钟即使在切断了外来时源的情况下， 仍能保持相当的准确度。另外，driftfile 选项也保存上一次响应所使用的 NTP 服务器的信息。 这个文件包含了 NTP 的内部信息， 它不应被任何其他进程修改。<code>无需更改</code></li>
+<li><code>restrict default kod nomodify notrap nopeer noquery</code>  默认拒绝所有NTP客户端的操作【restrict <IP 地址> &lt;子网掩码>|&lt;网段> [ignore|nomodiy|notrap|notrust|nknod]】 指定可以通信的IP地址和网段。如果没有指定选项，表示客户端访问NTP服务器没有任何限制
+
+<ul>
+<li>ignore    关闭所有NTP服务</li>
+<li>nomodiy   表示客户端不能更改NTP服务器的时间参数，但可以通过NTP服务器进行时间同步</li>
+<li>notrust   拒绝没有通过认证的客户端</li>
+<li>knod      kod技术科阻止&#8221;Kiss of Death&#8221;包（一种DOS攻击）对服务器的破坏，使用knod开启功能</li>
+<li>nopeer    不与其它同一层的NTP服务器进行同步</li>
+</ul>
+</li>
+<li><code>server 【IP|FQDN|prefer】</code>指该服务器上层NTP Server，使用prefer的优先级最高，没有使用prefer则按照配置文件顺序由高到低，默认情况下至少15min和上层NTP服务器进行时间校对</li>
+<li><code>fudge</code>可以指定本地NTP Server层，如<code>fudge 127.0.0.1 stratum 9</code></li>
+<li><code>broadcast 网段 子网掩码</code>指定NTP进行时间广播的网段，如<code>broadcast 192.168.1.255</code></li>
+<li><code>logfile</code> 可以指定NTP Server日志文件</li>
+</ul>
+
+
+<p>几个与NTP相关的配置文件:<code>/usr/share/zoneinfo/</code>、<code>/etc/sysconfig/clock</code>、<code>/etc/localtime</code>
+* /usr/share/zoneinfo/ 存放时区文件目录
+* /etc/sysconfig/clock 指定当前系统时区信息
+* /etc/localtime 相应的时区文件</p>
+
+<p>如果需要修改当前时区，则可以从/usr/share/zoneinfo/目录拷贝相应时区文件覆盖/etc/localtime并修改/etc/sysconfig/clock 即可</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+</span><span class='line'>sed -i <span class="s1">&#39;s:ZONE=.*:ZONE=&quot;Asia/Shanghai&quot;:g&#39;</span> /etc/sysconfig/clock
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>相关命令</h2>
+
+<p><code>ntpstat</code>查看同步状态</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</span>
-</span><span class='line'>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16
-</span><span class='line'><span class="c"># cat product_name </span>
-</span><span class='line'>VMware Virtual Platform
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ntpstat </span>
+</span><span class='line'>synchronised to NTP server <span class="o">(</span>192.168.0.18<span class="o">)</span> at stratum 4
+</span><span class='line'>   <span class="nb">time </span>correct to within 88 ms   <span class="c">#表面时间校正88ms</span>
+</span><span class='line'>   polling server every 1024 s        <span class="c">#每隔1024s更新一次</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
+<p><code>ntpq</code>列出上层状态</p>
 
-<p>&#8211;EOF&#8211;</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ntpq -np</span>
+</span><span class='line'>     remote           refid      st t when poll reach   delay   offset  <span class="nv">jitter</span>
+</span><span class='line'><span class="o">==============================================================================</span>
+</span><span class='line'>*192.168.0.18       202.112.31.197   3 u  101 1024  377   14.268    0.998   0.143
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出说明：</p>
+
+<ul>
+<li><code>remote</code>  NTP Server</li>
+<li><code>refid</code>   参考的上层ntp地址</li>
+<li><code>st</code>  层次</li>
+<li><code>when</code>    上次更新时间距离现在时常</li>
+<li><code>poll</code>    下次更新时间</li>
+<li><code>reach</code>   更新次数</li>
+<li><code>delay</code>   延迟</li>
+<li><code>offset</code>  时间补偿结果</li>
+<li><code>jitter</code>  与BIOS硬件时间差异</li>
+</ul>
+
+
+<h2>参考文档</h2>
+
+<p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
+<a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
+鸟哥Linux私房菜</p>
 </div>
 
 
@@ -175,7 +254,7 @@
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+<time datetime="2013-05-20T14:53:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -199,10 +278,10 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/05/02/sed-5/" title="Previous Post: 1-5. Write Pattern Space to File[译]">&laquo; 1-5. Write Pattern Space to File[译]</a>
+        <a class="basic-alignment left" href="/blog/2013/05/14/ping-dns/" title="Previous Post: ping和dns的一个小插曲">&laquo; ping和dns的一个小插曲</a>
       
       
-        <a class="basic-alignment right" href="/blog/2013/05/04/sed-6/" title="Next Post: 2-1、Sed Substitute Command[译]">2-1、Sed Substitute Command[译] &raquo;</a>
+        <a class="basic-alignment right" href="/blog/2013/05/21/named-chroot/" title="Next Post: DNS chroot rsyslog配置">DNS chroot rsyslog配置 &raquo;</a>
       
     </p>
   </footer>
@@ -305,8 +384,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/05/02/hardware/';
-        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/05/02/hardware/';
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/05/20/ntp/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/05/20/ntp/';
         var disqus_script = 'embed.js';
       
     (function () {

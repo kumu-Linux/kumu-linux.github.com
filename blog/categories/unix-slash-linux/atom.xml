@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-21T18:07:16+08:00</updated>
+  <updated>2013-05-21T18:11:59+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -83,7 +83,7 @@ $AddUnixListenSocket /var/named/chroot/dev/log
 <p>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
 ```</p>
 
-<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试后测试rsyslog重启前后named程序占用情况</p>
+<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>后测试rsyslog重启前后named程序占用情况</p>
 
 <p>``` bash</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-23T23:21:02+08:00</updated>
+  <updated>2013-05-23T23:27:55+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -20,7 +20,13 @@
     <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
     <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
 
-<p><openvpn></p>
+<!--more-->
+
+
+
+
+<center><img src="http://kumu-Linux.github.com/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
+
 
 <h2>准备软件：</h2>
 

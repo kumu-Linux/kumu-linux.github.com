@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-23T23:13:10+08:00</updated>
+  <updated>2013-05-23T23:21:02+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -90,7 +90,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></h3>
+<p>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

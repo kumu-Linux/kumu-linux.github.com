@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-23T23:13:10+08:00</updated>
+  <updated>2013-05-23T23:21:02+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -71,9 +71,8 @@ export KEY_NAME=kumu
 export KEY_EMAIL=root@kumu
 </code></p>
 
-<h3>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></h3>
-
-<p>``` bash</p>
+<p>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code>
+``` bash</p>
 
 <h1>source ~/.barc_profile</h1>
 

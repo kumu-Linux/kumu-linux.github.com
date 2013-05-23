@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-21T18:36:00+08:00</updated>
+  <updated>2013-05-23T23:13:10+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,518 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[openvpn服务搭建]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
+    <updated>2013-05-23T10:19:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
+
+<p><openvpn></p>
+
+<h2>准备软件：</h2>
+
+<ul>
+<li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
+<li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
+<li>[最新版本的openvpn-2.3.1官方不再集成<code>easy-rsa</code>] Note that easy-rsa is no longer bundled with OpenVPN source code archives. To get it, visit the easy-rsa page on GitHub, or download it from our Linux software repositories.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/OpenVPN/easy-rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>软件安装</h2>
+
+<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install openssl openssl-devel pam pam-devel -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>lzo-2.06</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>openvpn-2.3.1</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>相关配置</h2>
+
+<h3>添加环境变量</h3>
+
+<p>在<code>~/.barc_profile</code>文件中加入如下内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">D</span><span class="o">=</span>/etc/openvpn
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_CONFIG</span><span class="o">=</span><span class="nv">$D</span>/openssl.cnf
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_DIR</span><span class="o">=</span><span class="nv">$D</span>/keys
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_SIZE</span><span class="o">=</span>1024
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_COUNTRY</span><span class="o">=</span>CN
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_PROVINCE</span><span class="o">=</span>BJ
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_CITY</span><span class="o">=</span>BJ
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_ORG</span><span class="o">=</span>kumu
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_OU</span><span class="o">=</span>kumu
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_NAME</span><span class="o">=</span>kumu
+</span><span class='line'><span class="nb">export </span><span class="nv">KEY_EMAIL</span><span class="o">=</span>root@kumu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># source ~/.barc_profile</span>
+</span><span class='line'><span class="c"># mkdir /etc/openvpn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>:也可修改easy-rsa中的vars【/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars】，source生效</p>
+
+<h3>生成密钥</h3>
+
+<p>进入之前下载的<code>easy-rsa</code>目录</p>
+
+<p><strong>初始化PKI、生成证书</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
+</span><span class='line'>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0
+</span><span class='line'><span class="c"># ls</span>
+</span><span class='line'>build-ca     build-key         build-key-server  clean-all      openssl-0.9.6.cnf  pkitool      vars
+</span><span class='line'>build-dh     build-key-pass    build-req         inherit-inter  openssl-0.9.8.cnf  revoke-full  whichopensslcnf
+</span><span class='line'>build-inter  build-key-pkcs12  build-req-pass    list-crl       openssl-1.0.0.cnf  sign-req
+</span><span class='line'><span class="c"># cp openssl-1.0.0.cnf /etc/openvpn/openssl.cnf</span>
+</span><span class='line'><span class="c"># ./clean-all #初始化，清除原有不需要的文件</span>
+</span><span class='line'><span class="c"># ./build-ca  #一直回车即可</span>
+</span><span class='line'>Generating a 1024 bit RSA private key
+</span><span class='line'>.......++++++
+</span><span class='line'>............++++++
+</span><span class='line'>writing new private key to <span class="s1">&#39;ca.key&#39;</span>
+</span><span class='line'>-----
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="err">&#39;</span>s hostname<span class="o">)</span> <span class="o">[</span>kumu CA<span class="o">]</span>:
+</span><span class='line'>Name <span class="o">[]</span>:kumu
+</span><span class='line'>Email Address <span class="o">[</span>root@kumu<span class="o">]</span>:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>生成Server端证书Server Key</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-key-server kumu_server #一路回车，密码处填写密码</span>
+</span><span class='line'>Generating a 1024 bit RSA private key
+</span><span class='line'>....................................++++++
+</span><span class='line'>.........++++++
+</span><span class='line'>writing new private key to <span class="s1">&#39;kumu_server.key&#39;</span>
+</span><span class='line'>-----
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="s1">&#39;s hostname) [kumu_server]:</span>
+</span><span class='line'><span class="s1">Name [kumu]:</span>
+</span><span class='line'><span class="s1">Email Address [root@kumu]:</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">Please enter the following &#39;</span>extra<span class="s1">&#39; attributes</span>
+</span><span class='line'><span class="s1">to be sent with your certificate request</span>
+</span><span class='line'><span class="s1">A challenge password []:123321  #输入密码</span>
+</span><span class='line'><span class="s1">An optional company name []:kumu</span>
+</span><span class='line'><span class="s1">Using configuration from /etc/openvpn/openssl.cnf</span>
+</span><span class='line'><span class="s1">Check that the request matches the signature</span>
+</span><span class='line'><span class="s1">Signature ok</span>
+</span><span class='line'><span class="s1">The Subject&#39;</span>s Distinguished Name is as follows
+</span><span class='line'>countryName           :PRINTABLE:<span class="s1">&#39;CN&#39;</span>
+</span><span class='line'>stateOrProvinceName   :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
+</span><span class='line'>localityName          :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
+</span><span class='line'>organizationName      :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>organizationalUnitName:PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>commonName            :T61STRING:<span class="s1">&#39;kumu_server&#39;</span>
+</span><span class='line'>name                  :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>emailAddress          :IA5STRING:<span class="s1">&#39;root@kumu&#39;</span>
+</span><span class='line'>Certificate is to be certified <span class="k">until </span>May 11 22:54:08 2023 GMT <span class="o">(</span>3650 days<span class="o">)</span>
+</span><span class='line'>Sign the certificate? <span class="o">[</span>y/n<span class="o">]</span>:y
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>1 out of 1 certificate requests certified, commit? <span class="o">[</span>y/n<span class="o">]</span>y
+</span><span class='line'>Write out database with 1 new entries
+</span><span class='line'>Data Base Updated
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>生成Client端证书</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-key kumu_client1  #一路回车，密码处填写密码</span>
+</span><span class='line'>Generating a 1024 bit RSA private key
+</span><span class='line'>..++++++
+</span><span class='line'>.....................++++++
+</span><span class='line'>writing new private key to <span class="s1">&#39;kumu_client1.key&#39;</span>
+</span><span class='line'>-----
+</span><span class='line'>You are about to be asked to enter information that will be incorporated
+</span><span class='line'>into your certificate request.
+</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
+</span><span class='line'>There are quite a few fields but you can leave some blank
+</span><span class='line'>For some fields there will be a default value,
+</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
+</span><span class='line'>-----
+</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
+</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
+</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
+</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="s1">&#39;s hostname) [kumu_client1]:</span>
+</span><span class='line'><span class="s1">Name [kumu]:</span>
+</span><span class='line'><span class="s1">Email Address [root@kumu]:</span>
+</span><span class='line'>
+</span><span class='line'><span class="s1">Please enter the following &#39;</span>extra<span class="s1">&#39; attributes</span>
+</span><span class='line'><span class="s1">to be sent with your certificate request</span>
+</span><span class='line'><span class="s1">A challenge password []:123321</span>
+</span><span class='line'><span class="s1">An optional company name []:kumu</span>
+</span><span class='line'><span class="s1">Using configuration from /etc/openvpn/openssl.cnf</span>
+</span><span class='line'><span class="s1">Check that the request matches the signature</span>
+</span><span class='line'><span class="s1">Signature ok</span>
+</span><span class='line'><span class="s1">The Subject&#39;</span>s Distinguished Name is as follows
+</span><span class='line'>countryName           :PRINTABLE:<span class="s1">&#39;CN&#39;</span>
+</span><span class='line'>stateOrProvinceName   :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
+</span><span class='line'>localityName          :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
+</span><span class='line'>organizationName      :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>organizationalUnitName:PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>commonName            :T61STRING:<span class="s1">&#39;kumu_client1&#39;</span>
+</span><span class='line'>name                  :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
+</span><span class='line'>emailAddress          :IA5STRING:<span class="s1">&#39;root@kumu&#39;</span>
+</span><span class='line'>Certificate is to be certified <span class="k">until </span>May 11 23:01:12 2023 GMT <span class="o">(</span>3650 days<span class="o">)</span>
+</span><span class='line'>Sign the certificate? <span class="o">[</span>y/n<span class="o">]</span>:y
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>1 out of 1 certificate requests certified, commit? <span class="o">[</span>y/n<span class="o">]</span>y
+</span><span class='line'>Write out database with 1 new entries
+</span><span class='line'>Data Base Updated
+</span><span class='line'><span class="c"># ls /etc/openvpn/keys/</span>
+</span><span class='line'>01.pem  ca.key      index.txt.attr      kumu_client1.crt  kumu_server.crt  openvpn-status.log
+</span><span class='line'>02.pem  dh1024.pem  index.txt.attr.old  kumu_client1.csr  kumu_server.csr  serial
+</span><span class='line'>ca.crt  index.txt   index.txt.old       kumu_client1.key  kumu_server.key  serial.old
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：生成其他客户端证书以此类推，名字不相同即可</p>
+
+<p><strong>证书加密</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-dh </span>
+</span><span class='line'>./build-dh: line 7: dhparam: <span class="nb">command </span>not found
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>出现如上问题，修改<code>./build-dh</code>命令中<code>$OPENSSL</code>为<code>openssl</code>即可，原因是默认<code>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars</code>文件定义了<code>OPENSSL=openssl</code>,而笔者没有引用<code>vars</code>文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-dh </span>
+</span><span class='line'>Generating DH parameters, 1024 bit long safe prime, generator 2
+</span><span class='line'>This is going to take a long <span class="nb">time</span>
+</span><span class='line'>... ...
+</span><span class='line'><span class="c"># openvpn --genkey --secret /etc/openvpn/keys/ta.key  #生成加密key</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Server端配置文件修改:</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
+</span><span class='line'>/usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files
+</span><span class='line'><span class="c"># ls </span>
+</span><span class='line'>client.conf  loopback-client  openvpn-shutdown.sh  server.conf         tls-home.conf         xinetd-server-config
+</span><span class='line'>firewall.sh  loopback-server  openvpn-startup.sh   static-home.conf    tls-office.conf
+</span><span class='line'>home.up      office.up        README               static-office.conf  xinetd-client-config
+</span><span class='line'><span class="c"># cp server.conf /etc/openvpn/  #拷贝Server模板配置文件到配置目录</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>Server端配置文件内容如下</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^;|^$|^#&#39; /etc/openvpn/server.conf </span>
+</span><span class='line'>port 1194
+</span><span class='line'>proto udp
+</span><span class='line'>dev tun
+</span><span class='line'>ca /etc/openvpn/keys/ca.crt
+</span><span class='line'>cert /etc/openvpn/keys/kumu_server.crt
+</span><span class='line'>key /etc/openvpn/keys/kumu_server.key  <span class="c"># This file should be kept secret</span>
+</span><span class='line'>dh /etc/openvpn/keys/dh1024.pem
+</span><span class='line'>server 10.8.0.0 255.255.255.0
+</span><span class='line'>push <span class="s2">&quot;route 192.168.10.0 255.255.255.0&quot;</span> <span class="c"># 推送路由</span>
+</span><span class='line'>client-to-client
+</span><span class='line'>keepalive 10 120
+</span><span class='line'>tls-auth /etc/openvpn/keys/ta.key 0 <span class="c"># This file is secret</span>
+</span><span class='line'>comp-lzo
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>status /etc/openvpn/keys/openvpn-status.log
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Windows客户端连接配置</h3>
+
+<p>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a>
+32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></p>
+
+<p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>client
+</span><span class='line'>dev tun
+</span><span class='line'>proto udp
+</span><span class='line'>remote 10.2.0.115 1194
+</span><span class='line'>resolv-retry infinite
+</span><span class='line'>nobind
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>ca ca.crt
+</span><span class='line'>cert kumu_client1.crt
+</span><span class='line'>key kumu_client1.key
+</span><span class='line'>ns-cert-type server
+</span><span class='line'>tls-auth ta.key 1
+</span><span class='line'>comp-lzo
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，openvpn Gui客户端显示绿色，ping测试无误，如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>C:<span class="se">\U</span>sers<span class="se">\k</span>umu&gt;ping 10.8.0.1  <span class="c">#测试VPN</span>
+</span><span class='line'>
+</span><span class='line'>正在 Ping 10.8.0.1 具有 32 字节的数据:
+</span><span class='line'>来自 10.8.0.1 的回复: 字节<span class="o">=</span>32 时间&lt;1ms <span class="nv">TTL</span><span class="o">=</span>64
+</span><span class='line'>来自 10.8.0.1 的回复: 字节<span class="o">=</span>32 时间&lt;1ms <span class="nv">TTL</span><span class="o">=</span>64
+</span><span class='line'>... ...
+</span><span class='line'>C:<span class="se">\U</span>sers<span class="se">\k</span>umu&gt;ping 192.168.10.19 <span class="c">#测试内网</span>
+</span><span class='line'>
+</span><span class='line'>正在 Ping 192.168.10.19 具有 32 字节的数据:
+</span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>1ms <span class="nv">TTL</span><span class="o">=</span>64
+</span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>2ms <span class="nv">TTL</span><span class="o">=</span>64
+</span><span class='line'>... ..
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211; 未完待续</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
@@ -2138,364 +2650,6 @@ slot        插槽信息
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
 </span><span class='line'><span class="c"># grep &quot;OPTIONS=&quot; ~/snmpd</span>
 </span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[lsof在Linux中的10个例子<译>]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/08/lsof/"/>
-    <updated>2013-04-08T10:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/08/lsof</id>
-    <content type="html"><![CDATA[<p>本文主要是介绍lsof相关使用方法，原文主要是10个例子的讲解，笔者又新增了一些实用案例，<a href="http://www.tecmint.com/10-lsof-command-examples-in-linux/">原文地址</a> 。</p>
-
-<p>lsof的意思是&#8217;列出打开的文件&#8217;，用于找出哪些文件被哪些进程打开或是占用。我们都知道Linux/UNIX的理念就是一切皆文件(包括pipes管道、sockets、directories目录、devices设备等等)。使用lsof命令的原因之一就是，当一个磁盘不能被卸载时，借助lsof这个命令我们可以轻易的识别哪些文件正在被占用。</p>
-
-<!--more-->
-
-
-<h2>1、通过lsof命令列出所有打开的文件</h2>
-
-<p>在下面的例子中，它会以长列表的形式显示打开的文件，为了便于理解，它以Command、PID、USER、FD、TYPE分类</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof</span>
-</span><span class='line'><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>      <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>       <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">cwd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">rtd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span>     <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">mem</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>     <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>    <span class="mi">0u</span>      <span class="n">CHR</span>                <span class="mi">1</span><span class="p">,</span><span class="mi">3</span>      <span class="mi">0</span><span class="n">t0</span>       <span class="mi">4021</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>若不指定条件默认将显示所有进程打开的所有文件,lsof输出各列信息的意义如下：</p>
-
-<ul>
-<li>COMMAND：进程的名称</li>
-<li>PID：进程标识符</li>
-<li>USER：进程所有者</li>
-<li>FD：文件描述符，应用程序通过文件描述符识别该文件。如cwd、txt等
-
-<ul>
-<li>cwd 表示应用程序的当前工作目录</li>
-<li>RTD 根目录</li>
-<li>txt txt类型文件是程序代码，应用程序二进制文件本身或共享库</li>
-<li>MEM 内存映射文件</li>
-<li>u 表示该文件被打开并处于读取/写入模式，而不是只读 ® 或只写 (w) 模式。</li>
-<li>W 表示该应用程序具有对整个文件的写锁。该文件描述符用于确保每次只能打开一个应用程序实例。</li>
-<li>R 读访问</li>
-<li>初始打开每个应用程序时，都具有三个文件描述符，从 0 到 2，分别表示标准输入、输出和错误流。所以大多数应用程序所打开的文件的FD都是从3开始。</li>
-</ul>
-</li>
-<li>TYPE：文件类型，如DIR、REG等
-
-<ul>
-<li>DIR 目录</li>
-<li>REG 基本文件</li>
-<li>CHR 字符特殊文件</li>
-<li>FIFO 先进先出</li>
-<li>UNIX unix域套接字</li>
-</ul>
-</li>
-<li>DEVICE：指定磁盘的名称</li>
-<li>SIZE：文件的大小</li>
-<li>NODE：索引节点（文件在磁盘上的标识）</li>
-<li>NAME：打开文件的确切名称</li>
-</ul>
-
-
-<h2>2、列出特定用户打开的文件</h2>
-
-<p>使用-u选项后接用户指定某个用户打开文件</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -u apache</span>
-</span><span class='line'><span class="n">COMMAND</span>  <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">cwd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">rtd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>  <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>3、查找特定端口运行的进程</h2>
-
-<p>使用-i选项来查找正在运行特定端口的进程</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i TCP:53</span>
-</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="cp"># lsof -i UDP:53</span>
-</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span>
-</span><span class='line'><span class="cp"># lsof -i:53</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>4、列出ipv4和ipv6的文件</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i 4</span>
-</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>  <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="cp"># lsof -i 6</span>
-</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>5、列出TCP端口范围1-1024端口</h2>
-
-<p>列出打开1-1024端口所有正在运行的程序</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i TCP:1-1024</span>
-</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">httpd</span>    <span class="mi">2142</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">13337</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">http</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>6、通过脱字符排除某个用户</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -u^root</span>
-</span><span class='line'><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>7、查找特定用户使用文件和命令</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i -u apache </span>
-</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
-</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">9488</span>  <span class="mi">271645</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">apr</span><span class="o">-</span><span class="n">util</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">apr_ldap</span><span class="o">-</span><span class="mf">1.</span><span class="n">so</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>8、列出所有网络连接</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -i</span>
-</span><span class='line'><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>9、采用pid搜索</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof -p 1</span>
-</span><span class='line'><span class="n">COMMAND</span> <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>   <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">txt</span>    <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span> <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>10、杀死某个特定用户的所有活动</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># kill -9 `lsof -t -u named`</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>补充:</h3>
-
-<p>查看谁在使用文件系统,在卸载文件系统时，如果某个文件系统中有任何打开文件，操作一般会失败</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof /mnt/</span>
-</span><span class='line'><span class="n">COMMAND</span>   <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">bash</span>    <span class="mi">16672</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span><span class='line'><span class="n">lsof</span>    <span class="mi">17041</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span><span class='line'><span class="n">lsof</span>    <span class="mi">17042</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查看被删除的文件</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof | grep deleted --color</span>
-</span><span class='line'><span class="n">console</span><span class="o">-</span><span class="n">k</span>  <span class="mi">1291</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">155008</span>    <span class="mi">1577669</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">console</span><span class="o">-</span><span class="n">kit</span><span class="o">-</span><span class="n">daemon</span><span class="p">.</span><span class="err">#</span><span class="n">prelink</span><span class="err">#</span><span class="p">.</span><span class="n">bXthE2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span><span class='line'><span class="n">tail</span>      <span class="mi">17553</span>   <span class="n">root</span>    <span class="mi">3</span><span class="n">r</span>      <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>        <span class="mi">6</span>     <span class="mi">523317</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">test2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>应用实例</h2>
-
-<p>以下两个实例分别引用其它博主的实例，笔者也在实际过程中遇到过，作用很大，所以引用过来</p>
-
-<h3>实例1 恢复删除的文件</h3>
-
-<ul>
-<li>实例引用<a href="http://www.turbolinux.com.cn/turbo/wiki/doku.php?id=%E6%94%B6%E9%9B%86%E7%B3%BB%E7%BB%9F%E4%BF%A1%E6%81%AF:lsof">turbolinux</a></li>
-</ul>
-
-
-<p>当Linux计算机受到入侵时，常见的情况是日志文件被删除，以掩盖攻击者的踪迹。管理错误也可能导致意外删除重要的文件，比如在清理旧日志时，意外地删除了数据库的活动事务日志。有时可以通过lsof来恢复这些文件。</p>
-
-<p>当进程打开了某个文件时，只要该进程保持打开该文件，即使将其删除，它依然存在于磁盘中。这意味着，进程并不知道文件已经被删除，它仍然可以向打开该文件时提供给它的文件描述符进行读取和写入。除了该进程之外，这个文件是不可见的，因为已经删除了其相应的目录索引节点。</p>
-
-<p>在/proc 目录下，其中包含了反映内核和进程树的各种文件。/proc目录挂载的是在内存中所映射的一块区域，所以这些文件和目录并不存在于磁盘中，因此当我们对这些文件进行读取和写入时，实际上是在从内存中获取相关信息。大多数与 lsof 相关的信息都存储于以进程的 PID 命名的目录中，即/proc/1234 中包含的是PID为1234 的进程的信息。每个进程目录中存在着各种文件，它们可以使得应用程序简单地了解进程的内存空间、文件描述符列表、指向磁盘上的文件的符号链接和其他系统信息。lsof 程序使用该信息和其他关于内核内部状态的信息来产生其输出。所以lsof 可以显示进程的文件描述符和相关的文件名等信息。也就是我们通过访问进程的文件描述符可以找到该文件的相关信息。</p>
-
-<p>当系统中的某个文件被意外地删除了，只要这个时候系统中还有进程正在访问该文件，那么我们就可以通过lsof从/proc目录下恢复该文件的内容。 假如由于误操作将/var/log/messages文件删除掉了，那么这时要将/var/log/messages文件恢复的方法如下：</p>
-
-<p>首先使用lsof来查看当前是否有进程打开/var/logmessages文件，如下:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># lsof |grep /var/log/messages</span>
-</span><span class='line'><span class="n">syslogd</span>   <span class="mi">1283</span>      <span class="n">root</span>    <span class="mi">2</span><span class="n">w</span>      <span class="n">REG</span>        <span class="mi">3</span><span class="p">,</span><span class="mi">3</span>  <span class="mi">5381017</span>    <span class="mi">1773647</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面的信息可以看到 PID 1283（syslogd）打开文件的文件描述符为 2。同时还可以看到/var/log/messages已经标记被删除了。因此我们可以在 /proc/1283/fd/2 （fd下的每个以数字命名的文件表示进程对应的文件描述符）中查看相应的信息，如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="cp"># head -n 10 /proc/1283/fd/2</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="n">syslogd</span> <span class="mf">1.4.1</span><span class="o">:</span> <span class="n">restart</span><span class="p">.</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">klogd</span> <span class="mf">1.4.1</span><span class="p">,</span> <span class="n">log</span> <span class="n">source</span> <span class="o">=</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">kmsg</span> <span class="n">started</span><span class="p">.</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">Linux</span> <span class="n">version</span> <span class="mf">2.6.22.1</span><span class="o">-</span><span class="mi">8</span> <span class="p">(</span><span class="n">root</span><span class="err">@</span><span class="n">everestbuilder</span><span class="p">.</span><span class="n">linux</span><span class="o">-</span><span class="n">ren</span><span class="p">.</span><span class="n">org</span><span class="p">)</span> <span class="p">(</span><span class="n">gcc</span> <span class="n">version</span> <span class="mf">4.2.0</span><span class="p">)</span> <span class="err">#</span><span class="mi">1</span> <span class="n">SMP</span> <span class="n">Wed</span> <span class="n">Jul</span> <span class="mi">18</span> <span class="mi">11</span><span class="o">:</span><span class="mi">18</span><span class="o">:</span><span class="mi">32</span> <span class="n">EDT</span> <span class="mi">2007</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">BIOS</span><span class="o">-</span><span class="n">provided</span> <span class="n">physical</span> <span class="n">RAM</span> <span class="nl">map:</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000000000</span> <span class="o">-</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="o">-</span> <span class="mo">00000000000</span><span class="n">a0000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000100000</span> <span class="o">-</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="o">-</span> <span class="mo">0000000020000000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000e0000000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">0007000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="mi">8000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="n">c000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>从上面的信息可以看出，查看 /proc/1283/fd/2 就可以得到所要恢复的数据。如果可以通过文件描述符查看相应的数据，那么就可以使用 I/O 重定向将其复制到文件中，如:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">cat</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="mi">1283</span><span class="o">/</span><span class="n">fd</span><span class="o">/</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>对于许多应用程序，尤其是日志文件和数据库，这种恢复删除文件的方法非常有用。</p>
-
-<h3>应用实例2 磁盘剩余空间和du显示相差太大</h3>
-
-<ul>
-<li>实例引用：<a href="http://chenxu.yo2.cn/articles/lsof.html">orz DBA</a></li>
-</ul>
-
-
-<p>今天一同事说文件系统/tmp目录下空间用满了，当时du统计目录所有文件的时候却很小。听到这个现象，第一感觉就是应该有大文件被删除，但是这个文件可能依然被其他程序打开，导致这个文件不能被清除。登上服务器使用lsof看了一下，果然如此，具体排查过程如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
-</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
-</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span> <span class="mf">8.7</span><span class="n">G</span> <span class="mf">7.9</span><span class="n">G</span> <span class="mi">407</span><span class="n">M</span> <span class="mi">96</span><span class="o">%</span> <span class="o">/</span><span class="n">tmp</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">lsof</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">/</span><span class="n">tmp</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">-</span><span class="n">k7</span> <span class="o">-</span><span class="n">nr</span>  <span class="c">#注：其实直接lsof | grep deleted 即可</span>
-</span><span class='line'><span class="n">sleep</span> <span class="mi">18833</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span><span class='line'><span class="n">netstat_2</span> <span class="mi">13571</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面lsof输出结果的第二列是PID,倒数第三列是占用空间大小</p>
-
-<p>可以看到文件/tmp/netstat.log (deleted)占用7个多G的空间，虽然被删除了，但是还是有进程打开它。</p>
-
-<p>然后，用PID看看是哪个程序占用这个文件：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">ps</span> <span class="o">-</span><span class="n">ef</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">13571</span>
-</span><span class='line'><span class="mi">51717</span> <span class="mi">13571</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">2011</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mo">00</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat_20110829</span><span class="o">.</span><span class="n">sh</span>
-</span><span class='line'><span class="mi">51717</span> <span class="mi">21456</span> <span class="mi">13571</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">sleep</span> <span class="mi">10</span>
-</span><span class='line'><span class="n">zhuxu</span> <span class="mi">21458</span> <span class="mi">17014</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="n">pts</span><span class="o">/</span><span class="mi">0</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">grep</span> <span class="mi">13571</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>将这个进程KILL掉后，就OK了：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">kill</span> <span class="o">-</span><span class="mi">9</span> <span class="mi">13571</span>
-</span><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
-</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
-</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span>  <span class="mf">8.7</span><span class="n">G</span> <span class="mi">56</span><span class="n">M</span>  <span class="mf">8.2</span><span class="n">G</span> <span class="mi">1</span><span class="o">%</span>  <span class="o">/</span><span class="n">tmp</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

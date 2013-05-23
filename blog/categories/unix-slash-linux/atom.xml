@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-21T18:36:00+08:00</updated>
+  <updated>2013-05-23T23:13:10+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,342 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[openvpn服务搭建]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
+    <updated>2013-05-23T10:19:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
+
+<p><openvpn></p>
+
+<h2>准备软件：</h2>
+
+<ul>
+<li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
+<li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
+<li>[最新版本的openvpn-2.3.1官方不再集成<code>easy-rsa</code>] Note that easy-rsa is no longer bundled with OpenVPN source code archives. To get it, visit the easy-rsa page on GitHub, or download it from our Linux software repositories.</li>
+</ul>
+
+
+<p><code>bash
+git clone https://github.com/OpenVPN/easy-rsa
+</code></p>
+
+<h2>软件安装</h2>
+
+<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code>
+<code>bash
+yum install openssl openssl-devel pam pam-devel -y
+</code></p>
+
+<p><code>lzo-2.06</code>
+<code>bash
+./configure &amp;&amp; make &amp;&amp; make install
+</code></p>
+
+<p><code>openvpn-2.3.1</code>
+<code>bash
+./configure &amp;&amp; make &amp;&amp; make install
+</code></p>
+
+<h2>相关配置</h2>
+
+<h3>添加环境变量</h3>
+
+<p>在<code>~/.barc_profile</code>文件中加入如下内容：
+<code>bash
+export D=/etc/openvpn
+export KEY_CONFIG=$D/openssl.cnf
+export KEY_DIR=$D/keys
+export KEY_SIZE=1024
+export KEY_COUNTRY=CN
+export KEY_PROVINCE=BJ
+export KEY_CITY=BJ
+export KEY_ORG=kumu
+export KEY_OU=kumu
+export KEY_NAME=kumu
+export KEY_EMAIL=root@kumu
+</code></p>
+
+<h3>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></h3>
+
+<p>``` bash</p>
+
+<h1>source ~/.barc_profile</h1>
+
+<h1>mkdir /etc/openvpn</h1>
+
+<p>```</p>
+
+<p><strong>注</strong>:也可修改easy-rsa中的vars【/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars】，source生效</p>
+
+<h3>生成密钥</h3>
+
+<p>进入之前下载的<code>easy-rsa</code>目录</p>
+
+<p><strong>初始化PKI、生成证书</strong>:
+``` bash</p>
+
+<h1>pwd</h1>
+
+<p>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0</p>
+
+<h1>ls</h1>
+
+<p>build-ca     build-key         build-key-server  clean-all      openssl-0.9.6.cnf  pkitool      vars
+build-dh     build-key-pass    build-req         inherit-inter  openssl-0.9.8.cnf  revoke-full  whichopensslcnf
+build-inter  build-key-pkcs12  build-req-pass    list-crl       openssl-1.0.0.cnf  sign-req</p>
+
+<h1>cp openssl-1.0.0.cnf /etc/openvpn/openssl.cnf</h1>
+
+<h1>./clean-all #初始化，清除原有不需要的文件</h1>
+
+<h1>./build-ca  #一直回车即可</h1>
+
+<p>Generating a 1024 bit RSA private key
+.......++++++
+............++++++</p>
+
+<h2>writing new private key to 'ca.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu CA]:
+Name []:kumu
+Email Address [root@kumu]:
+```</p>
+
+<p><strong>生成Server端证书Server Key</strong>
+``` bash</p>
+
+<h1>./build-key-server kumu_server #一路回车，密码处填写密码</h1>
+
+<p>Generating a 1024 bit RSA private key
+....................................++++++
+.........++++++</p>
+
+<h2>writing new private key to 'kumu_server.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu_server]:
+Name [kumu]:
+Email Address [root@kumu]:</p>
+
+<p>Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:123321  #输入密码
+An optional company name []:kumu
+Using configuration from /etc/openvpn/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CN'
+stateOrProvinceName   :PRINTABLE:'BJ'
+localityName          :PRINTABLE:'BJ'
+organizationName      :PRINTABLE:'kumu'
+organizationalUnitName:PRINTABLE:'kumu'
+commonName            :T61STRING:'kumu_server'
+name                  :PRINTABLE:'kumu'
+emailAddress          :IA5STRING:'root@kumu'
+Certificate is to be certified until May 11 22:54:08 2023 GMT (3650 days)
+Sign the certificate? [y/n]:y</p>
+
+<p>1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+```</p>
+
+<p><strong>生成Client端证书</strong>:
+``` bash</p>
+
+<h1>./build-key kumu_client1  #一路回车，密码处填写密码</h1>
+
+<p>Generating a 1024 bit RSA private key
+..++++++
+.....................++++++</p>
+
+<h2>writing new private key to 'kumu_client1.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu_client1]:
+Name [kumu]:
+Email Address [root@kumu]:</p>
+
+<p>Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:123321
+An optional company name []:kumu
+Using configuration from /etc/openvpn/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CN'
+stateOrProvinceName   :PRINTABLE:'BJ'
+localityName          :PRINTABLE:'BJ'
+organizationName      :PRINTABLE:'kumu'
+organizationalUnitName:PRINTABLE:'kumu'
+commonName            :T61STRING:'kumu_client1'
+name                  :PRINTABLE:'kumu'
+emailAddress          :IA5STRING:'root@kumu'
+Certificate is to be certified until May 11 23:01:12 2023 GMT (3650 days)
+Sign the certificate? [y/n]:y</p>
+
+<p>1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated</p>
+
+<h1>ls /etc/openvpn/keys/</h1>
+
+<p>01.pem  ca.key      index.txt.attr      kumu_client1.crt  kumu_server.crt  openvpn-status.log
+02.pem  dh1024.pem  index.txt.attr.old  kumu_client1.csr  kumu_server.csr  serial
+ca.crt  index.txt   index.txt.old       kumu_client1.key  kumu_server.key  serial.old
+```</p>
+
+<p><strong>注</strong>：生成其他客户端证书以此类推，名字不相同即可</p>
+
+<p><strong>证书加密</strong>:
+``` bash</p>
+
+<h1>./build-dh</h1>
+
+<p>./build-dh: line 7: dhparam: command not found
+```</p>
+
+<p>出现如上问题，修改<code>./build-dh</code>命令中<code>$OPENSSL</code>为<code>openssl</code>即可，原因是默认<code>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars</code>文件定义了<code>OPENSSL=openssl</code>,而笔者没有引用<code>vars</code>文件
+``` bash</p>
+
+<h1>./build-dh</h1>
+
+<p>Generating DH parameters, 1024 bit long safe prime, generator 2
+This is going to take a long time
+... ...</p>
+
+<h1>openvpn --genkey --secret /etc/openvpn/keys/ta.key  #生成加密key</h1>
+
+<p>```</p>
+
+<h3>Server端配置文件修改:</h3>
+
+<p>``` bash</p>
+
+<h1>pwd</h1>
+
+<p>/usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files</p>
+
+<h1>ls</h1>
+
+<p>client.conf  loopback-client  openvpn-shutdown.sh  server.conf         tls-home.conf         xinetd-server-config
+firewall.sh  loopback-server  openvpn-startup.sh   static-home.conf    tls-office.conf
+home.up      office.up        README               static-office.conf  xinetd-client-config</p>
+
+<h1>cp server.conf /etc/openvpn/  #拷贝Server模板配置文件到配置目录</h1>
+
+<p>```</p>
+
+<p><strong>Server端配置文件内容如下</strong>
+``` bash</p>
+
+<h1>grep -vE '<sup>;|<sup>$|<sup>#'</sup></sup></sup> /etc/openvpn/server.conf</h1>
+
+<p>port 1194
+proto udp
+dev tun
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/kumu_server.crt
+key /etc/openvpn/keys/kumu_server.key  # This file should be kept secret
+dh /etc/openvpn/keys/dh1024.pem
+server 10.8.0.0 255.255.255.0
+push "route 192.168.10.0 255.255.255.0" # 推送路由
+client-to-client
+keepalive 10 120
+tls-auth /etc/openvpn/keys/ta.key 0 # This file is secret
+comp-lzo
+persist-key
+persist-tun
+status /etc/openvpn/keys/openvpn-status.log
+verb 3
+```</p>
+
+<h3>Windows客户端连接配置</h3>
+
+<p>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a>
+32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></p>
+
+<p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code>
+<code>bash
+client
+dev tun
+proto udp
+remote 10.2.0.115 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert kumu_client1.crt
+key kumu_client1.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+</code></p>
+
+<p>启动Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，openvpn Gui客户端显示绿色，ping测试无误，如下
+``` bash
+C:\Users\kumu>ping 10.8.0.1  #测试VPN</p>
+
+<p>正在 Ping 10.8.0.1 具有 32 字节的数据:
+来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
+来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
+... ...
+C:\Users\kumu>ping 192.168.10.19 #测试内网</p>
+
+<p>正在 Ping 192.168.10.19 具有 32 字节的数据:
+来自 192.168.10.19 的回复: 字节=32 时间=1ms TTL=64
+来自 192.168.10.19 的回复: 字节=32 时间=2ms TTL=64
+... ..
+```</p>
+
+<p>--EOF-- 未完待续</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
@@ -320,146 +656,6 @@ board_asset_tag  board_version  chassis_vendor     product_name     smbios_versi
 ```</p>
 
 <p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sed -i修改链接文件注意问题]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed-link/"/>
-    <updated>2013-04-09T23:23:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed-link</id>
-    <content type="html"><![CDATA[<h2>问题重现</h2>
-
-<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux &lt;br/&gt;</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux&lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux &lt;br/&gt;</span>
-</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># &lt;br/&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<!--more-->
-
-
-<p>我们发现链接文件不再是链接文件了，后来查看sed man选项时发现如下选项说明</p>
-
-<ul>
-<li><p>--follow-symlinks</p>
-
-<ul>
-<li>follow symlinks when processing in place; hard links will still be broken.</li>
-</ul>
-</li>
-<li><p>-i[SUFFIX], --in-place[=SUFFIX]</p>
-
-<ul>
-<li>edit  files  in  place (makes backup if extension supplied).  The default operation mode is to break symbolic and hard links.  This can be changed with --follow-symlinks and --copy.</li>
-</ul>
-</li>
-<li><p>-c, --copy</p>
-
-<ul>
-<li>use copy instead of rename when shuffling files in -i mode.  While this  will  avoid  breaking links  (symbolic  or hard), the resulting editing operation is not atomic.  This is rarely the desired mode;</li>
-</ul>
-</li>
-<li><p>--follow-symlinks is usually enough, and it is both faster and more secure.</p></li>
-</ul>
-
-
-<p>以上说明就不作过多解释了，说的很明显，看下面实例
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test&lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft&lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard&lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;em&gt;&lt;br/&gt;</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_hard</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard &lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft &lt;br/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;/em&gt;&lt;br/&gt;</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="mi">271656</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">05</span> <span class="n">test_hard</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="mi">271657</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">06</span> <span class="n">test_soft</span><span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># &lt;br/&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-很明显如man中所说-i选项对软链接和硬链接都会使受到破坏,而-c选项则不会</p>
-
-<h2>问题解决</h2>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># rm -rf test&lt;em&gt;</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test&lt;/em&gt;</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
---follow-symlinks选项只对软链接有效，硬链接还是会被破坏，建议使用-c选项，这里就不举例了</p>
-
-<h2>问题延伸</h2>
-
-<p>后来发现在RHEL5上运行相同的操作居然没有出现类似的现象，运行结果如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">echo</span> <span class="s">&quot;test&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">~/</span><span class="n">test</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&quot;s/test/test1/g&quot;</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
-
-<p>经查是sed的版本不同造成的影响，RHEL5系列的还是使用老版本的sed，没有--follow-symlinks类似的选项，笔者之前实验的版本是RHEL6.3，所以出现之前的一系列问题了</p>
 
 <p>--EOF--</p>
 ]]></content>

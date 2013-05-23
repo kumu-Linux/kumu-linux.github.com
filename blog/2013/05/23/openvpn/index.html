@@ -5,14 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Linux SA Notes By 枯木</title>
+  <title>openvpn服务搭建 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
   <meta name="description" content="OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。 准备软件： openvpn-2.3.1
 lzo-2.06
 [最新版本的openvpn-2.3.1官方不再集成easy- &hellip;">
-  
+  <meta name="keywords" content="openvpn,Linux">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -20,7 +20,7 @@ lzo-2.06
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.com">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -78,15 +78,12 @@ lzo-2.06
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/05/23/openvpn/">Openvpn服务搭建</a></h1>
+      <h1 class="entry-title">Openvpn服务搭建</h1>
     
     
       <p class="meta">
@@ -104,14 +101,14 @@ lzo-2.06
 
 <time datetime="2013-05-23T10:19:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2013</time>
         
-         | <a href="/blog/2013/05/23/openvpn/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
+<div class="entry-content"><p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
 
 <p><openvpn></p>
 
@@ -616,67 +613,16 @@ lzo-2.06
 
 <p>&#8211;EOF&#8211; 未完待续</p>
 </div>
-  
-  
 
 
-    </article>
-  
-  
-    <article>
+  <footer>
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/21/named-chroot/">DNS Chroot Rsyslog配置</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
   
 
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
 
-<time datetime="2013-05-21T10:53:00+08:00" pubdate data-updated="true">May 21<span>st</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/21/named-chroot/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>问题描述</h2>
-
-<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/21/named-chroot/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/20/ntp/">NTP服务</a></h1>
-    
-    
-      <p class="meta">
-        
 
 
 
@@ -688,221 +634,45 @@ lzo-2.06
   
 
 
-<time datetime="2013-05-20T14:53:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/20/ntp/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>简介</h2>
-
-<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/20/ntp/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+<time datetime="2013-05-23T10:19:00+08:00" pubdate data-updated="true">May 23<span>rd</span>, 2013</time>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/14/ping-dns/">Ping和dns的一个小插曲</a></h1>
-    
-    
-      <p class="meta">
-        
 
-
-
-
-
-
-
-
+<span class="categories">
   
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
+  
+</span>
 
 
-<time datetime="2013-05-14T17:54:00+08:00" pubdate data-updated="true">May 14<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/14/ping-dns/#disqus_thread">Comments</a>
-        
-      </p>
+    </p>
     
-  </header>
-
-
-  <div class="entry-content"><p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
-
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/14/ping-dns/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
+    
+    <p class="meta">
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/06/rsync-ssh/">Rsync备份之ssh篇</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-06T20:19:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/06/rsync-ssh/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><code>rsync</code>是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下：</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/06/rsync-ssh/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
+        <a class="basic-alignment left" href="/blog/2013/05/21/named-chroot/" title="Previous Post: DNS chroot rsyslog配置">&laquo; DNS chroot rsyslog配置</a>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/05/sed-7/">2-2、Global Flag (G Flag)[译]</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-05T09:15:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/05/sed-7/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/05/sed-7/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
       
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/05/04/sed-6/">2-1、Sed Substitute Command[译]</a></h1>
-    
-    
-      <p class="meta">
-        
+    </p>
+  </footer>
+</article>
 
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-05-04T23:29:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/05/04/sed-6/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>Sed 替换命令语法</h2>
-
-<p>Sed替换命令语法如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;[address-range|pattern-range] s/originalstring/</span>
-</span><span class='line'><span class="s1">replacement-string/[substitute-flags]&#39;</span> inputfile
-</span></code></pre></td></tr></table></div></figure>
-
-
-
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/05/04/sed-6/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/2/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -976,6 +746,7 @@ lzo-2.06
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -990,7 +761,10 @@ lzo-2.06
       var disqus_shortname = 'kumusanotes';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/05/23/openvpn/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/05/23/openvpn/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

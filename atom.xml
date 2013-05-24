@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-24T11:20:25+08:00</updated>
+  <updated>2013-05-24T11:21:48+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -469,16 +469,16 @@
 
 <h3>开启路由转发和启动Openvpn</h3>
 
-<p>开启路由转发</p>
+<p><strong>开启路由转发</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo </span>1 &gt; /proc/sys/net/ipv4/ip_forward <span class="c">#临时开启</span>
-</span><span class='line'><span class="c">#或者修改/etc/sysctl.conf中`net.ipv4.ip_forward = 1`，执行`sysctl -p`永久生效</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>启动服务</p>
+<h1>或者修改/etc/sysctl.conf中<code>net.ipv4.ip_forward = 1</code>，执行<code>sysctl -p</code>永久生效</h1>
+
+<p><strong>启动服务</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>openvpn --config /etc/openvpn/server.conf --daemon

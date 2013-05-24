@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-23T23:37:40+08:00</updated>
+  <updated>2013-05-24T11:18:04+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -30,6 +30,8 @@
 
 <h2>准备软件：</h2>
 
+<p>本例以RHEL6.3为例</p>
+
 <ul>
 <li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
 <li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
@@ -44,21 +46,21 @@
 
 <h2>软件安装</h2>
 
-<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code></p>
+<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code>安装</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install openssl openssl-devel pam pam-devel -y
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>lzo-2.06</code></p>
+<p><code>lzo-2.06</code>安装</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>openvpn-2.3.1</code></p>
+<p><code>openvpn-2.3.1</code>安装</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
@@ -67,9 +69,16 @@
 
 <h2>相关配置</h2>
 
+<h3>加载tun模块</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>modprobe tun
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h3>添加环境变量</h3>
 
-<p>在<code>~/.barc_profile</code>文件中加入如下内容：</p>
+<p>在<code>~/.barc_profile</code>文件中加入如下内容,命名根据实际需求修改：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -458,10 +467,34 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3>开启路由转发和启动Openvpn</h3>
+
+<p>开启路由转发</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo </span>1 &gt; /proc/sys/net/ipv4/ip_forward <span class="c">#临时开启</span>
+</span><span class='line'><span class="c">#或者修改/etc/sysctl.conf中`net.ipv4.ip_forward = 1`，执行`sysctl -p`永久生效</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动服务</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvpn --config /etc/openvpn/server.conf --daemon
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h3>Windows客户端连接配置</h3>
 
 <p>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a>
 32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></p>
+
+<p>拷贝Server端生成的如下客户端证书到Windows软件安装目录<code>OpenVPN\config</code>下
+* kumu_client1.crt
+* kumu_client1.key
+* ca.key
+* ta.key</p>
 
 <p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code></p>
 
@@ -483,7 +516,7 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>client
 </span><span class='line'>dev tun
 </span><span class='line'>proto udp
-</span><span class='line'>remote 10.2.0.115 1194
+</span><span class='line'>remote 10.2.0.110 1194
 </span><span class='line'>resolv-retry infinite
 </span><span class='line'>nobind
 </span><span class='line'>persist-key
@@ -498,7 +531,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>启动Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，openvpn Gui客户端显示绿色，ping测试无误，如下</p>
+<p>Win7/Win8以管理员身份启动Openvpn Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，Openvpn Gui客户端显示绿色，ping测试无误，如下</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-24T11:23:43+08:00</updated>
+  <updated>2013-05-24T13:31:21+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[openvpn服务搭建]]></title>
+    <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
     <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
     <updated>2013-05-23T10:19:00+08:00</updated>
     <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
@@ -68,13 +68,6 @@
 
 
 <h2>相关配置</h2>
-
-<h3>加载tun模块</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>modprobe tun
-</span></code></pre></td></tr></table></div></figure>
-
 
 <h3>添加环境变量</h3>
 
@@ -563,11 +556,112 @@
 </span><span class='line'>正在 Ping 192.168.10.19 具有 32 字节的数据:
 </span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>1ms <span class="nv">TTL</span><span class="o">=</span>64
 </span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>2ms <span class="nv">TTL</span><span class="o">=</span>64
-</span><span class='line'>... ..
+</span><span class='line'>... ...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>&#8211;EOF&#8211; 未完待续</p>
+<h3>Linux客户端配置</h3>
+
+<p><strong>安装</strong>参见Server端安装</p>
+
+<h4>相关配置</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mkdir /etc/openvpn</span>
+</span><span class='line'><span class="c"># cp /usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files/client.conf /etc/openvpn/</span>
+</span><span class='line'><span class="c"># grep -vE &#39;^$|^#|^;&#39; /etc/openvpn/client.conf</span>
+</span><span class='line'>client
+</span><span class='line'>dev tun
+</span><span class='line'>proto udp
+</span><span class='line'>remote 10.2.0.110 1194
+</span><span class='line'>resolv-retry infinite
+</span><span class='line'>nobind
+</span><span class='line'>persist-key
+</span><span class='line'>persist-tun
+</span><span class='line'>ca ca.crt
+</span><span class='line'>cert kumu_client1.crt
+</span><span class='line'>key kumu_client1.key
+</span><span class='line'>ns-cert-type server
+</span><span class='line'>tls-auth ta.key 1
+</span><span class='line'>comp-lzo
+</span><span class='line'>verb 3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>拷贝Server端生成的如下客户端证书到Linux客户端/etc/openvpn下(这里为了方便不再生成一套客户端证书了)</p>
+
+<ul>
+<li>kumu_client1.crt</li>
+<li>kumu_client1.key</li>
+<li>ca.key</li>
+<li>ta.key</li>
+</ul>
+
+
+<p><strong>启动Openvpn客户端服务</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvpn --config /etc/openvpn/client.conf --daemon
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>测试</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifconfig tun0</span>
+</span><span class='line'>tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+</span><span class='line'>          inet addr:10.8.0.6  P-t-P:10.8.0.5  Mask:255.255.255.255
+</span><span class='line'>... ...
+</span><span class='line'><span class="c"># route -n</span>
+</span><span class='line'>Kernel IP routing table
+</span><span class='line'>Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+</span><span class='line'>10.8.0.5        0.0.0.0         255.255.255.255 UH    0      0        0 tun0
+</span><span class='line'>10.8.0.0        10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+</span><span class='line'>192.168.10.0    10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+</span><span class='line'>... ...
+</span><span class='line'><span class="c"># ping 192.168.10.19</span>
+</span><span class='line'>PING 192.168.10.19 <span class="o">(</span>192.168.10.19<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+</span><span class='line'>64 bytes from 192.168.10.19: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.690 ms
+</span><span class='line'>64 bytes from 192.168.10.19: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>1.21 ms
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>测试正常，无误！</p>
+
+<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

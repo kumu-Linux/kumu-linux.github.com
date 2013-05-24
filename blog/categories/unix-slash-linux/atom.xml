@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-24T11:23:43+08:00</updated>
+  <updated>2013-05-24T13:31:21+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[openvpn服务搭建]]></title>
+    <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
     <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
     <updated>2013-05-23T10:19:00+08:00</updated>
     <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
@@ -61,12 +61,6 @@ yum install openssl openssl-devel pam pam-devel -y
 </code></p>
 
 <h2>相关配置</h2>
-
-<h3>加载tun模块</h3>
-
-<p><code>bash
-modprobe tun
-</code></p>
 
 <h3>添加环境变量</h3>
 
@@ -382,10 +376,89 @@ C:\Users\kumu>ping 192.168.10.19 #测试内网</p>
 <p>正在 Ping 192.168.10.19 具有 32 字节的数据:
 来自 192.168.10.19 的回复: 字节=32 时间=1ms TTL=64
 来自 192.168.10.19 的回复: 字节=32 时间=2ms TTL=64
-... ..
+... ...
 ```</p>
 
-<p>--EOF-- 未完待续</p>
+<h3>Linux客户端配置</h3>
+
+<p><strong>安装</strong>参见Server端安装</p>
+
+<h4>相关配置</h4>
+
+<p>``` bash</p>
+
+<h1>mkdir /etc/openvpn</h1>
+
+<h1>cp /usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files/client.conf /etc/openvpn/</h1>
+
+<h1>grep -vE '<sup>$|<sup>#|<sup>;'</sup></sup></sup> /etc/openvpn/client.conf</h1>
+
+<p>client
+dev tun
+proto udp
+remote 10.2.0.110 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert kumu_client1.crt
+key kumu_client1.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+```</p>
+
+<p>拷贝Server端生成的如下客户端证书到Linux客户端/etc/openvpn下(这里为了方便不再生成一套客户端证书了)</p>
+
+<ul>
+<li>kumu_client1.crt</li>
+<li>kumu_client1.key</li>
+<li>ca.key</li>
+<li>ta.key</li>
+</ul>
+
+
+<p><strong>启动Openvpn客户端服务</strong></p>
+
+<p><code>bash
+openvpn --config /etc/openvpn/client.conf --daemon
+</code></p>
+
+<h4>测试</h4>
+
+<p>``` bash</p>
+
+<h1>ifconfig tun0</h1>
+
+<p>tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00</p>
+
+<pre><code>      inet addr:10.8.0.6  P-t-P:10.8.0.5  Mask:255.255.255.255
+</code></pre>
+
+<p>... ...</p>
+
+<h1>route -n</h1>
+
+<p>Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+10.8.0.5        0.0.0.0         255.255.255.255 UH    0      0        0 tun0
+10.8.0.0        10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+192.168.10.0    10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+... ...</p>
+
+<h1>ping 192.168.10.19</h1>
+
+<p>PING 192.168.10.19 (192.168.10.19) 56(84) bytes of data.
+64 bytes from 192.168.10.19: icmp_seq=1 ttl=64 time=0.690 ms
+64 bytes from 192.168.10.19: icmp_seq=2 ttl=64 time=1.21 ms
+... ...
+```</p>
+
+<p>测试正常，无误！</p>
+
+<p>--EOF--</p>
 ]]></content>
   </entry>
   

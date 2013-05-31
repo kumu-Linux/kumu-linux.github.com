@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-05-31T19:23:53+08:00</updated>
+  <updated>2013-05-31T19:39:02+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -150,27 +150,17 @@ Valid string keywords are:
 <h2>1、通过lsof命令列出所有打开的文件</h2>
 
 <p>在下面的例子中，它会以长列表的形式显示打开的文件，为了便于理解，它以Command、PID、USER、FD、TYPE分类
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>      <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>       <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">cwd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">rtd</span>       <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>          <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span>     <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>  <span class="n">mem</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>     <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
-</span><span class='line'><span class="n">init</span>          <span class="mi">1</span>   <span class="n">root</span>    <span class="mi">0u</span>      <span class="n">CHR</span>                <span class="mi">1</span><span class="p">,</span><span class="mi">3</span>      <span class="mi">0</span><span class="n">t0</span>       <span class="mi">4021</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof</h1>
+
+<p>COMMAND     PID   USER   FD      TYPE             DEVICE SIZE/OFF       NODE NAME
+init          1   root  cwd       DIR                8,3     4096          2 /
+init          1   root  rtd       DIR                8,3     4096          2 /
+init          1   root  txt       REG                8,3   150352     527181 /sbin/init
+init          1   root  mem       REG                8,3    65928     654110 /lib64/libnss_files-2.12.so
+init          1   root    0u      CHR                1,3      0t0       4021 /dev/null
+{% endcodeblock %}</p>
 
 <p>若不指定条件默认将显示所有进程打开的所有文件,lsof输出各列信息的意义如下：</p>
 
@@ -211,233 +201,140 @@ Valid string keywords are:
 <h2>2、列出特定用户打开的文件</h2>
 
 <p>使用-u选项后接用户指定某个用户打开文件
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">u</span> <span class="n">apache</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>  <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">cwd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">rtd</span>    <span class="n">DIR</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
-</span><span class='line'><span class="n">httpd</span>   <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>    <span class="mi">65928</span>  <span class="mi">654110</span> <span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">libnss_files</span><span class="o">-</span><span class="mf">2.12</span><span class="p">.</span><span class="n">so</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof -u apache</h1>
+
+<p>COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+httpd   6032 apache  cwd    DIR    8,3     4096       2 /
+httpd   6032 apache  rtd    DIR    8,3     4096       2 /
+httpd   6032 apache  txt    REG    8,3   354688 1605148 /usr/sbin/httpd
+httpd   6032 apache  mem    REG    8,3    65928  654110 /lib64/libnss_files-2.12.so
+{% endcodeblock %}</p>
 
 <h2>3、查找特定端口运行的进程</h2>
 
 <p>使用-i选项来查找正在运行特定端口的进程
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="nl">TCP:</span><span class="mi">53</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="nl">UDP:</span><span class="mi">53</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>   <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="nl">i:</span><span class="mi">53</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>   <span class="mi">20u</span>  <span class="n">IPv4</span>  <span class="mi">61664</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="nl">localhost:</span><span class="n">domain</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">named</span>   <span class="mi">16885</span> <span class="n">named</span>  <span class="mi">512u</span>  <span class="n">IPv4</span>  <span class="mi">61663</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">UDP</span> <span class="nl">localhost:</span><span class="n">domain</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof -i TCP:53</h1>
+
+<p>COMMAND   PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+named   16885 named   20u  IPv4  61664      0t0  TCP localhost:domain (LISTEN)</p>
+
+<h1>lsof -i UDP:53</h1>
+
+<p>COMMAND   PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+named   16885 named  512u  IPv4  61663      0t0  UDP localhost:domain</p>
+
+<h1>lsof -i:53</h1>
+
+<p>named   16885 named   20u  IPv4  61664      0t0  TCP localhost:domain (LISTEN)
+named   16885 named  512u  IPv4  61663      0t0  UDP localhost:domain
+{% endcodeblock %}</p>
 
 <h2>4、列出ipv4和ipv6的文件</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="mi">4</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>    <span class="n">PID</span>  <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>  <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="mi">6</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>lsof -i 4</h1>
+
+<p>COMMAND    PID  USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd      1239  root    3u  IPv4  10081      0t0  TCP *:ssh (LISTEN)</p>
+
+<h1>lsof -i 6</h1>
+
+<p>COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd     1239   root    4u  IPv6  10083      0t0  TCP *:ssh (LISTEN)
+{% endcodeblock %}</p>
 
 <h2>5、列出TCP端口范围1-1024端口</h2>
 
 <p>列出打开1-1024端口所有正在运行的程序
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="nl">TCP:</span><span class="mi">1</span><span class="o">-</span><span class="mi">1024</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>   <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">sshd</span>     <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">httpd</span>    <span class="mi">2142</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">13337</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">*:</span><span class="n">http</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof -i TCP:1-1024</h1>
+
+<p>COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd     1239   root    3u  IPv4  10081      0t0  TCP <em>:ssh (LISTEN)
+sshd     1239   root    4u  IPv6  10083      0t0  TCP </em>:ssh (LISTEN)
+httpd    2142   root    4u  IPv6  13337      0t0  TCP *:http (LISTEN)
+{% endcodeblock %}</p>
 
 <h2>6、通过脱字符排除某个用户</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">u</span><span class="o">&lt;</span><span class="n">sup</span><span class="o">&gt;</span><span class="n">root</span><span class="o">&lt;/</span><span class="n">sup</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>     <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">dbus</span><span class="o">-</span><span class="n">daem</span>  <span class="mi">1212</span>   <span class="n">dbus</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>       <span class="mi">2</span> <span class="o">/</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>lsof -u<sup>root</sup></h1>
+
+<p>COMMAND     PID   USER   FD   TYPE             DEVICE SIZE/OFF    NODE NAME
+dbus-daem  1212   dbus  cwd    DIR                8,3     4096       2 /
+dbus-daem  1212   dbus  rtd    DIR                8,3     4096       2 /
+{% endcodeblock %}</p>
 
 <h2>7、查找特定用户使用文件和命令</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span> <span class="o">-</span><span class="n">u</span> <span class="n">apache</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>    <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">txt</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">354688</span> <span class="mi">1605148</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">httpd</span>
-</span><span class='line'><span class="n">httpd</span>     <span class="mi">6032</span> <span class="n">apache</span>  <span class="n">mem</span>    <span class="n">REG</span>    <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">9488</span>  <span class="mi">271645</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">lib64</span><span class="o">/</span><span class="n">apr</span><span class="o">-</span><span class="n">util</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">apr_ldap</span><span class="o">-</span><span class="mf">1.</span><span class="n">so</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>lsof -i -u apache</h1>
+
+<p>COMMAND    PID   USER   FD   TYPE DEVICE SIZE/OFF    NODE NAME
+httpd     6032 apache  txt    REG    8,3   354688 1605148 /usr/sbin/httpd
+httpd     6032 apache  mem    REG    8,3     9488  271645 /usr/lib64/apr-util-1/apr_ldap-1.so
+{% endcodeblock %}</p>
 
 <h2>8、列出所有网络连接</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">i</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>    <span class="n">PID</span>   <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">3u</span>  <span class="n">IPv4</span>  <span class="mi">10081</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span><span class='line'><span class="n">sshd</span>      <span class="mi">1239</span>   <span class="n">root</span>    <span class="mi">4u</span>  <span class="n">IPv6</span>  <span class="mi">10083</span>      <span class="mi">0</span><span class="n">t0</span>  <span class="n">TCP</span> <span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;:</span><span class="n">ssh</span> <span class="p">(</span><span class="n">LISTEN</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>lsof -i</h1>
+
+<p>COMMAND    PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd      1239   root    3u  IPv4  10081      0t0  TCP <em>:ssh (LISTEN)
+sshd      1239   root    4u  IPv6  10083      0t0  TCP </em>:ssh (LISTEN)
+{% endcodeblock %}</p>
 
 <h2>9、采用pid搜索</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">p</span> <span class="mi">1</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span> <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span>             <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span>   <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">rtd</span>    <span class="n">DIR</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>     <span class="mi">4096</span>      <span class="mi">2</span> <span class="o">/</span>
-</span><span class='line'><span class="n">init</span>      <span class="mi">1</span> <span class="n">root</span>  <span class="n">txt</span>    <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">150352</span> <span class="mi">527181</span> <span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">init</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>lsof -p 1</h1>
+
+<p>COMMAND PID USER   FD   TYPE             DEVICE SIZE/OFF   NODE NAME
+init      1 root  cwd    DIR                8,3     4096      2 /
+init      1 root  rtd    DIR                8,3     4096      2 /
+init      1 root  txt    REG                8,3   150352 527181 /sbin/init
+{% endcodeblock %}</p>
 
 <h2>10、杀死某个特定用户的所有活动</h2>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">kill</span> <span class="o">-</span><span class="mi">9</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">-</span><span class="n">t</span> <span class="o">-</span><span class="n">u</span> <span class="n">named</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}</p>
+
+<h1>kill -9 <code>lsof -t -u named</code></h1>
+
+<p>{% endcodeblock %}</p>
 
 <h3>补充:</h3>
 
 <p>查看谁在使用文件系统,在卸载文件系统时，如果某个文件系统中有任何打开文件，操作一般会失败
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">/</span><span class="n">mnt</span><span class="o">/&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">COMMAND</span>   <span class="n">PID</span> <span class="n">USER</span>   <span class="n">FD</span>   <span class="n">TYPE</span> <span class="n">DEVICE</span> <span class="n">SIZE</span><span class="o">/</span><span class="n">OFF</span> <span class="n">NODE</span> <span class="n">NAME</span>
-</span><span class='line'><span class="n">bash</span>    <span class="mi">16672</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span><span class='line'><span class="n">lsof</span>    <span class="mi">17041</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span><span class='line'><span class="n">lsof</span>    <span class="mi">17042</span> <span class="n">root</span>  <span class="n">cwd</span>    <span class="n">DIR</span>   <span class="mi">11</span><span class="p">,</span><span class="mi">0</span>     <span class="mi">8192</span> <span class="mi">1856</span> <span class="o">/</span><span class="n">mnt</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof /mnt/</h1>
+
+<p>COMMAND   PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+bash    16672 root  cwd    DIR   11,0     8192 1856 /mnt
+lsof    17041 root  cwd    DIR   11,0     8192 1856 /mnt
+lsof    17042 root  cwd    DIR   11,0     8192 1856 /mnt
+{% endcodeblock %}</p>
 
 <p>查看被删除的文件
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">deleted</span> <span class="o">--</span><span class="n">color</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">console</span><span class="o">-</span><span class="n">k</span>  <span class="mi">1291</span>   <span class="n">root</span>  <span class="n">txt</span>       <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>   <span class="mi">155008</span>    <span class="mi">1577669</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">sbin</span><span class="o">/</span><span class="n">console</span><span class="o">-</span><span class="n">kit</span><span class="o">-</span><span class="n">daemon</span><span class="p">.</span><span class="err">#</span><span class="n">prelink</span><span class="err">#</span><span class="p">.</span><span class="n">bXthE2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span><span class='line'><span class="n">tail</span>      <span class="mi">17553</span>   <span class="n">root</span>    <span class="mi">3</span><span class="n">r</span>      <span class="n">REG</span>                <span class="mi">8</span><span class="p">,</span><span class="mi">3</span>        <span class="mi">6</span>     <span class="mi">523317</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">test2</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof | grep deleted --color</h1>
+
+<p>console-k  1291   root  txt       REG                8,3   155008    1577669 /usr/sbin/console-kit-daemon.#prelink#.bXthE2 (deleted)
+tail      17553   root    3r      REG                8,3        6     523317 /tmp/test2 (deleted)
+{% endcodeblock %}</p>
 
 <h2>应用实例</h2>
 
@@ -459,53 +356,34 @@ Valid string keywords are:
 <p>当系统中的某个文件被意外地删除了，只要这个时候系统中还有进程正在访问该文件，那么我们就可以通过lsof从/proc目录下恢复该文件的内容。 假如由于误操作将/var/log/messages文件删除掉了，那么这时要将/var/log/messages文件恢复的方法如下：</p>
 
 <p>首先使用lsof来查看当前是否有进程打开/var/logmessages文件，如下:
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">lsof</span> <span class="o">|</span><span class="n">grep</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">syslogd</span>   <span class="mi">1283</span>      <span class="n">root</span>    <span class="mi">2</span><span class="n">w</span>      <span class="n">REG</span>        <span class="mi">3</span><span class="p">,</span><span class="mi">3</span>  <span class="mi">5381017</span>    <span class="mi">1773647</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>lsof |grep /var/log/messages</h1>
+
+<p>syslogd   1283      root    2w      REG        3,3  5381017    1773647 /var/log/messages (deleted)
+{% endcodeblock %}</p>
 
 <p>从上面的信息可以看到 PID 1283（syslogd）打开文件的文件描述符为 2。同时还可以看到/var/log/messages已经标记被删除了。因此我们可以在 /proc/1283/fd/2 （fd下的每个以数字命名的文件表示进程对应的文件描述符）中查看相应的信息，如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">head</span> <span class="o">-</span><span class="n">n</span> <span class="mi">10</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="mi">1283</span><span class="o">/</span><span class="n">fd</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="n">syslogd</span> <span class="mf">1.4.1</span><span class="o">:</span> <span class="n">restart</span><span class="p">.</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">klogd</span> <span class="mf">1.4.1</span><span class="p">,</span> <span class="n">log</span> <span class="n">source</span> <span class="o">=</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="n">kmsg</span> <span class="n">started</span><span class="p">.</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">Linux</span> <span class="n">version</span> <span class="mf">2.6.22.1</span><span class="o">-</span><span class="mi">8</span> <span class="p">(</span><span class="n">root</span><span class="err">@</span><span class="n">everestbuilder</span><span class="p">.</span><span class="n">linux</span><span class="o">-</span><span class="n">ren</span><span class="p">.</span><span class="n">org</span><span class="p">)</span> <span class="p">(</span><span class="n">gcc</span> <span class="n">version</span> <span class="mf">4.2.0</span><span class="p">)</span> <span class="err">#</span><span class="mi">1</span> <span class="n">SMP</span> <span class="n">Wed</span> <span class="n">Jul</span> <span class="mi">18</span> <span class="mi">11</span><span class="o">:</span><span class="mi">18</span><span class="o">:</span><span class="mi">32</span> <span class="n">EDT</span> <span class="mi">2007</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span> <span class="n">BIOS</span><span class="o">-</span><span class="n">provided</span> <span class="n">physical</span> <span class="n">RAM</span> <span class="nl">map:</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000000000</span> <span class="o">-</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000000009f</span><span class="mo">000</span> <span class="o">-</span> <span class="mo">00000000000</span><span class="n">a0000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mo">0000000000100000</span> <span class="o">-</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="p">(</span><span class="n">usable</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">000000001f</span><span class="mi">7</span><span class="n">d3800</span> <span class="o">-</span> <span class="mo">0000000020000000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000e0000000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">0007000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span><span class='line'><span class="n">Aug</span>  <span class="mi">4</span> <span class="mi">13</span><span class="o">:</span><span class="mi">50</span><span class="o">:</span><span class="mi">15</span> <span class="n">holmes86</span> <span class="nl">kernel:</span>  <span class="n">BIOS</span><span class="o">-</span><span class="nl">e820:</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="mi">8000</span> <span class="o">-</span> <span class="mf">00000000f</span><span class="mo">000</span><span class="n">c000</span> <span class="p">(</span><span class="n">reserved</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}</p>
+
+<h1>head -n 10 /proc/1283/fd/2</h1>
+
+<p>Aug  4 13:50:15 holmes86 syslogd 1.4.1: restart.
+Aug  4 13:50:15 holmes86 kernel: klogd 1.4.1, log source = /proc/kmsg started.
+Aug  4 13:50:15 holmes86 kernel: Linux version 2.6.22.1-8 (root@everestbuilder.linux-ren.org) (gcc version 4.2.0) #1 SMP Wed Jul 18 11:18:32 EDT 2007
+Aug  4 13:50:15 holmes86 kernel: BIOS-provided physical RAM map:
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 0000000000000000 - 000000000009f000 (usable)
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 000000000009f000 - 00000000000a0000 (reserved)
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 0000000000100000 - 000000001f7d3800 (usable)
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 000000001f7d3800 - 0000000020000000 (reserved)
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 00000000e0000000 - 00000000f0007000 (reserved)
+Aug  4 13:50:15 holmes86 kernel:  BIOS-e820: 00000000f0008000 - 00000000f000c000 (reserved)
+{% endcodeblock %}</p>
 
 <p>从上面的信息可以看出，查看 /proc/1283/fd/2 就可以得到所要恢复的数据。如果可以通过文件描述符查看相应的数据，那么就可以使用 I/O 重定向将其复制到文件中，如:
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">cat</span> <span class="o">/</span><span class="n">proc</span><span class="o">/</span><span class="mi">1283</span><span class="o">/</span><span class="n">fd</span><span class="o">/</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">messages</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
+{% codeblock lang:cpp %}
+cat /proc/1283/fd/2 > /var/log/messages
+{% endcodeblock %}
 对于许多应用程序，尤其是日志文件和数据库，这种恢复删除文件的方法非常有用。</p>
 
 <h3>应用实例2 磁盘剩余空间和du显示相差太大</h3>
@@ -516,45 +394,34 @@ Valid string keywords are:
 
 
 <p>今天一同事说文件系统/tmp目录下空间用满了，当时du统计目录所有文件的时候却很小。听到这个现象，第一感觉就是应该有大文件被删除，但是这个文件可能依然被其他程序打开，导致这个文件不能被清除。登上服务器使用lsof看了一下，果然如此，具体排查过程如下：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
-</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
-</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span> <span class="mf">8.7</span><span class="n">G</span> <span class="mf">7.9</span><span class="n">G</span> <span class="mi">407</span><span class="n">M</span> <span class="mi">96</span><span class="o">%</span> <span class="o">/</span><span class="n">tmp</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">lsof</span> <span class="o">|</span> <span class="n">grep</span> <span class="o">/</span><span class="n">tmp</span> <span class="o">|</span> <span class="n">sort</span> <span class="o">-</span><span class="n">k7</span> <span class="o">-</span><span class="n">nr</span>  <span class="c">#注：其实直接lsof | grep deleted 即可</span>
-</span><span class='line'><span class="n">sleep</span> <span class="mi">18833</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span><span class='line'><span class="n">netstat_2</span> <span class="mi">13571</span> <span class="n">peien</span><span class="o">.</span><span class="n">htg</span> <span class="mi">1</span><span class="n">w</span> <span class="n">REG</span> <span class="mi">8</span><span class="p">,</span><span class="mi">5</span> <span class="mi">8321143673</span> <span class="mi">54</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat</span><span class="o">.</span><span class="n">log</span> <span class="p">(</span><span class="n">deleted</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:python %}
+$ df -h
+Filesystem Size Used Avail Use% Mounted on
+/dev/sda5 8.7G 7.9G 407M 96% /tmp
+$ sudo lsof | grep /tmp | sort -k7 -nr  #注：其实直接lsof | grep deleted 即可
+sleep 18833 peien.htg 1w REG 8,5 8321143673 54 /tmp/netstat.log (deleted)
+netstat_2 13571 peien.htg 1w REG 8,5 8321143673 54 /tmp/netstat.log (deleted)
+{% endcodeblock %}</p>
 
 <p>上面lsof输出结果的第二列是PID,倒数第三列是占用空间大小</p>
 
 <p>可以看到文件/tmp/netstat.log (deleted)占用7个多G的空间，虽然被删除了，但是还是有进程打开它。</p>
 
 <p>然后，用PID看看是哪个程序占用这个文件：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">ps</span> <span class="o">-</span><span class="n">ef</span> <span class="o">|</span> <span class="n">grep</span> <span class="mi">13571</span>
-</span><span class='line'><span class="mi">51717</span> <span class="mi">13571</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">2011</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mi">15</span><span class="p">:</span><span class="mo">00</span> <span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">bash</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">netstat_20110829</span><span class="o">.</span><span class="n">sh</span>
-</span><span class='line'><span class="mi">51717</span> <span class="mi">21456</span> <span class="mi">13571</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="err">?</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">sleep</span> <span class="mi">10</span>
-</span><span class='line'><span class="n">zhuxu</span> <span class="mi">21458</span> <span class="mi">17014</span> <span class="mi">0</span> <span class="mi">09</span><span class="p">:</span><span class="mi">40</span> <span class="n">pts</span><span class="o">/</span><span class="mi">0</span> <span class="mo">00</span><span class="p">:</span><span class="mo">00</span><span class="p">:</span><span class="mo">00</span> <span class="n">grep</span> <span class="mi">13571</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:python %}
+$ ps -ef | grep 13571
+51717 13571 1 0 2011 ? 00:15:00 /bin/bash /tmp/netstat_20110829.sh
+51717 21456 13571 0 09:40 ? 00:00:00 sleep 10
+zhuxu 21458 17014 0 09:40 pts/0 00:00:00 grep 13571
+{% endcodeblock %}</p>
 
 <p>将这个进程KILL掉后，就OK了：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">sudo</span> <span class="n">kill</span> <span class="o">-</span><span class="mi">9</span> <span class="mi">13571</span>
-</span><span class='line'><span class="err">$</span> <span class="n">df</span> <span class="o">-</span><span class="n">h</span>
-</span><span class='line'><span class="n">Filesystem</span> <span class="n">Size</span> <span class="n">Used</span> <span class="n">Avail</span> <span class="n">Use</span><span class="o">%</span> <span class="n">Mounted</span> <span class="n">on</span>
-</span><span class='line'><span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">sda5</span>  <span class="mf">8.7</span><span class="n">G</span> <span class="mi">56</span><span class="n">M</span>  <span class="mf">8.2</span><span class="n">G</span> <span class="mi">1</span><span class="o">%</span>  <span class="o">/</span><span class="n">tmp</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:python %}
+$ sudo kill -9 13571
+$ df -h
+Filesystem Size Used Avail Use% Mounted on
+/dev/sda5  8.7G 56M  8.2G 1%  /tmp
+{% endcodeblock %}</p>
 
 <p>--EOF--</p>
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-05T08:10:29+08:00</updated>
+  <updated>2013-06-06T07:16:22+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,249 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iproute]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/04/iproute/"/>
+    <updated>2013-06-04T11:16:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/04/iproute</id>
+    <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
+
+<p>iproute是用于linux下网络配置工具，该工具包还有以下组件</p>
+
+<!--more-->
+
+
+<p>``` bash</p>
+
+<h1>rpm -ql  iproute | grep bin</h1>
+
+<p>/sbin/cbq           #流量控制
+/sbin/ifcfg         #网络地址配置管理
+/sbin/ip            #网络配置命令
+/sbin/rtmon         #rtmon listens on netlink socket and monitors routing table changes.
+/sbin/tc            #进行流量控制的命令
+/usr/sbin/arpd      #收集arp信息保存到本地cache daemon
+/usr/sbin/lnstat    #网络统计信息
+/usr/sbin/nstat     #显示网络统计信息
+/usr/sbin/rtacct    #查看数据包流量状态
+【nstat and rtacct are simple tools to monitor kernel snmp counters and network interface statistics.】
+/usr/sbin/ss        #类似netstat命令，显示活动连接
+```</p>
+
+<p>iproute的中心是<code>ip</code>这个命令，类似<code>arp</code>、<code>ifconfig</code>、<code>route</code>命令虽然这些工具能够工作，但是在Linux2.2和更高版本的内核上就有点out了。</p>
+
+<h3>ip基本使用方法</h3>
+
+<p>``` bash</p>
+
+<h1>ip --help</h1>
+
+<p>Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }</p>
+
+<pre><code>   ip [ -force ] -batch filename
+</code></pre>
+
+<p>where  OBJECT := { link | addr | addrlabel | route | rule | neigh | ntable |</p>
+
+<pre><code>               tunnel | maddr | mroute | mrule | monitor | xfrm }
+   OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |
+                -f[amily] { inet | inet6 | ipx | dnet | link } |
+                -o[neline] | -t[imestamp] | -b[atch] [filename] |
+                -rc[vbuf] [size]}
+</code></pre>
+
+<p>```</p>
+
+<p><strong>OBJECT</strong></p>
+
+<ul>
+<li>link          指网络设备，通过此对象命令，我们可以查看及更改网络设备的属性。</li>
+<li>addr          地址管理</li>
+<li>neigh         arp表管理</li>
+<li>route         路由管理</li>
+<li>rule          路由策略</li>
+<li>maddr         多址广播地址</li>
+<li>mroute        多播路由缓存管理</li>
+<li>tunnel        通道管理</li>
+</ul>
+
+
+<p>``` bash</p>
+
+<h1>ip -V         #打印iproute信息</h1>
+
+<p>ip utility, iproute2-ss091226
+```</p>
+
+<p><strong>显示链路信息</strong>
+``` bash</p>
+
+<h1>ip link</h1>
+
+<p>1: lo: &lt;LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN</p>
+
+<pre><code>link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</code></pre>
+
+<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
+
+<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff 
+</code></pre>
+
+<h1>ip link show dev eth0</h1>
+
+<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
+
+<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
+</code></pre>
+
+<p>```</p>
+
+<p><strong>显示IP地址</strong>
+``` bash</p>
+
+<h1>ip addr</h1>
+
+<p>1: lo: &lt;LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN</p>
+
+<pre><code>link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+inet 127.0.0.1/8 scope host lo
+inet6 ::1/128 scope host 
+   valid_lft forever preferred_lft forever
+</code></pre>
+
+<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
+
+<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
+inet 192.168.0.10/24 brd 192.168.0.255 scope global eth0
+</code></pre>
+
+<p>```</p>
+
+<p>显示路由<code>ip route</code> [类似<code>route -n</code>]
+``` bash</p>
+
+<h1>ip route | column -t</h1>
+
+<p>192.168.0.0/24  dev  eth1          scope  link
+10.2.0.0/16     dev  eth2          proto  kernel  scope  link  src  10.2.0.111
+default         via  10.2.255.254  dev    eth2</p>
+
+<h1>ip route del 192.168.0.0/24 dev eth1</h1>
+
+<h1>ip route add 192.168.0.0/24 dev eth1</h1>
+
+<h1>ip route del via 10.2.255.254  //删除默认路由</h1>
+
+<h1>ip route add via 10.2.255.254  //增加默认路由</h1>
+
+<h1>ip route add 192.168.1.0/24 via 192.168.0.1  //增加静态路由，192.168.0.1为下一跳地址</h1>
+
+<h1>ip route del 192.168.1.0/24 via 192.168.0.1  //删除静态路由</h1>
+
+<p>```</p>
+
+<p>显示arp信息<code>ip neigh</code> [可以取代<code>arp -n</code>],删除则是<code>ip neigh del IP地址 dev 设备名</code></p>
+
+<h3>路由策略数据库</h3>
+
+<p>如果你有一个大规模的路由器，需要同时满足不同用户对于路由的不通需求，路由策略数据库可以帮你通过多路由表技术来实现。当内核需要做出路由选择时，它会找出应该参考哪一张路由表。除了<code>ip</code>外,<code>route</code>也可以修改main和local表。</p>
+
+<p><strong>默认规则</strong>
+``` bash</p>
+
+<h1>ip rule</h1>
+
+<p>0:  from all lookup local
+32766:  from all lookup main
+32767:  from all lookup default
+```</p>
+
+<p>上面列出了规则的优先顺序。<code>ip route</code>命令默认显示的就是main表。<code>ip route show table all</code>显示所有规则中的表</p>
+
+<p>``` bash</p>
+
+<h1>ip route list table local</h1>
+
+<p>broadcast 192.168.0.255 dev eth0  proto kernel  scope link  src 192.168.0.10
+broadcast 10.2.0.0 dev eth1  proto kernel  scope link  src 10.2.0.217
+broadcast 127.255.255.255 dev lo  proto kernel  scope link  src 127.0.0.1
+... ...
+```</p>
+
+<p>default表为空</p>
+
+<h3>例 简单策略路由添加 [引用自<a href="https://www.google.com.hk/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;ved=0CDkQFjAB&amp;url=%68%74%74%70%3a%2f%2f%77%77%77%2e%6c%61%72%74%63%2e%6f%72%67%2f%4c%41%52%54%43%2d%7a%68%5f%43%4e%2e%47%42%32%33%31%32%2e%70%64%66&amp;ei=4XeuUc3RPIG1lQW1voGwAg&amp;usg=AFQjCNEI4pFvc81u0hYutCtbC4mEoh44qA&amp;sig2=Txgnxnm1LMqWL87RKUsWDQ">Linux高级路由中文HOWTO</a>]</h3>
+
+<p>让我们再来一个真实的例子。我有两个Cable Modem，连接到了一个 Linux的NAT (“伪装”) 路由器上。这里的室友们向我付费使用Internet。假如我其中的一个室友因为只想访问 hotmail 而希望少付一些钱。对我来说这没有问题,他们肯定只能使用那个比较次的Cable Modem。</p>
+
+<p>那个比较快的cable modem 的IP地址是 212.64.94.251，PPP 链路，对端IP是212.64.94.1。而那个比较慢的cable modem的IP地址是212.64.78.148，对端是195.96.98.253。</p>
+
+<p>local 表：
+<code>bash
+[ahu@home ahu]$ ip route list table local
+broadcast 127.255.255.255 dev lo proto kernel scope link src 127.0.0.1
+local 10.0.0.1 dev eth0 proto kernel scope host src 10.0.0.1
+broadcast 10.0.0.0 dev eth0 proto kernel scope link src 10.0.0.1
+local 212.64.94.251 dev ppp0 proto kernel scope host src 212.64.94.251
+broadcast 10.255.255.255 dev eth0 proto kernel scope link src 10.0.0.1
+broadcast 127.0.0.0 dev lo proto kernel scope link src 127.0.0.1
+local 212.64.78.148 dev ppp2 proto kernel scope host src 212.64.78.148
+local 127.0.0.1 dev lo proto kernel scope host src 127.0.0.1
+local 127.0.0.0/8 dev lo proto kernel scope host src 127.0.0.1
+</code></p>
+
+<p>让我们看看“main”路由表：
+<code>bash
+[ahu@home ahu]$ ip route list table main
+195.96.98.253 dev ppp2 proto kernel scope link src 212.64.78.148
+212.64.94.1 dev ppp0 proto kernel scope link src 212.64.94.251
+10.0.0.0/8 dev eth0 proto kernel scope link src 10.0.0.1
+127.0.0.0/8 dev lo scope link
+default via 212.64.94.1 dev ppp0
+</code></p>
+
+<p>我们现在为我们的朋友创建了一个叫做“John”的规则。其实我们完全可以使用纯数字表示规则，但是不方便。我们可以向<code>/etc/iproute2/rt_tables</code>文件中添加数字与名字的关联：
+``` bash</p>
+
+<h1>echo 200 John >> /etc/iproute2/rt_tables</h1>
+
+<h1>ip rule add from 10.0.0.10 table John</h1>
+
+<h1>ip rule</h1>
+
+<p>0:  from all lookup local
+32765:  from 10.0.0.10 lookup John
+32766:  from all lookup main
+32767:  from all lookup default
+```</p>
+
+<p>现在，剩下的事情就是为 John 的路由表创建路由项了。别忘了刷新路由缓存：
+``` bash</p>
+
+<h1>ip route add default via 195.96.98.253 dev ppp2 table John</h1>
+
+<h1>ip route flush cache</h1>
+
+<p>```</p>
+
+<p>总结主要是以下几步：</p>
+
+<ul>
+<li>echo 200 John >> /etc/iproute2/rt_tables #方便表示，把规则名字和数字对应加入到<code>/etc/iproute2/rt_tables</code>文件</li>
+<li>ip rule add from 10.0.0.10 table John    #新增规则</li>
+<li>ip route add default via 195.96.98.253 dev ppp2 table John #规则中添加路由表</li>
+<li>ip route flush cache  #刷新路由表</li>
+</ul>
+
+
+<p>--EOF--</p>
+
+<p>未完待续<br/>
+下一篇预报--Linux下高级路由</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[top基本介绍]]></title>

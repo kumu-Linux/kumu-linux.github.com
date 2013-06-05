@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-05T08:08:58+08:00</updated>
+  <updated>2013-06-05T08:10:29+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -94,7 +94,7 @@ Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached</p>
 <p></p>
 
 
-<p>最后两行为内存相关信息：</p>
+<p>倒数第2、3行为内存相关信息：</p>
 
 <table>
     <tr>
@@ -145,7 +145,7 @@ Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached</p>
 <p></p>
 
 
-<p>第4行则是进程相关的资源占用信息:</p>
+<p>最后1行则是进程相关的资源占用信息:</p>
 
 <ul>
 <li>PID：进程的ID</li>

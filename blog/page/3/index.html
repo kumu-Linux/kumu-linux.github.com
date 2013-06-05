@@ -9,9 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
-基本的语法： 1
-sed [options] {sed-commands} {input-file} ">
+  <meta name="description" content="Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用REPE首字母缩写来记住sed的执行流程。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,6 +17,8 @@ sed [options] {sed-commands} {input-file} ">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
   
   <link rel="canonical" href="http://kumu-Linux.github.com/blog/page/3">
   <link href="/favicon.png" rel="icon">
@@ -81,6 +81,92 @@ sed [options] {sed-commands} {input-file} ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/26/sed-2/">1-2、Sed Scripting Flow[译]</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-26T16:28:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/26/sed-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用<code>REPE</code>首字母缩写来记住sed的执行流程。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/26/sed-2/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/25/github-drinkup/">Github Drinkup</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-25T19:52:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/25/github-drinkup/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>昨天晚上在北京贝塔咖啡参加了InfoQ主办的GitHub首届中国Drinkup活动，作为一个伪码农能够参加这样的晚会感觉还是非常荣幸的。首先自己之前也从未参加类似的活动，其次这样的活动会有技术圈内很多技术达人，再次是这样的活动可以说是一个学习交流的好机会。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/25/github-drinkup/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -328,94 +414,6 @@ sed [options] {sed-commands} {input-file} ">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/09/sed/">Sed远程替换的一个错误</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-09T15:17:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/09/sed/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/09/sed/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/08/lsof/">lsof在Linux中的10个例子<译></a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-08T10:19:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/08/lsof/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文主要是介绍lsof相关使用方法，原文主要是10个例子的讲解，笔者又新增了一些实用案例，<a href="http://www.tecmint.com/10-lsof-command-examples-in-linux/">原文地址</a> 。</p>
-
-<p>lsof的意思是&#8217;列出打开的文件&#8217;，用于找出哪些文件被哪些进程打开或是占用。我们都知道Linux/UNIX的理念就是一切皆文件(包括pipes管道、sockets、directories目录、devices设备等等)。使用lsof命令的原因之一就是，当一个磁盘不能被卸载时，借助lsof这个命令我们可以轻易的识别哪些文件正在被占用。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/08/lsof/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -437,6 +435,14 @@ sed [options] {sed-commands} {input-file} ">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/04/iproute/">iproute</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/02/top/">top基本介绍</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/05/23/openvpn/">openvpn基本搭建实例</a>
       </li>
     
@@ -452,19 +458,11 @@ sed [options] {sed-commands} {input-file} ">
         <a href="/blog/2013/05/14/ping-dns/">ping和dns的一个小插曲</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/05/06/rsync-ssh/">rsync备份之ssh篇</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/05/05/sed-7/">2-2、Global Flag (g flag)[译]</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (7)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (2)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (7)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (3)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

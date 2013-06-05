@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-01T09:32:11+08:00</updated>
+  <updated>2013-06-05T07:59:45+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,458 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iproute]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/04/iproute/"/>
+    <updated>2013-06-04T11:16:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/04/iproute</id>
+    <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
+
+<p>iproute是用于linux下网络配置工具，该工具包还有以下组件</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># rpm -ql  iproute | grep bin</span>
+</span><span class='line'>/sbin/cbq         <span class="c">#流量控制</span>
+</span><span class='line'>/sbin/ifcfg           <span class="c">#网络地址配置管理</span>
+</span><span class='line'>/sbin/ip          <span class="c">#网络配置命令</span>
+</span><span class='line'>/sbin/rtmon           <span class="c">#rtmon listens on netlink socket and monitors routing table changes.</span>
+</span><span class='line'>/sbin/tc          <span class="c">#进行流量控制的命令</span>
+</span><span class='line'>/usr/sbin/arpd        <span class="c">#收集arp信息保存到本地cache daemon</span>
+</span><span class='line'>/usr/sbin/lnstat  <span class="c">#网络统计信息</span>
+</span><span class='line'>/usr/sbin/nstat       <span class="c">#显示网络统计信息</span>
+</span><span class='line'>/usr/sbin/rtacct  <span class="c">#查看数据包流量状态</span>
+</span><span class='line'>【nstat and rtacct are simple tools to monitor kernel snmp counters and network interface statistics.】
+</span><span class='line'>/usr/sbin/ss      <span class="c">#类似netstat命令，显示活动连接</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>iproute的中心是<code>ip</code>这个命令，类似<code>arp</code>、<code>ifconfig</code>、<code>route</code>命令虽然这些工具能够工作，但是在Linux2.2和更高版本的内核上就有点out了。</p>
+
+<h3>ip基本使用方法</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip --help</span>
+</span><span class='line'>Usage: ip <span class="o">[</span> OPTIONS <span class="o">]</span> OBJECT <span class="o">{</span> COMMAND | <span class="nb">help</span> <span class="o">}</span>
+</span><span class='line'>       ip <span class="o">[</span> -force <span class="o">]</span> -batch filename
+</span><span class='line'>where  OBJECT :<span class="o">=</span> <span class="o">{</span> link | addr | addrlabel | route | rule | neigh | ntable |
+</span><span class='line'>                   tunnel | maddr | mroute | mrule | monitor | xfrm <span class="o">}</span>
+</span><span class='line'>       OPTIONS :<span class="o">=</span> <span class="o">{</span> -V<span class="o">[</span>ersion<span class="o">]</span> | -s<span class="o">[</span>tatistics<span class="o">]</span> | -d<span class="o">[</span>etails<span class="o">]</span> | -r<span class="o">[</span>esolve<span class="o">]</span> |
+</span><span class='line'>                    -f<span class="o">[</span>amily<span class="o">]</span> <span class="o">{</span> inet | inet6 | ipx | dnet | link <span class="o">}</span> |
+</span><span class='line'>                    -o<span class="o">[</span>neline<span class="o">]</span> | -t<span class="o">[</span>imestamp<span class="o">]</span> | -b<span class="o">[</span>atch<span class="o">]</span> <span class="o">[</span>filename<span class="o">]</span> |
+</span><span class='line'>                    -rc<span class="o">[</span>vbuf<span class="o">]</span> <span class="o">[</span>size<span class="o">]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>OBJECT</strong></p>
+
+<ul>
+<li>link          指网络设备，通过此对象命令，我们可以查看及更改网络设备的属性。</li>
+<li>addr          地址管理</li>
+<li>neigh         arp表管理</li>
+<li>route         路由管理</li>
+<li>rule          路由策略</li>
+<li>maddr         多址广播地址</li>
+<li>mroute        多播路由缓存管理</li>
+<li>tunnel        通道管理</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip -V      #打印iproute信息</span>
+</span><span class='line'>ip utility, iproute2-ss091226
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>显示链路信息</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link</span>
+</span><span class='line'>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue state UNKNOWN
+</span><span class='line'>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
+</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
+</span><span class='line'><span class="c"># ip link show dev eth0</span>
+</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
+</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p><strong>显示IP地址</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip addr</span>
+</span><span class='line'>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue state UNKNOWN
+</span><span class='line'>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+</span><span class='line'>    inet 127.0.0.1/8 scope host lo
+</span><span class='line'>    inet6 ::1/128 scope host
+</span><span class='line'>       valid_lft forever preferred_lft forever
+</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
+</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
+</span><span class='line'>    inet 192.168.0.10/24 brd 192.168.0.255 scope global eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显示路由<code>ip route</code> [类似<code>route -n</code>]</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route | column -t</span>
+</span><span class='line'>192.168.0.0/24  dev  eth1          scope  link
+</span><span class='line'>10.2.0.0/16     dev  eth2          proto  kernel  scope  link  src  10.2.0.111
+</span><span class='line'>default         via  10.2.255.254  dev    eth2
+</span><span class='line'><span class="c"># ip route del 192.168.0.0/24 dev eth1</span>
+</span><span class='line'><span class="c"># ip route add 192.168.0.0/24 dev eth1</span>
+</span><span class='line'><span class="c"># ip route del via 10.2.255.254  //删除默认路由</span>
+</span><span class='line'><span class="c"># ip route add via 10.2.255.254  //增加默认路由</span>
+</span><span class='line'><span class="c"># ip route add 192.168.1.0/24 via 192.168.0.1  //增加静态路由，192.168.0.1为下一跳地址</span>
+</span><span class='line'><span class="c"># ip route del 192.168.1.0/24 via 192.168.0.1  //删除静态路由</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>显示arp信息<code>ip neigh</code> [可以取代<code>arp -n</code>],删除则是<code>ip neigh del IP地址 dev 设备名</code></p>
+
+<h3>路由策略数据库</h3>
+
+<p>如果你有一个大规模的路由器，需要同时满足不同用户对于路由的不通需求，路由策略数据库可以帮你通过多路由表技术来实现。当内核需要做出路由选择时，它会找出应该参考哪一张路由表。除了<code>ip</code>外,<code>route</code>也可以修改main和local表。</p>
+
+<p><strong>默认规则</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip rule</span>
+</span><span class='line'>0:    from all lookup <span class="nb">local </span>
+</span><span class='line'>32766:    from all lookup main
+</span><span class='line'>32767:    from all lookup default
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面列出了规则的优先顺序。<code>ip route</code>命令默认显示的就是main表。<code>ip route show table all</code>显示所有规则中的表</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route list table local</span>
+</span><span class='line'>broadcast 192.168.0.255 dev eth0  proto kernel  scope link  src 192.168.0.10
+</span><span class='line'>broadcast 10.2.0.0 dev eth1  proto kernel  scope link  src 10.2.0.217
+</span><span class='line'>broadcast 127.255.255.255 dev lo  proto kernel  scope link  src 127.0.0.1
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>default表为空</p>
+
+<h3>例 简单策略路由添加 [引用自<a href="https://www.google.com.hk/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;ved=0CDkQFjAB&amp;url=%68%74%74%70%3a%2f%2f%77%77%77%2e%6c%61%72%74%63%2e%6f%72%67%2f%4c%41%52%54%43%2d%7a%68%5f%43%4e%2e%47%42%32%33%31%32%2e%70%64%66&amp;ei=4XeuUc3RPIG1lQW1voGwAg&amp;usg=AFQjCNEI4pFvc81u0hYutCtbC4mEoh44qA&amp;sig2=Txgnxnm1LMqWL87RKUsWDQ">Linux高级路由中文HOWTO</a>]</h3>
+
+<p>让我们再来一个真实的例子。我有两个Cable Modem，连接到了一个 Linux的NAT (“伪装”) 路由器上。这里的室友们向我付费使用Internet。假如我其中的一个室友因为只想访问 hotmail 而希望少付一些钱。对我来说这没有问题,他们肯定只能使用那个比较次的Cable Modem。</p>
+
+<p>那个比较快的cable modem 的IP地址是 212.64.94.251，PPP 链路，对端IP是212.64.94.1。而那个比较慢的cable modem的IP地址是212.64.78.148，对端是195.96.98.253。</p>
+
+<p>local 表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>ahu@home ahu<span class="o">]</span><span class="nv">$ </span>ip route list table <span class="nb">local</span>
+</span><span class='line'>broadcast 127.255.255.255 dev lo proto kernel scope link src 127.0.0.1
+</span><span class='line'><span class="nb">local </span>10.0.0.1 dev eth0 proto kernel scope host src 10.0.0.1
+</span><span class='line'>broadcast 10.0.0.0 dev eth0 proto kernel scope link src 10.0.0.1
+</span><span class='line'><span class="nb">local </span>212.64.94.251 dev ppp0 proto kernel scope host src 212.64.94.251
+</span><span class='line'>broadcast 10.255.255.255 dev eth0 proto kernel scope link src 10.0.0.1
+</span><span class='line'>broadcast 127.0.0.0 dev lo proto kernel scope link src 127.0.0.1
+</span><span class='line'><span class="nb">local </span>212.64.78.148 dev ppp2 proto kernel scope host src 212.64.78.148
+</span><span class='line'><span class="nb">local </span>127.0.0.1 dev lo proto kernel scope host src 127.0.0.1
+</span><span class='line'><span class="nb">local </span>127.0.0.0/8 dev lo proto kernel scope host src 127.0.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>让我们看看“main”路由表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>ahu@home ahu<span class="o">]</span><span class="nv">$ </span>ip route list table main
+</span><span class='line'>195.96.98.253 dev ppp2 proto kernel scope link src 212.64.78.148
+</span><span class='line'>212.64.94.1 dev ppp0 proto kernel scope link src 212.64.94.251
+</span><span class='line'>10.0.0.0/8 dev eth0 proto kernel scope link src 10.0.0.1
+</span><span class='line'>127.0.0.0/8 dev lo scope link
+</span><span class='line'>default via 212.64.94.1 dev ppp0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们现在为我们的朋友创建了一个叫做“John”的规则。其实我们完全可以使用纯数字表示规则，但是不方便。我们可以向<code>/etc/iproute2/rt_tables</code>文件中添加数字与名字的关联：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># echo 200 John &gt;&gt; /etc/iproute2/rt_tables</span>
+</span><span class='line'><span class="c"># ip rule add from 10.0.0.10 table John</span>
+</span><span class='line'><span class="c"># ip rule</span>
+</span><span class='line'>0:    from all lookup <span class="nb">local </span>
+</span><span class='line'>32765:  from 10.0.0.10 lookup John
+</span><span class='line'>32766:    from all lookup main
+</span><span class='line'>32767:    from all lookup default
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，剩下的事情就是为 John 的路由表创建路由项了。别忘了刷新路由缓存：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route add default via 195.96.98.253 dev ppp2 table John</span>
+</span><span class='line'><span class="c"># ip route flush cache</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>总结主要是以下几步：</p>
+
+<ul>
+<li>echo 200 John >> /etc/iproute2/rt_tables #方便表示，把规则名字和数字对应加入到<code>/etc/iproute2/rt_tables</code>文件</li>
+<li>ip rule add from 10.0.0.10 table John    #新增规则</li>
+<li>ip route add default via 195.96.98.253 dev ppp2 table John #规则中添加路由表</li>
+<li>ip route flush cache  #刷新路由表</li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+
+<p>未完待续<br/>
+下一篇预报&#8211;Linux下高级路由</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[top基本介绍]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/02/top/"/>
+    <updated>2013-06-02T09:49:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/02/top</id>
+    <content type="html"><![CDATA[<p><code>top</code>命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面跟着笔者一起<code>top</code>一下吧：</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># top</span>
+</span><span class='line'>top - 10:52:40 up 3 days, 52 min,  1 user,  load average: 57.28, 112.40, 123.60
+</span><span class='line'>Tasks:  99 total,   1 running,  98 sleeping,   0 stopped,   0 zombie
+</span><span class='line'>Cpu<span class="o">(</span>s<span class="o">)</span>: 19.5%us, 11.4%sy,  0.0%ni,  0.0%id, 65.7%wa,  0.0%hi,  3.4%si,  0.0%st
+</span><span class='line'>Mem:  16435896k total, 16232468k used,   203428k free,    58004k buffers
+</span><span class='line'>Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached
+</span><span class='line'>
+</span><span class='line'>  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+</span><span class='line'>  ... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>统计信息区前五行是系统整体的统计信息。第一行是任务队列信息，同uptime命令的执行结果。其内容如下：</p>
+
+<table class="table table-striped">
+    <tr>
+        <td>10:52:40</td>
+        <td>当前时间</td>
+    </tr>
+    <tr>
+        <td>up 3 days, 52 min</td>
+        <td>系统运行时间</td>
+    </tr>
+    <tr>
+        <td>1 users</td>
+        <td>当前登录用户数</td>
+    </tr>
+    <tr>
+        <td>load average: 57.28, 112.40, 123.60</td>
+        <td>系统负载，即任务队列平均长度。
+        <br>分别为1、5、15min前到现在平均值。</br></td>
+    </tr>
+</table>
+
+
+<p></p>
+
+
+<p>第二、三行为进程和CPU的信息。当有多个CPU时，这些内容可能会超过两行。内容如下：</p>
+
+<table>
+    <tr>
+        <td>Tasks:99 total</td>
+        <td>进程总数[键入H可查看线程数]</td>
+    </tr>
+    <tr>
+        <td>1 running,  98 sleeping,  0 stopped</td>
+        <td>正在运行的进程、睡眠进程、停止的进程</td>
+    </tr>
+    <tr>
+        <td>0 zombie</td>
+        <td>僵尸进程数</td>
+    </tr>
+    <tr>
+        <td>Cpu(s): 19.5%us, 11.4%sy,  
+        <br> 0.0%ni, 0.0%id,</br> 
+        65.7%wa, 0.0%hi, 3.4%si, 0.0%st</td>
+        <td>用户空间占用CPU百分比、内核空间占用CPU百分比
+        <br>用户进程空间内改变进程优先级占用CPU、空闲CPU百分比</br>
+        等待IO的CPU时间百分比，最后三个是中断请求相关</td>
+    </tr>
+</table>
+
+
+
+
+<p></p>
+
+
+<p>最后两行为内存相关信息：</p>
+
+<table>
+    <tr>
+        <td>Mem: 16435896k total, 16232468k used, 
+        <br>203428k free, 58004k buffers</br></td>
+        <td>分别是物理内存总量、使用物理内存总量
+        <br>空闲内存总量、用作内核缓存内存量</br></td>
+    </tr>
+    <tr>
+        <td>Swap: 1044476k total, 713552k used, 
+        <br>330924k free, 10052032k cached<br></td>
+        <td>分别是交换分区量、使用交换分区总量
+        <br>空闲交换区总量、缓存交换区总量</br></td>
+    </tr>
+</table>
+
+
+<p></p>
+
+
+<p><strong>buffer</strong>   <a href="http://wiki.answers.com/Q/Difference_between_buffer_and_cache">Difference between buffer and cache?</a></p>
+
+<blockquote><p>A data area, shared by hardware devices or program a process is called buffer. They are operated at different speeds or with different sets of priorities. The buffer allows each device or process to operate without holding up by the other. In order to a buffer to be effective, the size of the buffer needs to be considered by the buffer designer. Like a cache, a buffer is a &#8220;midpoint holding place&#8221; but does not exist so much to accelerate the speed of an activity as for supporting the coordination of separate activities.</p></blockquote>
+
+<p></p>
+
+
+<p></p>
+
+<blockquote><p>This term is used not only in programming but in hardware as well. In programming, buffering sometimes needs to screen data from its final intended place so that it can be edited or processed before moving to a regular file or database.</p></blockquote>
+
+<p><strong>cached</strong></p>
+
+<blockquote><p>Cache memory is type of random access memory (RAM). Cache Memory can be accessed more quickly by the computer microprocessor than it can be accessed by regular RAM. Like microprocessor processes data, it looks first in the cache memory and if there, it finds the data from a previous reading of data, it does not need to do the more time consuming reading of data from larger memory.</p></blockquote>
+
+<p></p>
+
+
+<blockquote><p>Sometimes Cache memory is described in levels of closeness and convenience to the microprocessor. An L1 cache is on the same chip like the microprocessors.</p></blockquote>
+
+<p></p>
+
+
+<p></p>
+
+<blockquote><p>In addition to cache memory, RAM itself is a cache memory for hard disk storage since all of RAM&#8217;s contents come up to the hard disk initially when you turn on your computer and load the operating system that you are loading it into RAM and later when you start new applications and access new data. RAM also contains a special area called a disk cache that consists of the data most recently read in from the hard disk.</p></blockquote>
+
+<p></p>
+
+
+<p>第4行则是进程相关的资源占用信息:</p>
+
+<ul>
+<li>PID：进程的ID</li>
+<li>USER：进程所有者</li>
+<li>PR：进程的优先级别，越小越优先被执行</li>
+<li>NI：nice值。负值表示高优先级，正值表示低优先级</li>
+<li>VIRT：进程占用的虚拟内存</li>
+<li>RES：进程占用的物理内存</li>
+<li>SHR：进程使用的共享内存</li>
+<li>S：进程的状态。S表示休眠，R表示正在运行，Z表示僵死状态，N表示该进程优先值为负数</li>
+<li>%CPU：进程占用CPU的使用率</li>
+<li>%MEM：进程使用的物理内存和总内存的百分比</li>
+<li>TIME+：该进程启动后占用的总的CPU时间，即占用CPU使用时间的累加值。</li>
+<li>COMMAND：进程启动命令名称</li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+
+<p>未完待续&#8211;玩转top小技巧</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
@@ -2582,216 +3034,6 @@ slot        插槽信息
 <p>最后重启snmpd，使修改生效，就会发现messages的snmp的信息就相对少很多了，完成实际的需求。</p>
 
 <p>参考文档:<a href="http://dgz.dyndns.org/mediawiki/index.php/%28RHEL%29_HOWTO_stop_snmpd_spamming_/var/log/messages">dyndns.org</a></p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sed -i修改链接文件注意问题]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed-link/"/>
-    <updated>2013-04-09T23:23:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed-link</id>
-    <content type="html"><![CDATA[<h2>问题重现</h2>
-
-<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<!--more-->
-
-
-<p>我们发现链接文件不再是链接文件了，后来查看sed man选项时发现如下选项说明</p>
-
-<ul>
-<li><p>&#8211;follow-symlinks</p>
-
-<ul>
-<li>follow symlinks when processing in place; hard links will still be broken.</li>
-</ul>
-</li>
-<li><p>-i[SUFFIX], &#8211;in-place[=SUFFIX]</p>
-
-<ul>
-<li>edit  files  in  place (makes backup if extension supplied).  The default operation mode is to break symbolic and hard links.  This can be changed with &#8211;follow-symlinks and &#8211;copy.</li>
-</ul>
-</li>
-<li><p>-c, &#8211;copy</p>
-
-<ul>
-<li>use copy instead of rename when shuffling files in -i mode.  While this  will  avoid  breaking links  (symbolic  or hard), the resulting editing operation is not atomic.  This is rarely the desired mode;</li>
-</ul>
-</li>
-<li><p>&#8211;follow-symlinks is usually enough, and it is both faster and more secure.</p></li>
-</ul>
-
-
-<p>以上说明就不作过多解释了，说的很明显，看下面实例</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard   </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft   </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271656</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">05</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271657</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">06</span> <span class="n">test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>很明显如man中所说-i选项对软链接和硬链接都会使受到破坏,而-c选项则不会</p>
-
-<h2>问题解决</h2>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># rm -rf test*</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;follow-symlinks选项只对软链接有效，硬链接还是会被破坏，建议使用-c选项，这里就不举例了</p>
-
-<h2>问题延伸</h2>
-
-<p>后来发现在RHEL5上运行相同的操作居然没有出现类似的现象，运行结果如下：</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">echo</span> <span class="s">&quot;test&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">~/</span><span class="n">test</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&quot;s/test/test1/g&quot;</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>经查是sed的版本不同造成的影响，RHEL5系列的还是使用老版本的sed，没有&#8211;follow-symlinks类似的选项，笔者之前实验的版本是RHEL6.3，所以出现之前的一系列问题了</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[sed远程替换的一个错误]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/09/sed/"/>
-    <updated>2013-04-09T15:17:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/09/sed</id>
-    <content type="html"><![CDATA[<p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
-
-<!--more-->
-
-
-<h2>问题出现</h2>
-
-<p>以下为本地执行sed替换，本地替换没有什么问题</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="c"># sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39; snmpd</span>
-</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>尝试远程替换，发现ssh直接后接命令替换失败</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="c"># ssh root@localhost sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39; ~/snmpd </span>
-</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>问题解决</h2>
-
-<p>之后使用\转义命令中的&#8221;，再把远程命令加到&#8221;&#8220;中,远程替换成功</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
-</span><span class='line'><span class="c"># grep &quot;OPTIONS=&quot; ~/snmpd</span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

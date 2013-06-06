@@ -9,8 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Linux Tips 1、给Linux man一点颜色看看 在~/.bashrc或者~/.bash_profile中加入如下内容,source即可生效
-1
+  <meta name="description" content="Linux Tips 1、给Linux man一点颜色看看 在~/.bashrc或者~/.bash_profile中加入如下内容,source即可生效 1
 2
 3
 4
@@ -96,9 +95,10 @@ export &hellip;">
     
   </header>
   
-  1、给<strong>Linux man</strong>一点颜色看看
-<p></p>
-在<strong>~/.bashrc</strong>或者<strong>~/.bash_profile</strong>中加入如下内容,<strong>source</strong>即可生效
+  <p><strong>1</strong>、给<strong>Linux man</strong>一点颜色看看</p>
+
+<p>在<strong>~/.bashrc</strong>或者<strong>~/.bash_profile</strong>中加入如下内容,<strong>source</strong>即可生效</p>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -114,6 +114,44 @@ export &hellip;">
 </span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_ue</span><span class="o">=</span><span class="s1">$&#39;\E[0m&#39;</span>
 </span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_us</span><span class="o">=</span><span class="s1">$&#39;\E[01;32m&#39;</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>2</strong>、通过文件添加<strong>Swap</strong>分区</p>
+
+<ul>
+<li>a、生成实际需求大小的文件
+
+<ul>
+<li>dd if=/dev/zero of=/swapfile bs=1024 count=65536</li>
+</ul>
+</li>
+<li>b、把生成的文件格式化成swap
+
+<ul>
+<li>mkswap /swapfile</li>
+</ul>
+</li>
+<li>c、使swap文件生效，但是自动重启之后就会失效
+
+<ul>
+<li>swapon /swapfile</li>
+</ul>
+</li>
+<li>d、加入以下内容到/etc/fstab配置文件中使重启swap自动生效
+
+<ul>
+<li>/swapfile swap swap defaults 0 0</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>3</strong>、查看某个进程占用<strong>Swap</strong>大小</p>
+
+<ul>
+<li>a、top 按f键输入p回车即可</li>
+<li>b、grep &#8211;color -i swap /proc/pid/status</li>
+</ul>
 
 
   

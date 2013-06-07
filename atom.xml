@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-07T19:29:39+08:00</updated>
+  <updated>2013-06-07T19:36:05+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -84,6 +84,8 @@
 
 
 <p>参考: <a href="http://linux.vbird.org/">鸟哥Linux私房菜</a>  <a href="http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">top - Process Activity Command</a>  <a href="http://how-to.linuxcareer.com/learning-linux-commands-top">Learning Linux Commands: top</a></p>
+
+<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   
@@ -535,7 +537,7 @@
 
 <p>&#8211;EOF&#8211;</p>
 
-<p>未完待续&#8211;玩转top小技巧</p>
+<p>top实践&#8211;<a href="http://kumu-linux.github.io/blog/2013/06/07/top-hacks/">top实践小技巧</a></p>
 ]]></content>
   </entry>
   

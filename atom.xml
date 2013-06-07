@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-06T18:06:00+08:00</updated>
+  <updated>2013-06-07T19:29:39+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,80 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[top实践小技巧]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/07/top-hacks/"/>
+    <updated>2013-06-07T17:32:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/07/top-hacks</id>
+    <content type="html"><![CDATA[<p>之前介绍了<a href="http://kumu-linux.github.io/blog/2013/06/02/top/">top基本介绍</a>,本章主要介绍一些top的实用技巧。</p>
+
+<!--more-->
+
+
+<p>终端执行top命令之后【也可后接一些选项，比如<code>top -p 1</code>只监控init进程，<code>top -u root</code>只显示root运行进程等等】，可以敲击如下按键，实现不同功能：</p>
+
+<ul>
+<li><code>1</code>(数字1)：列出所有的单个CPU负载情况</li>
+<li><code>z</code>:top显示颜色</li>
+<li><code>P</code>[大写]:按CPU占用高低顺序列出程序</li>
+<li><code>M</code>[大写]:按内存占用高低顺序列出程序</li>
+<li><code>x</code>:类似高亮显示，在z显示模式下效果才会更明显</li>
+</ul>
+
+
+<p>如下效果图:</p>
+
+<center><img src="http://kumu-Linux.github.com/images/top1.png" alt="geek" title="geek" width="600" /></center>
+
+
+<ul>
+<li>top显示Swap利用率，使用top命令后按f键，然后按p键，回车之后即可看到Swap状态</li>
+</ul>
+
+
+<center><img src="http://kumu-Linux.github.com/images/top2.png" alt="geek" title="geek" width="600" /></center>
+
+
+<ul>
+<li><code>d</code>:top默认的刷新时间是3s，使用d键可以自定义刷新时间</li>
+</ul>
+
+
+<center><img src="http://kumu-Linux.github.com/images/top3.png" alt="geek" title="geek" width="600" /></center>
+
+
+
+
+<p></p>
+
+
+<p><strong>top类似上下翻页的方法：</strong></p>
+
+<ul>
+<li>shift &lt;  下翻页</li>
+<li>shift >   上翻页</li>
+</ul>
+
+
+<p>top默认按cpu占用排序，这也是可以修改的，按F(大写)即可选择相应排序，之后任意键退出即可</p>
+
+<center><img src="http://kumu-Linux.github.com/images/top4.png" alt="geek" title="geek" width="600" /></center>
+
+
+<ul>
+<li><code>c</code>:显示进程命令的全路径与参数</li>
+<li><code>f</code>:可以指定top显示的内容，如ppid、swap等都可以选择显示</li>
+<li><code>k</code>:输入k之后可以kill掉指定的进程</li>
+<li><code>A</code>:分类显示各种系统资源高的进程。可用于快速识别系统上的性能要求极高的任务，<strong>推荐使用</strong></li>
+<li><code>h</code>:获取top的命令帮助</li>
+<li><code>W</code>[大写]:将当前设置写入~/.toprc文件中。这是写top配置文件的推荐方法</li>
+</ul>
+
+
+<p>参考: <a href="http://linux.vbird.org/">鸟哥Linux私房菜</a>  <a href="http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">top - Process Activity Command</a>  <a href="http://how-to.linuxcareer.com/learning-linux-commands-top">Learning Linux Commands: top</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iproute]]></title>
@@ -2950,90 +3024,6 @@ slot        插槽信息
 <p>人总是太容易迷失自己了，在北京的这些日子里，总是感觉找不到自我。每天3个小时的来来回回，时常感到心力交瘁。我想有时候对自己期望太高了，做一件事总是想一下子做好，做技术总想一下子达到某种高度。有时，抱怨生活的各种不公，总是不能安安静静的放下自己好好思量。现在回想起来，又是觉得那么可笑。其实我想只需要看准方向，每天坚持一点点，不断的积累，这比无病呻吟来说要好的多。</p>
 
 <p>好好的做自己，好好的活着。为雅安人民祈福，我们遭受了很多，但我们还是要坚强的活下去，雅安加油！</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[RHEL6修改snmpd日志输出]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/16/snmpd/"/>
-    <updated>2013-04-16T10:52:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/16/snmpd</id>
-    <content type="html"><![CDATA[<h3>需求和现象</h3>
-
-<p>默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。</p>
-
-<!--more-->
-
-
-<h3>解决方法</h3>
-
-<p>第一反应就是想到snmp的配置文件，但是发现配置文件/etc/snmp/snmpd.conf中没有关于log的日志定义，ps -ef | grep snmp[d] 得到如下结果</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ps -ef | grep snmp[d]</span>
-</span><span class='line'>root     59108     1  0 22:12 ?        00:00:00 /usr/sbin/snmpd -LS0-6d -Lf /dev/null -p /var/run/snmpd.pid
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上启动命令中就有关于日志的选项，关于snmp日志的警告级别如下</p>
-
-<ul>
-<li>0 or ! for LOG_EMERG,</li>
-<li>1 or a for LOG_ALERT,</li>
-<li>2 or c for LOG_CRIT,</li>
-<li>3 or e for LOG_ERR,</li>
-<li>4 or w for LOG_WARNING,</li>
-<li>5 or n for LOG_NOTICE,</li>
-<li>6 or i for LOG_INFO,</li>
-<li>7 or d for LOG_DEBUG.</li>
-</ul>
-
-
-<p>默认的时0-6级别的日志都会被记录，查看/etc/init.d/snmpd启动文件，有以下定义</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; -A3 /etc/init.d/snmpd </span>
-</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -e /etc/sysconfig/snmpd <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  . /etc/sysconfig/snmpd
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>snmpd启动文件定义了OPTIONS，启动文件中提到了/etc/sysconfig/snmpd，查看内容默认如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
-</span><span class='line'><span class="c"># snmpd command line options</span>
-</span><span class='line'><span class="c"># OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>因为/etc/sysconfig/snmpd优先级高于OPTIONS，所以可以直接修改配置文件即可，取消OPTIONS注释，修改如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
-</span><span class='line'><span class="c"># snmpd command line options</span>
-</span><span class='line'> <span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-3d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span> <span class="c">#只记录0-3级别的日志即可</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然也可以直接修改/etc/init.d/snmpd启动文件中的OPTIONS</p>
-
-<p>最后重启snmpd，使修改生效，就会发现messages的snmp的信息就相对少很多了，完成实际的需求。</p>
-
-<p>参考文档:<a href="http://dgz.dyndns.org/mediawiki/index.php/%28RHEL%29_HOWTO_stop_snmpd_spamming_/var/log/messages">dyndns.org</a></p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

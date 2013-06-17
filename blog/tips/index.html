@@ -122,25 +122,31 @@ export &hellip;">
 <li>a、生成实际需求大小的文件
 
 <ul>
-<li>dd if=/dev/zero of=/swapfile bs=1024 count=65536</li>
+<li><code>dd if=/dev/zero of=/swapfile bs=1024 count=65536</code></li>
 </ul>
 </li>
 <li>b、把生成的文件格式化成swap
 
 <ul>
-<li>mkswap /swapfile</li>
+<li><code>mkswap /swapfile</code></li>
 </ul>
 </li>
 <li>c、使swap文件生效，但是自动重启之后就会失效
 
 <ul>
-<li>swapon /swapfile</li>
+<li><code>swapon /swapfile</code></li>
 </ul>
 </li>
 <li>d、加入以下内容到/etc/fstab配置文件中使重启swap自动生效
 
 <ul>
-<li>/swapfile swap swap defaults 0 0</li>
+<li><code>/swapfile swap swap defaults 0 0</code></li>
+</ul>
+</li>
+<li>e、关闭
+
+<ul>
+<li><code>swapoff /swapfile</code>并删除<code>/etc/fstab</code>文件中内容</li>
 </ul>
 </li>
 </ul>
@@ -149,8 +155,29 @@ export &hellip;">
 <p><strong>3</strong>、查看某个进程占用<strong>Swap</strong>大小</p>
 
 <ul>
-<li>a、top 按f键输入p回车即可</li>
-<li>b、grep &#8211;color -i swap /proc/pid/status</li>
+<li>方法1、<code>top</code> 按<code>f</code>键输入<code>p</code>回车即可</li>
+<li>方法2、<code>grep --color -i swap /proc/pid/status</code></li>
+</ul>
+
+
+<p><strong>4</strong>、RHEL常用Yum源</p>
+
+<ul>
+<li>源1、<a href="http://fedoraproject.org/wiki/EPEL/zh-cn">epel企业版Linux附加软件包</a>
+
+<ul>
+<li><strong>rhel6 x86_64</strong> <code>rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</code></li>
+<li><strong>rhel5 x86_64</strong> <code>rpm -ivh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm</code></li>
+</ul>
+</li>
+<li>源2、<a href="http://repoforge.org/use/">RepoForge </a> CentOS社区认为是最安全也是最稳定的一个软件仓库
+
+<ul>
+<li><strong>rhel6 x86_64</strong> <code>rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</code></li>
+<li><strong>rhel5 x86_64</strong> <code>rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el5.rf.x86_64.rpm</code></li>
+</ul>
+</li>
+<li>源3、<a href="http://mirrors.163.com/.help/centos.html">网易163 mirrors</a> <a href="http://mirrors.sohu.com/help/centos.html">搜狐 mirrors</a></li>
 </ul>
 
 

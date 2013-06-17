@@ -5,11 +5,19 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>用Markdown写日志 - Linux SA Notes By 枯木</title>
+  <title>Linux Tips - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="始末 大概是2011-05开始创建自己的第一个博客 枯木新浪博客，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。 在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子， &hellip;">
+  <meta name="description" content="Linux Tips 1、给Linux man一点颜色看看 在~/.bashrc或者~/.bash_profile中加入如下内容,source即可生效 1
+2
+3
+4
+5
+6
+7
+export LESS_TERMCAP_mb=$&#39;\E[01;31m&#39;
+export &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +28,7 @@
   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
   
   
-  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/04/05/hello">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/tips">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -80,136 +88,100 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">用Markdown写日志</h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
-        
-         | <a href="#disqus_thread">Comments</a>
-        
-      </p>
+    <h1 class="entry-title">Linux Tips</h1>
     
   </header>
+  
+  <p><strong>1</strong>、给<strong>Linux man</strong>一点颜色看看</p>
+
+<p>在<strong>~/.bashrc</strong>或者<strong>~/.bash_profile</strong>中加入如下内容,<strong>source</strong>即可生效</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_mb</span><span class="o">=</span><span class="s1">$&#39;\E[01;31m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_md</span><span class="o">=</span><span class="s1">$&#39;\E[01;31m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_me</span><span class="o">=</span><span class="s1">$&#39;\E[0m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_se</span><span class="o">=</span><span class="s1">$&#39;\E[0m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_so</span><span class="o">=</span><span class="s1">$&#39;\E[01;44;33m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_ue</span><span class="o">=</span><span class="s1">$&#39;\E[0m&#39;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LESS_TERMCAP_us</span><span class="o">=</span><span class="s1">$&#39;\E[01;32m&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
-<div class="entry-content"><h3>始末</h3>
-
-<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
-
-<!--more-->
-
-
-<p>在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子，也曾多次迁居。个人突然觉得孟母三迁和我搬博客的目的还是很类似了，2年内我经历了新浪博客&#8211;网易博客&#8211;51CTO&#8211;CSDN。基本上国内主流的博客我都体验过，后来还是决定在Github长久居住。阮一峰在 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog&#8212;-github Pages和Jekyll入门</a> 一文中描述说喜欢写Blog的人，会经历三个阶段：</p>
-
-<pre><code>第一阶段，刚接触Blog，觉得很新鲜，试着选择一个免费空间来写。  
-第二阶段，发现免费空间限制太多，就自己购买域名和空间，搭建独立博客。
-第三阶段，觉得独立博客的管理太麻烦，最好在保留控制权的前提下，让别人来管，自己只负责写文章。
-</code></pre>
-
-<p>以上的三个阶段我只经历过第一和第三个阶段，很多次换博客主要还是限制的问题，现在在Github相对自由了，当然这是在不会被墙的情况下。对于国内的几个博客还是简要介绍下我个人的体验:</p>
+<p><strong>2</strong>、通过文件添加<strong>Swap</strong>分区</p>
 
 <ul>
-<li>新浪博客</li>
+<li>a、生成实际需求大小的文件
+
+<ul>
+<li><code>dd if=/dev/zero of=/swapfile bs=1024 count=65536</code></li>
+</ul>
+</li>
+<li>b、把生成的文件格式化成swap
+
+<ul>
+<li><code>mkswap /swapfile</code></li>
+</ul>
+</li>
+<li>c、使swap文件生效，但是自动重启之后就会失效
+
+<ul>
+<li><code>swapon /swapfile</code></li>
+</ul>
+</li>
+<li>d、加入以下内容到/etc/fstab配置文件中使重启swap自动生效
+
+<ul>
+<li><code>/swapfile swap swap defaults 0 0</code></li>
+</ul>
+</li>
+<li>e、关闭
+
+<ul>
+<li><code>swapoff /swapfile</code>并删除<code>/etc/fstab</code>文件中内容</li>
+</ul>
+</li>
 </ul>
 
 
-<p>先说说新浪博客吧，之前因为比较关注韩寒，所以对于新浪博客还是很熟悉的，所以我第一站选择了新浪博客。怎么说呢，关于新浪博客只能说仅仅是一个抒情的地方，对于技术来说就很不适合了，不过自己还是坚持了很长一段时间，算是一种情愫吧。</p>
+<p><strong>3</strong>、查看某个进程占用<strong>Swap</strong>大小</p>
 
 <ul>
-<li>网易博客</li>
+<li>方法1、<code>top</code> 按<code>f</code>键输入<code>p</code>回车即可</li>
+<li>方法2、<code>grep --color -i swap /proc/pid/status</code></li>
 </ul>
 
 
-<p>对于网易，基本上和新浪是同一类型的，不适合写技术博客。但是网易的很多用户体验做的感觉还是比新浪好很多，无奈还是需要搬家。</p>
+<p><strong>4</strong>、RHEL常用Yum源</p>
 
 <ul>
-<li>51CTO</li>
+<li>源1、<a href="http://fedoraproject.org/wiki/EPEL/zh-cn">epel企业版Linux附加软件包</a>
+
+<ul>
+<li><strong>rhel6 x86_64</strong> <code>rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</code></li>
+<li><strong>rhel5 x86_64</strong> <code>rpm -ivh http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm</code></li>
+</ul>
+</li>
+<li>源2、<a href="http://repoforge.org/use/">RepoForge </a> CentOS社区认为是最安全也是最稳定的一个软件仓库
+
+<ul>
+<li><strong>rhel6 x86_64</strong> <code>rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</code></li>
+<li><strong>rhel5 x86_64</strong> <code>rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el5.rf.x86_64.rpm</code></li>
+</ul>
+</li>
+<li>源3、<a href="http://mirrors.163.com/.help/centos.html">网易163 mirrors</a> <a href="http://mirrors.sohu.com/help/centos.html">搜狐 mirrors</a></li>
 </ul>
 
 
-<p>对于从事Linux运维相关技术的技术人来说，还是一个很不错的技术交流平台。特别对于新手来说，还是能够学到很多东西的。但是51CTO后台博客的体验相对来说还是差很多的，博客界面的设计和后台管理个人感觉也较为简陋。不过，有一点是要非常肯定的，51CTO的小编都很热情，相对CSDN会好很多。</p>
-
-<ul>
-<li>CSDN</li>
-</ul>
-
-
-<p>CSDN可以说是一个大杂烩吧，融合了各种类型的技术人，博客界面设计和后台管理看起来很极简，很舒服，博客体验相对较好。所以在CSDN上我坚持了很长一段时间，但是后来CSDN的恶劣行为，让我还是决定离开了，上面的博客只能有时间慢慢搬过来了。</p>
-
-<p>基本上国内博客的体验就这么多了吧，如果作为一个技术人，我还是建议在Github上搭建Octopress，利用Markdown书写技术Blog。因为这里有无限的自由度，最关键的是Github还会帮你管理，你只需要想和写。关于Github+Octopress的优点我就不多说了，Google、百度很多解释，我只想说 <em>像黑客一样写作</em> ，这就足够了。如果想做，那么 <em>Just do it！</em>。</p>
-
-<p>文章附：
-<a href="http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html">Blogging Like a Hacker</a></p>
-
-<p>&#8211;EOF&#8211;</p>
-</div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  
-  
-  
-  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
-  
-</div>
-
-    
-    <p class="meta">
-      
-      
-        <a class="basic-alignment right" href="/blog/2013/04/06/octopress-plus-github/" title="Next Post: Octopress Windows环境搭建">Octopress Windows环境搭建 &raquo;</a>
-      
-    </p>
-  </footer>
 </article>
 
   <section>
@@ -312,8 +284,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/04/05/hello/';
-        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/04/05/hello/';
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/tips/index.html';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/tips/index.html';
         var disqus_script = 'embed.js';
       
     (function () {

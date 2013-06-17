@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>用Markdown写日志 - Linux SA Notes By 枯木</title>
+  <title>dmidecode - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="始末 大概是2011-05开始创建自己的第一个博客 枯木新浪博客，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。 在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子， &hellip;">
-  
+  <meta name="description" content="在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明， &hellip;">
+  <meta name="keywords" content="dmidecode, Linux">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -20,7 +20,7 @@
   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
   
   
-  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/04/05/hello">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/04/27/dmidecode">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -84,7 +84,7 @@
   
   <header>
     
-      <h1 class="entry-title">用Markdown写日志</h1>
+      <h1 class="entry-title">Dmidecode</h1>
     
     
       <p class="meta">
@@ -100,7 +100,7 @@
   
 
 
-<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
+<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -109,54 +109,154 @@
   </header>
 
 
-<div class="entry-content"><h3>始末</h3>
-
-<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
+<div class="entry-content"><p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
 
 <!--more-->
 
 
-<p>在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子，也曾多次迁居。个人突然觉得孟母三迁和我搬博客的目的还是很类似了，2年内我经历了新浪博客&#8211;网易博客&#8211;51CTO&#8211;CSDN。基本上国内主流的博客我都体验过，后来还是决定在Github长久居住。阮一峰在 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog&#8212;-github Pages和Jekyll入门</a> 一文中描述说喜欢写Blog的人，会经历三个阶段：</p>
+<p><code>dmidecode</code>的作用则是将DMI表中的信息用人可以读懂的方式显示出来。</p>
 
-<pre><code>第一阶段，刚接触Blog，觉得很新鲜，试着选择一个免费空间来写。  
-第二阶段，发现免费空间限制太多，就自己购买域名和空间，搭建独立博客。
-第三阶段，觉得独立博客的管理太麻烦，最好在保留控制权的前提下，让别人来管，自己只负责写文章。
+<p>最简单的使用方法，它将显示dmidecode所能获取到的全部dmi信息：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>但是显示所有的信息不便于我们获取想要获取的信息，那么就需要结合其它选项获取信息</p>
+
+<p><strong>常用参数:</strong></p>
+
+<ul>
+<li>-q 或 &#8211;quiet
+
+<ul>
+<li>不显示太多信息，比如某条数据是从哪里读来的等等，为了得到简洁的信息，此条很有用</li>
+</ul>
+</li>
+<li>-t 或 &#8211;type TYPE
+
+<ul>
+<li>指定要显示类型的信息</li>
+</ul>
+</li>
+<li>-s 或 &#8211;string KEYWORD
+
+<ul>
+<li>显示特定的关键字</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>-t或&#8211;type后的文本参数</strong></p>
+
+<pre><code>bios        bios的各项信息
+system      系统信息，在我的笔记本上可以看到版本、型号、序号等信息。
+baseboard   主板信息
+chassis     底板信息
+processor   CPU的详细信息
+memory      内存信息，包括目前插的内存条数及大小，支持的单条最大内存和总内存大小等
+cache       缓存信息
+connector   PCI设备信息
+slot        插槽信息 
 </code></pre>
 
-<p>以上的三个阶段我只经历过第一和第三个阶段，很多次换博客主要还是限制的问题，现在在Github相对自由了，当然这是在不会被墙的情况下。对于国内的几个博客还是简要介绍下我个人的体验:</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -t </span>
+</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;t&#39;</span>
+</span><span class='line'>Type number or keyword expected
+</span><span class='line'>Valid <span class="nb">type </span>keywords are:
+</span><span class='line'>  bios
+</span><span class='line'>  system
+</span><span class='line'>  baseboard
+</span><span class='line'>  chassis
+</span><span class='line'>  processor
+</span><span class='line'>  memory
+</span><span class='line'>  cache
+</span><span class='line'>  connector
+</span><span class='line'>  slot
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>dmidecode -s</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -s</span>
+</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;s&#39;</span>
+</span><span class='line'>String keyword expected
+</span><span class='line'>Valid string keywords are:
+</span><span class='line'>  bios-vendor
+</span><span class='line'>  bios-version
+</span><span class='line'>  bios-release-date
+</span><span class='line'>  system-manufacturer
+</span><span class='line'>  system-product-name
+</span><span class='line'>  system-version
+</span><span class='line'>  system-serial-number
+</span><span class='line'>  system-uuid
+</span><span class='line'>  baseboard-manufacturer
+</span><span class='line'>  baseboard-product-name
+</span><span class='line'>  baseboard-version
+</span><span class='line'>  baseboard-serial-number
+</span><span class='line'>  baseboard-asset-tag
+</span><span class='line'>  chassis-manufacturer
+</span><span class='line'>  chassis-type
+</span><span class='line'>  chassis-version
+</span><span class='line'>  chassis-serial-number
+</span><span class='line'>  chassis-asset-tag
+</span><span class='line'>  processor-family
+</span><span class='line'>  processor-manufacturer
+</span><span class='line'>  processor-version
+</span><span class='line'>  processor-frequency
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>常用命令举例</strong></p>
 
 <ul>
-<li>新浪博客</li>
+<li>1、查看服务器型号：dmidecode | grep &#8216;Product Name&#8217;</li>
+<li>2、查看系统序列号：dmidecode -s system-serial-number</li>
+<li>3、查看内存信息：dmidecode -t memory</li>
+<li>4、查看OEM信息：dmidecode -t 11</li>
 </ul>
 
-
-<p>先说说新浪博客吧，之前因为比较关注韩寒，所以对于新浪博客还是很熟悉的，所以我第一站选择了新浪博客。怎么说呢，关于新浪博客只能说仅仅是一个抒情的地方，对于技术来说就很不适合了，不过自己还是坚持了很长一段时间，算是一种情愫吧。</p>
-
-<ul>
-<li>网易博客</li>
-</ul>
-
-
-<p>对于网易，基本上和新浪是同一类型的，不适合写技术博客。但是网易的很多用户体验做的感觉还是比新浪好很多，无奈还是需要搬家。</p>
-
-<ul>
-<li>51CTO</li>
-</ul>
-
-
-<p>对于从事Linux运维相关技术的技术人来说，还是一个很不错的技术交流平台。特别对于新手来说，还是能够学到很多东西的。但是51CTO后台博客的体验相对来说还是差很多的，博客界面的设计和后台管理个人感觉也较为简陋。不过，有一点是要非常肯定的，51CTO的小编都很热情，相对CSDN会好很多。</p>
-
-<ul>
-<li>CSDN</li>
-</ul>
-
-
-<p>CSDN可以说是一个大杂烩吧，融合了各种类型的技术人，博客界面设计和后台管理看起来很极简，很舒服，博客体验相对较好。所以在CSDN上我坚持了很长一段时间，但是后来CSDN的恶劣行为，让我还是决定离开了，上面的博客只能有时间慢慢搬过来了。</p>
-
-<p>基本上国内博客的体验就这么多了吧，如果作为一个技术人，我还是建议在Github上搭建Octopress，利用Markdown书写技术Blog。因为这里有无限的自由度，最关键的是Github还会帮你管理，你只需要想和写。关于Github+Octopress的优点我就不多说了，Google、百度很多解释，我只想说 <em>像黑客一样写作</em> ，这就足够了。如果想做，那么 <em>Just do it！</em>。</p>
-
-<p>文章附：
-<a href="http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html">Blogging Like a Hacker</a></p>
 
 <p>&#8211;EOF&#8211;</p>
 </div>
@@ -181,12 +281,12 @@
   
 
 
-<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
+<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/octopress/'>Octopress</a>
+    <a class='category' href='/blog/categories/yun-wei-li-qi/'>运维利器</a>
   
 </span>
 
@@ -205,8 +305,10 @@
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2013/04/26/sed-2/" title="Previous Post: 1-2、Sed Scripting Flow[译]">&laquo; 1-2、Sed Scripting Flow[译]</a>
       
-        <a class="basic-alignment right" href="/blog/2013/04/06/octopress-plus-github/" title="Next Post: Octopress Windows环境搭建">Octopress Windows环境搭建 &raquo;</a>
+      
+        <a class="basic-alignment right" href="/blog/2013/04/28/sed-3/" title="Next Post: 1-3、Print Pattern Space[译]">1-3、Print Pattern Space[译] &raquo;</a>
       
     </p>
   </footer>
@@ -312,8 +414,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/04/05/hello/';
-        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/04/05/hello/';
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/';
         var disqus_script = 'embed.js';
       
     (function () {

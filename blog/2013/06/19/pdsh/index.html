@@ -5,13 +5,31 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>1-4、Delete Lines[译] - Linux SA Notes By 枯木</title>
+  <title>pdsh使用方法 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="使用sed d命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，d命令也不能修改原始文件的内容。 默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。 1
-sed &#39;d &hellip;">
-  <meta name="keywords" content="Linux, sed">
+  <meta name="description" content="PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，点击下载 pdsh基本用法 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20 &hellip;">
+  <meta name="keywords" content="Linux,pdsh">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -21,7 +39,7 @@ sed &#39;d &hellip;">
   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
   
   
-  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/04/29/sed-4">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/06/19/pdsh">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -85,7 +103,7 @@ sed &#39;d &hellip;">
   
   <header>
     
-      <h1 class="entry-title">1-4、Delete Lines[译]</h1>
+      <h1 class="entry-title">Pdsh使用方法</h1>
     
     
       <p class="meta">
@@ -101,7 +119,7 @@ sed &#39;d &hellip;">
   
 
 
-<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
+<time datetime="2013-06-19T15:26:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -110,154 +128,173 @@ sed &#39;d &hellip;">
   </header>
 
 
-<div class="entry-content"><p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
+<div class="entry-content"><p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
 
 <!--more-->
 
 
-<p>默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指定删除的地址范围是非常有用的。接下来有很多类似的例子：</p>
-
-<p><strong>仅删除第二行:</strong></p>
+<h2>pdsh基本用法</h2>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>... ...
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> pdsh -h
+</span><span class='line'>Usage: pdsh <span class="o">[</span>-options<span class="o">]</span> <span class="nb">command</span> ...
+</span><span class='line'>-S                <span class="k">return </span>largest of remote <span class="nb">command </span><span class="k">return </span>values
+</span><span class='line'>-h                output usage menu and quit              获取帮助
+</span><span class='line'>-V                output version information and quit     查看版本
+</span><span class='line'>-q                list the option settings and quit           列出pdsh执行的一些信息
+</span><span class='line'>-b                disable ^C status feature <span class="o">(</span>batch mode<span class="o">)</span>
+</span><span class='line'>-d                <span class="nb">enable </span>extra debug information from ^C status
+</span><span class='line'>-l user           execute remote commands as user         指定远程使用的用户
+</span><span class='line'>-t seconds        <span class="nb">set </span>connect timeout <span class="o">(</span>default is 10 sec<span class="o">)</span>   指定超时时间
+</span><span class='line'>-u seconds        <span class="nb">set command </span>timeout <span class="o">(</span>no default<span class="o">)</span>          类似-t
+</span><span class='line'>-f n              use fanout of n nodes                       设置同时连接的目标主机的个数
+</span><span class='line'>-w host,host,...  <span class="nb">set </span>target node list on <span class="nb">command </span>line        指定主机，host可以是主机名也可以是ip
+</span><span class='line'>-x host,host,...  <span class="nb">set </span>node exclusion list on <span class="nb">command </span>line 排除某些或者某个主机
+</span><span class='line'>-R name           <span class="nb">set </span>rcmd module to name                 指定rcmd的模块名，默认使用ssh
+</span><span class='line'>-N                disable hostname: labels on output lines    输出不显示主机名或者ip
+</span><span class='line'>-L                list info on all loaded modules and <span class="nb">exit</span>    列出pdsh加载的模块信息
+</span><span class='line'>-a                target all nodes                            指定所有的节点
+</span><span class='line'>-g groupname      target hosts in dsh group <span class="s2">&quot;groupname&quot;</span>     指定dsh组名
+</span><span class='line'>-X groupname      exclude hosts in dsh group <span class="s2">&quot;groupname&quot;</span>    排除组，一般和-a连用
+</span><span class='line'>available rcmd modules: <span class="nb">exec</span>,xcpu,ssh <span class="o">(</span>default: ssh<span class="o">)</span>        可用的执行命令模块，默认为ssh
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除1到4行:</strong></p>
+<h2>使用实例</h2>
+
+<p><strong>单个主机测试</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1,4 d&#39;</span> employee.txt
-</span><span class='line'>105,Jane Miller,Sales Manager
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231 -l root uptime
+</span><span class='line'>192.168.0.231:  16:16:11 up 32 days, 22:14, ? users,  load average: 0.10, 0.14, 0.16
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除行2到最后一行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>仅删除奇数行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1~2 d&#39;</span> employee.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配词“Manager”的行：</strong></p>
+<p><strong>多个主机测试</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Manager/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -l root uptime
+</span><span class='line'>192.168.0.233:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.13, 0.12, 0.10
+</span><span class='line'>192.168.0.232:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.45, 0.34, 0.27
+</span><span class='line'>192.168.0.231:  16:17:06 up 32 days, 22:15, ? users,  load average: 0.09, 0.13, 0.15
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除匹配有”Jason”的行到第四行：</strong></p>
+<p><strong>逗号分隔主机</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,4 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231,192.168.0.234 -l root uptime
+</span><span class='line'>192.168.0.234:  16:19:44 up 32 days, 22:19, ? users,  load average: 0.17, 0.21, 0.20
+</span><span class='line'>192.168.0.231:  16:19:44 up 32 days, 22:17, ? users,  load average: 0.29, 0.18, 0.16
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>注</strong>：如果这儿没有匹配“Jason“的行在1到4行中，这条命令只删除第四行后匹配”Jason“的行</p>
-
-<p><strong>删除匹配“Raj“的行到最后一行:</strong></p>
+<p><strong>-x排除某个主机</strong></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -x 192.168.0.232 -l root uptime
+</span><span class='line'>192.168.0.233:  16:18:24 up 32 days, 22:19, ? users,  load average: 0.11, 0.12, 0.09
+</span><span class='line'>192.168.0.231:  16:18:25 up 32 days, 22:16, ? users,  load average: 0.11, 0.13, 0.15
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除匹配”Raj”的行到匹配“Jane“的行：</strong></p>
+<p><strong>主机组</strong><br/>
+对于-g组，把对应的主机写入到<code>/etc/dsh/group/</code>或<code>~/.dsh/group/</code>目录下的文件中即可，文件名就是对应组名</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,/Jane/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat ~/.dsh/group/dsh-test
+</span><span class='line'>192.168.0.231
+</span><span class='line'>192.168.0.232
+</span><span class='line'>192.168.0.233
+</span><span class='line'>192.168.0.234
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除匹配”Jason”的行和其之后的两行：</strong></p>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,+2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root uptime
+</span><span class='line'>192.168.0.232:  16:21:38 up 32 days, 22:22, ? users,  load average: 0.01, 0.15, 0.21
+</span><span class='line'>192.168.0.231:  16:21:38 up 32 days, 22:19, ? users,  load average: 0.17, 0.16, 0.16
+</span><span class='line'>192.168.0.234:  16:21:39 up 32 days, 22:21, ? users,  load average: 0.15, 0.19, 0.19
+</span><span class='line'>192.168.0.233:  16:21:40 up 32 days, 22:22, ? users,  load average: 0.15, 0.15, 0.10
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>有用的删除实例</h2>
-
-<p>下面的实例在日常操作中是非常有用的</p>
-
-<p><strong>删除所有的空行</strong></p>
+<p><strong>dshbak格式化输出</strong><br/>
+pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出多时会比较混乱，可以采用<code>dshbak</code>做一些格式化，让输出更清晰。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^$/ d&#39;</span> employee.txt
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span>    <span class="c">#查看哪些主机时间不一样，主机一多，可读性不强</span>
+</span><span class='line'>192.168.0.232: Wed Jun 19 16:24:40 CST 2013
+</span><span class='line'>192.168.0.231: Wed Jun 19 16:24:40 CST 2013
+</span><span class='line'>192.168.0.234: Wed Jun 19 16:24:40 CST 2013
+</span><span class='line'>192.168.0.233: Wed Jun 19 16:24:40 CST 2013
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>grep实现过滤空行：</p>
+
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^$&#39;</span> employee.txt
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span> | dshbak -c  <span class="c">#使用dshbak之后可读性变得好了很多</span>
+</span><span class='line'>----------------
+</span><span class='line'>192.168.0.<span class="o">[</span>231-232,234<span class="o">]</span>
+</span><span class='line'>----------------
+</span><span class='line'>Wed Jun 19 16:24:18 CST 2013
+</span><span class='line'>----------------
+</span><span class='line'>192.168.0.233
+</span><span class='line'>----------------
+</span><span class='line'>Wed Jun 19 16:24:19 CST 2013
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p><strong>删除所有注释的行(假设注释行以#号开头)</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^#/ d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grep实现过滤注释行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^#&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：当你使用多个sed命令时，此时sed遇到&#8217;d&#8217;命令，整个匹配的匹配行将被删除，并且之后的命令对于删除的行将不会执行。</p>
 
 <p>&#8211;EOF&#8211;</p>
 </div>
@@ -282,12 +319,12 @@ sed &#39;d &hellip;">
   
 
 
-<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
+<time datetime="2013-06-19T15:26:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sed-slash-awk/'>SED/AWK</a>
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
   
 </span>
 
@@ -306,14 +343,18 @@ sed &#39;d &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/04/28/sed-3/" title="Previous Post: 1-3、Print Pattern Space[译]">&laquo; 1-3、Print Pattern Space[译]</a>
+        <a class="basic-alignment left" href="/blog/2013/06/07/top-hacks/" title="Previous Post: top实践小技巧">&laquo; top实践小技巧</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/05/02/sed-5/" title="Next Post: 1-5. Write Pattern Space to File[译]">1-5. Write Pattern Space to File[译] &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -408,7 +449,10 @@ sed &#39;d &hellip;">
       var disqus_shortname = 'kumusanotes';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/06/19/pdsh/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/06/19/pdsh/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

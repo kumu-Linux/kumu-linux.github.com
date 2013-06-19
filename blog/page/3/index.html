@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明， &hellip;">
+  <meta name="description" content="使用sed的p命令，你可以打印当前模式空间中的行。 你也许会好奇为什么需要p命令，默认的sed会在执行完命令后输出模式空间的缓存。 其实这是有原因的，等会你将看到，这个命令将允许你专门控制打印到标准输出。通常来说，你应该使用-n选项来抑制作为标准sed流一部分的默认输出。否则，当执行p命令的时候， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,53 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/04/28/sed-3/">1-3、Print Pattern Space[译]</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-28T00:25:00+08:00" pubdate data-updated="true">Apr 28<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/28/sed-3/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用sed的p命令，你可以打印当前模式空间中的行。</p>
+
+<p>你也许会好奇为什么需要p命令，默认的sed会在执行完命令后输出模式空间的缓存。</p>
+
+<p>其实这是有原因的，等会你将看到，这个命令将允许你专门控制打印到标准输出。通常来说，你应该使用-n选项来抑制作为标准sed流一部分的默认输出。否则，当执行p命令的时候，该行会输出两次。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/28/sed-3/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -350,51 +397,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/16/snmpd/">RHEL6修改snmpd日志输出</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-16T10:52:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/16/snmpd/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>需求和现象</h3>
-
-<p>默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/16/snmpd/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -416,6 +418,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/19/pdsh/">pdsh使用方法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/07/top-hacks/">top实践小技巧</a>
       </li>
     
@@ -435,15 +441,11 @@
         <a href="/blog/2013/05/21/named-chroot/">DNS chroot rsyslog配置</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/05/20/ntp/">NTP服务</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (7)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (5)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (8)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (5)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-19T16:32:30+08:00</updated>
+  <updated>2013-06-19T16:39:50+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -79,6 +79,7 @@
 <li><code>k</code>:输入k之后可以kill掉指定的进程</li>
 <li><code>A</code>:分类显示各种系统资源高的进程。可用于快速识别系统上的性能要求极高的任务，<strong>推荐使用</strong></li>
 <li><code>h</code>:获取top的命令帮助</li>
+<li><code>H</code>:显示线程，默认只显示进程</li>
 <li><code>W</code>[大写]:将当前设置写入~/.toprc文件中。这是写top配置文件的推荐方法</li>
 </ul>
 
@@ -96,7 +97,7 @@
     <id>http://kumu-Linux.github.com/blog/2013/06/04/iproute</id>
     <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
 
-<p>iproute是用于linux下网络配置工具，该工具包还有以下组件</p>
+<p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
 
 <!--more-->
 

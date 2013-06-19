@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: SED/AWK | Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.com/blog/categories/sed-slash-awk/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.com/"/>
+  <updated>2013-06-19T17:35:31+08:00</updated>
+  <id>http://kumu-Linux.github.com/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[2-2、Global Flag (g flag)[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/05/sed-7/"/>
+    <updated>2013-05-05T09:15:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/05/sed-7</id>
+    <content type="html"><![CDATA[<p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
+
+<!--more-->
+
+
+<p><strong>替换每行的第一个<code>a</code>变为<code>A</code></strong>:
+<code>bash
+$ sed 's/a/A/' employee.txt
+101,John Doe,CEO
+102,JAson Smith,IT Manager
+103,RAj Reddy,Sysadmin
+104,AnAnd Ram,Developer
+105,JAne Miller,Sales Manager
+</code></p>
+
+<p><strong>替换每行所有的<code>a</code>变为<code>A</code></strong>:
+<code>bash
+$ sed 's/a/A/g' employee.txt
+101,John Doe,CEO
+102,JAson Smith,IT MAnAger
+103,RAj Reddy,SysAdmin
+104,AnAnd RAm,Developer
+105,JAne Miller,SAles MAnAger
+</code></p>
+
+<p><strong>注</strong>:因为没有指定地址范围，所以以上例子都是针对文件所有行的</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[2-1、Sed Substitute Command[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/04/sed-6/"/>
+    <updated>2013-05-04T23:29:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/04/sed-6</id>
+    <content type="html"><![CDATA[<h2>Sed 替换命令语法</h2>
+
+<p>Sed替换命令语法如下：
+<code>bash
+sed '[address-range|pattern-range] s/originalstring/
+replacement-string/[substitute-flags]' inputfile
+</code></p>
+
+<!--more-->
+
+
+<p>在上面的sed语法中:</p>
+
+<ul>
+<li>地址范围或者模式范围是可选的，如果你没有指定任何一个，那么sed会在所有的行中执行替换命令</li>
+<li><code>s</code>--告诉sed执行替换命令</li>
+<li>原始字符串--这个字符串将会在输入文件中被搜索。原始字符串也可以是一个正则表达式</li>
+<li>替换字符串--Sed将会通过这个字符串替换原始字符串</li>
+</ul>
+
+
+<p><strong>注</strong>:记住源文件不改变;替换是在模式空间的buffer中完成并且打印输出。</p>
+
+<h2>以下是几个简单的sed替代的例子</h2>
+
+<p><strong>更换所有出现的Director:</strong>
+<code>bash
+$ sed 's/Manager/Director/' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Director
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Director
+</code></p>
+
+<p><strong>只替换行中含有关键词'Sales'行中的Manager为Director:</strong>
+<code>bash
+$ sed '/Sales/s/Manager/Director/' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Director
+</code>
+<strong>注</strong>:使用地址范围造成只替换了一个，而之前例子显示是替换两个</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-5. Write Pattern Space to File[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/02/sed-5/"/>
+    <updated>2013-05-02T00:06:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/02/sed-5</id>
+    <content type="html"><![CDATA[<p>使用sed <code>w</code>命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。</p>
+
+<!--more-->
+
+
+<p>接下来的是一些例子。</p>
+
+<p><strong>把employee.txt文件内容写入到output.txt（并且打印到屏幕）:</strong>
+<code>bash
+$ sed 'w output.txt' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+… …
+$ cat output.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+… …
+</code></p>
+
+<p><strong>把employee.txt文件内容写入到output.txt，但是不打印到屏幕：</strong>
+<code>bash
+$ sed -n 'w output.txt' employee.txt
+$ cat output.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+… …
+</code></p>
+
+<p><strong>只写入第二行:</strong>
+<code>bash
+$ sed -n '2 w output.txt' employee.txt
+$ cat output.txt
+102,Jason Smith,IT Manager
+</code></p>
+
+<p><strong>写入1到4行:</strong>
+<code>bash
+$ sed -n '1,4 w output.txt' employee.txt
+$ cat output.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+… …
+</code></p>
+
+<p><strong>写入第二行到最后一行：</strong>
+<code>bash
+$ sed -n '2,$ w output.txt' employee.txt
+$ cat output.txt
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+… …
+</code></p>
+
+<p><strong>只写入奇数行：</strong>
+<code>bash
+$ sed -n '1~2 w output.txt' employee.txt
+$ cat output.txt
+101,John Doe,CEO
+103,Raj Reddy,Sysadmin
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>写入匹配词”Jane”的行：</strong>
+<code>bash
+$ sed -n '/Jane/ w output.txt' employee.txt
+$ cat output.txt
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>从第一行开始写入匹配”Jason”的行到第四行：</strong>
+<code>bash
+$ sed -n '/Jason/,4 w output.txt' employee.txt
+$ cat output.txt
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+</code>
+<strong>注</strong>：如果1到4行没有匹配到”Jason”，这条命令只写入第四行后匹配”Jason”的行</p>
+
+<p><strong>写入行从第一行开始匹配”Raj”的行到结束行：</strong>
+<code>bash
+$ sed -n '/Raj/,$ w output.txt' employee.txt
+$ cat output.txt
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>写入匹配”Raj”行开始直到匹配到“Jane”行：</strong>
+<code>bash
+$ sed -n '/Raj/,/Jane/ w output.txt' employee.txt
+$ cat output.txt
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>写入匹配“Jason”的行和其之后的2行：</strong>
+<code>bash
+$ sed -n '/Jason/,+2 w output.txt' employee.txt
+$ cat output.txt
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+</code></p>
+
+<p><strong>注</strong>：你可能不经常使用w命令，大多数人使用UNIX输出重定向，来保存sed输出到一个文件，如: sed ‘p’ exployee.txt > output.txt</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-4、Delete Lines[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/29/sed-4/"/>
+    <updated>2013-04-29T23:29:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/29/sed-4</id>
+    <content type="html"><![CDATA[<p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
+
+<!--more-->
+
+
+<p>默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。
+<code>bash
+sed 'd' employee.txt
+</code></p>
+
+<p>指定删除的地址范围是非常有用的。接下来有很多类似的例子：</p>
+
+<p><strong>仅删除第二行:</strong>
+<code>bash
+$ sed '2 d' employee.txt
+101,John Doe,CEO
+103,Raj Reddy,Sysadmin
+... ...
+</code></p>
+
+<p><strong>删除1到4行:</strong>
+<code>bash
+$ sed '1,4 d' employee.txt
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>删除行2到最后一行:</strong>
+<code>bash
+$ sed '2,$ d' employee.txt
+101,John Doe,CEO
+</code></p>
+
+<p><strong>仅删除奇数行:</strong>
+<code>bash
+$ sed '1~2 d' employee.txt
+102,Jason Smith,IT Manager
+104,Anand Ram,Developer
+</code></p>
+
+<p><strong>删除匹配词“Manager”的行：</strong>
+<code>bash
+$ sed '/Manager/ d' employee.txt
+101,John Doe,CEO
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+</code></p>
+
+<p><strong>删除匹配有”Jason”的行到第四行：</strong>
+<code>bash
+$ sed '/Jason/,4 d' employee.txt
+101,John Doe,CEO
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>注</strong>：如果这儿没有匹配“Jason“的行在1到4行中，这条命令只删除第四行后匹配”Jason“的行</p>
+
+<p><strong>删除匹配“Raj“的行到最后一行:</strong>
+<code>bash
+$ sed '/Raj/,$ d' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+</code></p>
+
+<p><strong>删除匹配”Raj”的行到匹配“Jane“的行：</strong>
+<code>bash
+$ sed '/Raj/,/Jane/ d' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+</code></p>
+
+<p><strong>删除匹配”Jason”的行和其之后的两行：</strong>
+<code>bash
+$ sed '/Jason/,+2 d' employee.txt
+101,John Doe,CEO
+105,Jane Miller,Sales Manager
+</code></p>
+
+<h2>有用的删除实例</h2>
+
+<p>下面的实例在日常操作中是非常有用的</p>
+
+<p><strong>删除所有的空行</strong>
+<code>bash
+sed '/^$/ d' employee.txt
+</code></p>
+
+<p>grep实现过滤空行：
+<code>bash
+grep -v '^$' employee.txt
+</code></p>
+
+<p><strong>删除所有注释的行(假设注释行以#号开头)</strong>
+<code>bash
+sed '/^#/ d' employee.txt
+</code></p>
+
+<p>grep实现过滤注释行：
+<code>bash
+grep -v '^#' employee.txt
+</code></p>
+
+<p><strong>注</strong>：当你使用多个sed命令时，此时sed遇到'd'命令，整个匹配的匹配行将被删除，并且之后的命令对于删除的行将不会执行。</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[1-3、Print Pattern Space[译]]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/28/sed-3/"/>
+    <updated>2013-04-28T00:25:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/28/sed-3</id>
+    <content type="html"><![CDATA[<p>使用sed的p命令，你可以打印当前模式空间中的行。</p>
+
+<p>你也许会好奇为什么需要p命令，默认的sed会在执行完命令后输出模式空间的缓存。</p>
+
+<p>其实这是有原因的，等会你将看到，这个命令将允许你专门控制打印到标准输出。通常来说，你应该使用-n选项来抑制作为标准sed流一部分的默认输出。否则，当执行p命令的时候，该行会输出两次。</p>
+
+<!--more-->
+
+
+<p>接下来的例子employee.txt文件中的行将输出两次：
+<code>bash
+$ sed 'p' employee.txt
+101,John Doe,CEO
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+102,Jason Smith,IT Manager
+… …
+</code></p>
+
+<p>打印每行一次(作用和’cat expolyee.txt’相同)：
+<code>bash
+$ sed -n 'p' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+</code></p>
+
+<h2>特定的地址范围</h2>
+
+<p>如果你在使用sed命令前不指定地址范围，那么默认会匹配所有的行，接下来的一些例子是在使用sed命令前指定一个范围</p>
+
+<p><strong>只打印第二行</strong>
+<code>bash
+$ sed -n '2 p' employee.txt
+102,Jason Smith,IT Manager
+</code></p>
+
+<p><strong>打印1到2行</strong>
+<code>bash
+$ sed -n '1,2 p' employee.txt
+101,John Doe,CEO
+102,Jason Smith,IT Manager
+</code></p>
+
+<p><strong>打印第2行到结尾($表示到最后一行)</strong>
+<code>bash
+$ sed -n '2,$ p' employee.txt
+</code></p>
+
+<h2>修改地址范围</h2>
+
+<p>你可以通过逗号、+和~修改地址范围。</p>
+
+<ul>
+<li>,在上面的例子中，我们看到了使用逗号(,)修改地址范围规范的一部分。它的意义很明了：n,m显示n到m的值。</li>
+<li>+号可以和逗号结合，指定的是行数而不是绝对的行号。例如，n,+m意味着从n开始往后m行。</li>
+<li>~号也可用于修好地址范围。它的特殊的意思表示跳过命令之间的行。例如，地址范围n~m表面sed从第n行开始并且每次跳过m行。
+
+<ul>
+<li>1~2 匹配1,3,5,7,等。</li>
+<li>2~2 匹配 2,4,6,8,等。</li>
+<li>1~3 匹配 1,4,7,10,等。</li>
+<li>2~3 匹配 2,5,8,11,等。</li>
+</ul>
+</li>
+</ul>
+
+
+<p><strong>只打印奇数行：</strong>
+<code>bash
+$ sed -n '1~2 p' employee.txt
+101,John Doe,CEO
+103,Raj Reddy,Sysadmin
+… …
+</code></p>
+
+<h2>词匹配</h2>
+
+<p>正如你可以指定一定数量地址（或者地址范围），你也可以指定一个特定的词(或者词的范围)匹配，在接下来的例子中将会演示。</p>
+
+<p><strong>打印匹配有“Jane”的行：</strong>
+<code>bash
+$ sed -n ‘/Jane/ p’ employee.txt
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>打印从第一行到第四行匹配“Jason”的行：</strong>
+<code>bash
+$ sed -n '/Jason/,4 p' employee.txt
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+</code></p>
+
+<pre><code>注：如果这里再1到4行没有匹配到”Jason”，那么这条命令会打印出包含“Jason”之后的行。
+</code></pre>
+
+<p><strong>打印从第一行到最后一行匹配”Raj”的行：</strong>
+<code>bash
+$ sed -n '/Raj/,$ p' employee.txt
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Manager
+</code></p>
+
+<p><strong>打印匹配行”Raj”直到匹配到”Jane”行：</strong>
+<code>bash
+$ sed -n '/Raj/,/Jane/ p' employee.txt
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+105,Jane Miller,Sales Manager
+</code></p>
+
+<pre><code>注：如果没有匹配到Jane，则打印“Raj“行到最后一行
+</code></pre>
+
+<p><strong>打印匹配“Jason”的行并且打印“Jason”行后的两行：</strong>
+<code>bash
+$ sed -n '/Jason/,+2 p' employee.txt
+102,Jason Smith,IT Manager
+103,Raj Reddy,Sysadmin
+104,Anand Ram,Developer
+</code></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+</feed>

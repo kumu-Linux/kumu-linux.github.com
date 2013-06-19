@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Octopress | Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.com/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.com/"/>
+  <updated>2013-06-19T17:35:31+08:00</updated>
+  <id>http://kumu-Linux.github.com/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress Windows环境搭建]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/06/octopress-plus-github/"/>
+    <updated>2013-04-06T17:09:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/06/octopress-plus-github</id>
+    <content type="html"><![CDATA[<p>关于Octopress+GitHub+Markdown环境的搭建其实已经有很多写的很好的教程了，这里算是作一个总结吧，把遇到的一些问题说明注解一下。</p>
+
+<p><strong>优点</strong>：</p>
+
+<pre><code>1. 用文件方式储存数据，无需数据库
+2. 以静态方式发布，直接托管github
+3. 用markdown格式写博客，可轻松配置和发布
+</code></pre>
+
+<!--more-->
+
+
+<h2>安装</h2>
+
+<p>本文主要讲解在Windows上的安装方法,Linux可参考<a href="http://octopress.org/docs/">官方文档</a></p>
+
+<h3>准备软件</h3>
+
+<ul>
+<li>git
+
+<ul>
+<li>下载地址： <a href="https://code.google.com/p/msysgit/downloads/detail?name=Git-1.8.1.2-preview20130201.exe&amp;can=2&amp;q=">Git-1.8.1.2</a></li>
+</ul>
+</li>
+<li>ruby
+
+<ul>
+<li>下载地址：<a href="http://rubyforge.org/frs/download.php/75127/rubyinstaller-1.9.2-p290.exe">ruby-1.9.2</a> <strong>推荐使用ruby-1.9.2</strong> ,最新2.0版结合Octopress会有些问题</li>
+</ul>
+</li>
+<li>gem
+
+<ul>
+<li>下载地址：<a href="https://github.com/downloads/oneclick/rubyinstaller/DevKit-tdm-32-4.5.2-20111229-1559-sfx.exe">DevKit-tdm-32-4.5.2</a> ,64位下载相关软件，本文中使用32位环境，<a href="http://rubyinstaller.org/downloads/">官网</a></li>
+</ul>
+</li>
+<li>python
+
+<ul>
+<li>下载地址：<a href="http://www.activestate.com/activepython/downloads/thank-you?dl=http://downloads.activestate.com/ActivePython/releases/2.7.2.5/ActivePython-2.7.2.5-win32-x86.msi">Activepython-2.7.2.5</a> ,博客代码加亮模块需要python环境支持</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>安装软件</h3>
+
+<h4>注：</h4>
+
+<hr />
+
+<p>ruby安装选项时选择<code>Add Ruby exectutables to your path</code>，如果安装时没有选择，则可以使用 <code>我的电脑</code> -- <code>属性</code> -- <code>高级系统设置</code> -- <code>环境变量</code>，添加<strong>ruby命令路径</strong>到系统环境变量即可，另外也要加入<strong>git的命令路径</strong>。</p>
+
+<p>对于Gem下载完成后，将其解压，如 D:\DevKit，然后在cmd窗口中执行如下命令安装：
+{% codeblock lang:cpp %}
+D:
+cd DevKit
+ruby dk.rb init
+ruby dk.rb instal
+{% endcodeblock %}</p>
+
+<p>python安装完后执行如下安装
+{% codeblock lang:cpp %}
+easy_install pygments
+{% endcodeblock %}</p>
+
+<h4>Octopress和相关插件安装</h4>
+
+<p>{% codeblock lang:cpp %}
+git clone git://github.com/imathis/octopress.git
+cd octopress  <br/>
+ruby --version  #确保ruby安装版本为1.9.2
+gem install bundler rdoc
+bundle install
+rake install
+{% endcodeblock %}</p>
+
+<p>执行rake install时可能出现如下错误</p>
+
+<pre><code>You have already activated rake 0.9.2.2, 
+but your Gemfile requires rake 0.9.2. 
+Using bundle exec may solve this.
+</code></pre>
+
+<p>可以在<code>rake install</code>命令前添加<code>bundle exec</code>或者直接修改octopress目录文件<code>Gemfile</code>,修改rake版本为当前版本</p>
+
+<h3>Github创建库(省略)</h3>
+
+<pre><code>注册 &lt;USERNAME&gt; 的账号
+创建 &lt;USERNAME&gt;.github.com 的仓库
+</code></pre>
+
+<h3>相关操作</h3>
+
+<p>{% codeblock lang:cpp %}
+rake setup_github_pages # 配置 octopress 与 github 的连接
+rake generate           # 生成静态文件
+rake preview            # 在本机4000端口生成访问内容
+rake deploy             # 发布文件到 github
+{% endcodeblock %}</p>
+
+<p>执行rake generate可能产生如下错误
+{% codeblock lang:cpp %}
+Liquid Exception: invalid byte sequence in GBK in page
+{% endcodeblock %}</p>
+
+<p><strong>解决方法</strong>： CMD命令窗口执行如下操作
+{% codeblock lang:cpp %}
+set LANG=zh_CN.UTF-8
+set LC_ALL=zh_CN.UTF-8
+{% endcodeblock %}</p>
+
+<h3>参考</h3>
+
+<ul>
+<li><a href="http://sinosmond.github.io/blog/2012/03/12/install-and-deploy-octopress-to-github-on-windows7-from-scratch/">sinosmond.github.io</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">ruanyifeng.com</a></li>
+<li><a href="http://zjun.github.io/2012/09/23/blog-in-octopress-on-github/">zjun.github.io</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[用Markdown写日志]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/04/05/hello/"/>
+    <updated>2013-04-05T22:30:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/04/05/hello</id>
+    <content type="html"><![CDATA[<h3>始末</h3>
+
+<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
+
+<!--more-->
+
+
+<p>在这两年的时间里，我也从一个之前和技术没有半点关系的动科专业的学生真正成为了一名Linux SA。孟轲的母亲为选择良好的环境教育孩子，也曾多次迁居。个人突然觉得孟母三迁和我搬博客的目的还是很类似了，2年内我经历了新浪博客--网易博客--51CTO--CSDN。基本上国内主流的博客我都体验过，后来还是决定在Github长久居住。阮一峰在 <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">搭建一个免费的，无限流量的Blog----github Pages和Jekyll入门</a> 一文中描述说喜欢写Blog的人，会经历三个阶段：</p>
+
+<pre><code>第一阶段，刚接触Blog，觉得很新鲜，试着选择一个免费空间来写。  
+第二阶段，发现免费空间限制太多，就自己购买域名和空间，搭建独立博客。
+第三阶段，觉得独立博客的管理太麻烦，最好在保留控制权的前提下，让别人来管，自己只负责写文章。
+</code></pre>
+
+<p>以上的三个阶段我只经历过第一和第三个阶段，很多次换博客主要还是限制的问题，现在在Github相对自由了，当然这是在不会被墙的情况下。对于国内的几个博客还是简要介绍下我个人的体验:</p>
+
+<ul>
+<li>新浪博客</li>
+</ul>
+
+
+<p>先说说新浪博客吧，之前因为比较关注韩寒，所以对于新浪博客还是很熟悉的，所以我第一站选择了新浪博客。怎么说呢，关于新浪博客只能说仅仅是一个抒情的地方，对于技术来说就很不适合了，不过自己还是坚持了很长一段时间，算是一种情愫吧。</p>
+
+<ul>
+<li>网易博客</li>
+</ul>
+
+
+<p>对于网易，基本上和新浪是同一类型的，不适合写技术博客。但是网易的很多用户体验做的感觉还是比新浪好很多，无奈还是需要搬家。</p>
+
+<ul>
+<li>51CTO</li>
+</ul>
+
+
+<p>对于从事Linux运维相关技术的技术人来说，还是一个很不错的技术交流平台。特别对于新手来说，还是能够学到很多东西的。但是51CTO后台博客的体验相对来说还是差很多的，博客界面的设计和后台管理个人感觉也较为简陋。不过，有一点是要非常肯定的，51CTO的小编都很热情，相对CSDN会好很多。</p>
+
+<ul>
+<li>CSDN</li>
+</ul>
+
+
+<p>CSDN可以说是一个大杂烩吧，融合了各种类型的技术人，博客界面设计和后台管理看起来很极简，很舒服，博客体验相对较好。所以在CSDN上我坚持了很长一段时间，但是后来CSDN的恶劣行为，让我还是决定离开了，上面的博客只能有时间慢慢搬过来了。</p>
+
+<p>基本上国内博客的体验就这么多了吧，如果作为一个技术人，我还是建议在Github上搭建Octopress，利用Markdown书写技术Blog。因为这里有无限的自由度，最关键的是Github还会帮你管理，你只需要想和写。关于Github+Octopress的优点我就不多说了，Google、百度很多解释，我只想说 <em>像黑客一样写作</em> ，这就足够了。如果想做，那么 <em>Just do it！</em>。</p>
+
+<p>文章附：
+<a href="http://tom.preston-werner.com/2008/11/17/blogging-like-a-hacker.html">Blogging Like a Hacker</a></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-19T17:33:30+08:00</updated>
+  <updated>2013-06-19T17:37:01+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -430,7 +430,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 </span></code></pre></td></tr></table></div></figure>
 
 
-
+<p>使用dshbak之后可读性变得好了很多</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -441,7 +441,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span> | dshbak -c  <span class="c">#使用dshbak之后可读性变得好了很多</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span> | dshbak -c
 </span><span class='line'>----------------
 </span><span class='line'>192.168.0.<span class="o">[</span>231-232,234<span class="o">]</span>
 </span><span class='line'>----------------

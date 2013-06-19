@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-19T16:39:50+08:00</updated>
+  <updated>2013-06-19T17:29:01+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,194 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[nslookup、host和dig]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host/"/>
+    <updated>2013-06-19T16:55:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host</id>
+    <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
+
+<!--more-->
+
+
+<h2>nslookup</h2>
+
+<blockquote><p>nslookup is a tried and true program that has weathered the ages. nslookup has been deprecated and may be removed from future releases. There is not even a man page for this program.</p></blockquote>
+
+<p>因此，这里不过多介绍这个古老的工具了</p>
+
+<h2>host</h2>
+
+<p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例
+``` bash</p>
+
+<h1>host www.google.com</h1>
+
+<p>www.google.com has address 74.125.135.106
+```</p>
+
+<p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定
+``` bash</p>
+
+<h1>host www.google.com 8.8.8.8</h1>
+
+<p>Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:</p>
+
+<p>www.google.com has address 173.194.72.147
+```</p>
+
+<p><code>host</code>当然也支持反解析
+``` bash</p>
+
+<h1>host 173.194.72.147</h1>
+
+<p>147.72.194.173.in-addr.arpa domain name pointer tf-in-f147.1e100.net.
+```</p>
+
+<p>指定查询类型可以使用<code>-t</code>选项</p>
+
+<p>``` bash</p>
+
+<h1>host -t SOA google.com  #查询SOA记录信息</h1>
+
+<p>google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+```</p>
+
+<p>查询<code>MX</code>记录
+<code>
+$ host -t MX google.com
+google.com mail is handled by 10 aspmx.l.google.com.
+google.com mail is handled by 40 alt3.aspmx.l.google.com.
+google.com mail is handled by 20 alt1.aspmx.l.google.com.
+google.com mail is handled by 50 alt4.aspmx.l.google.com.
+google.com mail is handled by 30 alt2.aspmx.l.google.com.
+</code></p>
+
+<p><code>-C</code>对比认证DNS SOA信息
+```</p>
+
+<h1>host -C google.com</h1>
+
+<p>Nameserver 216.239.34.10:</p>
+
+<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></pre>
+
+<p>Nameserver 216.239.36.10:</p>
+
+<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></pre>
+
+<p>Nameserver 216.239.32.10:
+... ...
+```</p>
+
+<p>查询DNS Server软件版本信息,10.10.10.2为DNS Server
+``` bash</p>
+
+<h1>host -c CH -t txt version.bind 10.10.10.2</h1>
+
+<p>Using domain server:
+Name: 10.10.10.2
+Address: 10.10.10.2#53
+Aliases:</p>
+
+<p>version.bind descriptive text "9.8.1-P2"
+```</p>
+
+<p><strong>host帮助</strong>
+``` bash</p>
+
+<h1>host</h1>
+
+<p>Usage: host [-aCdlriTwv] [-c class] [-N ndots] [-t type] [-W time]</p>
+
+<pre><code>        [-R number] [-m flag] hostname [server]
+   -a is equivalent to -v -t ANY
+   -c specifies query class for non-IN data  搜索非网络数据时要指定要查找的类
+   -C compares SOA records on authoritative nameservers
+   -d is equivalent to -v
+   -l lists all hosts in a domain, using AXFR
+   -i IP6.INT reverse lookups
+   -N changes the number of dots allowed before root lookup is done
+   -r disables recursive processing
+   -R specifies number of retries for UDP packets
+   -s a SERVFAIL response should stop query
+   -t specifies the query type 指定要查询的记录类型
+   -T enables TCP/IP mode
+   -v enables verbose output  输出更详细的信息
+   -w specifies to wait forever for a reply
+   -W specifies how long to wait for a reply
+   -4 use IPv4 query transport only
+   -6 use IPv6 query transport only
+   -m set memory debugging flag (trace|record|usage)
+</code></pre>
+
+<p>```</p>
+
+<h2>dig</h2>
+
+<p>dig也是一个很强大的命令，相对host来说输出较为繁杂，如下：</p>
+
+<p>``` bash
+$ dig www.google.com
+... ...</p>
+
+<p>;; ANSWER SECTION:
+www.google.com.         297     IN      A       74.125.135.106
+www.google.com.         297     IN      A       74.125.135.104
+... ...</p>
+
+<p>;; AUTHORITY SECTION:
+google.com.             172796  IN      NS      ns3.google.com.
+google.com.             172796  IN      NS      ns1.google.com.
+google.com.             172796  IN      NS      ns4.google.com.
+google.com.             172796  IN      NS      ns2.google.com.</p>
+
+<p>... ...
+```</p>
+
+<p>查询<code>MX</code>记录
+<code>bash
+$ dig google.com MX | grep '^;; ANSWER SECTION:' -A 5
+;; ANSWER SECTION:
+google.com.             368     IN      MX      50 alt4.aspmx.l.google.com.
+google.com.             368     IN      MX      40 alt3.aspmx.l.google.com.
+google.com.             368     IN      MX      10 aspmx.l.google.com.
+google.com.             368     IN      MX      30 alt2.aspmx.l.google.com.
+google.com.             368     IN      MX      20 alt1.aspmx.l.google.com.
+</code></p>
+
+<p>查询<code>SOA</code>记录
+<code>bash
+$ dig google.com SOA | grep '^;; ANSWER SECTION:' -A 1
+;; ANSWER SECTION:
+google.com.             85539   IN      SOA     ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></p>
+
+<p>指定DNS Server查询
+<code>bash
+$ dig www.baidu.com @8.8.8.8
+... ...
+;; ANSWER SECTION:
+www.baidu.com.          1024    IN      CNAME   www.a.shifen.com.
+www.a.shifen.com.       166     IN      A       119.75.217.56
+www.a.shifen.com.       166     IN      A       119.75.218.77
+... ...
+</code></p>
+
+<p><code>dig</code>查询版本号
+<code>bash
+$ dig chaos txt version.bind  10.0.0.2 | grep '^;; ANSWER SECTION:' -A 1
+;; ANSWER SECTION:
+version.bind.           0       CH      TXT     "9.8.1-P2"
+</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[pdsh使用方法]]></title>
@@ -778,68 +966,6 @@ sed -i 's:ZONE=.*:ZONE="Asia/Shanghai":g' /etc/sysconfig/clock
 <p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
 <a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
 鸟哥Linux私房菜</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/14/ping-dns/"/>
-    <updated>2013-05-14T17:54:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/14/ping-dns</id>
-    <content type="html"><![CDATA[<p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
-
-<!--more-->
-
-
-<h3>问题重现</h3>
-
-<p>解析正常
-``` bash</p>
-
-<h1>nslookup mail.server1.test.com</h1>
-
-<p>Server:     192.168.0.8
-Address:    192.168.0.8#53</p>
-
-<p>Name:   mail.server1.test.com
-Address: 192.168.0.8
-```</p>
-
-<p>但是域名ping不通 【strace尝试追踪问题，使用的是公司内网DNS，但是获取不到地址】
-``` bash</p>
-
-<h1>ping mail.server1.test.com</h1>
-
-<p>ping: unknown host mail.server1.test.com
-```</p>
-
-<h3>问题解决</h3>
-
-<p>1、查看/etc/nsswitch.conf内容，解析顺序如下，文件没有问题
-``` bash</p>
-
-<h1>grep ^hosts:  /etc/nsswitch.conf</h1>
-
-<p>hosts:      files dns
-```</p>
-
-<p>2、重启nscd【Dns Server Cache】，尝试清空缓存，问题依然存在
-``` bash</p>
-
-<h1>/etc/init.d/nscd restart</h1>
-
-<p>```</p>
-
-<p>... ...</p>
-
-<p>期间N种方式的尝试，无解。后来同事发现把之前的<strong>外网DNS注释</strong>，<strong>重启<code>nscd</code></strong>，问题解决。
-``` bash</p>
-
-<h1>/etc/init.d/nscd restart</h1>
-
-<p>```</p>
-
-<p>--EOF--</p>
 ]]></content>
   </entry>
   

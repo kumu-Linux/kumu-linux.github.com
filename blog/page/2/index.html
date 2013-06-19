@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 /etc/resolv.conf 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了 ">
+  <meta name="description" content="简介 Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用UDP &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -81,6 +81,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/20/ntp/">NTP服务</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-20T14:53:00+08:00" pubdate data-updated="true">May 20<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/20/ntp/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>简介</h2>
+
+<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/20/ntp/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -351,49 +396,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/04/29/sed-4/">1-4、Delete Lines[译]</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/29/sed-4/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/29/sed-4/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -415,6 +417,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/06/19/nslookup-dig-host/">nslookup、host和dig</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/19/pdsh/">pdsh使用方法</a>
       </li>
     
@@ -434,15 +440,11 @@
         <a href="/blog/2013/05/23/openvpn/">openvpn基本搭建实例</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/05/21/named-chroot/">DNS chroot rsyslog配置</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (8)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (5)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (9)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (2)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (5)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-19T16:39:50+08:00</updated>
+  <updated>2013-06-19T17:29:01+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,271 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[nslookup、host和dig]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host/"/>
+    <updated>2013-06-19T16:55:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host</id>
+    <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
+
+<!--more-->
+
+
+<h2>nslookup</h2>
+
+<blockquote><p>nslookup is a tried and true program that has weathered the ages. nslookup has been deprecated and may be removed from future releases. There is not even a man page for this program.</p></blockquote>
+
+<p>因此，这里不过多介绍这个古老的工具了</p>
+
+<h2>host</h2>
+
+<p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host www.google.com</span>
+</span><span class='line'>www.google.com has address 74.125.135.106
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host www.google.com 8.8.8.8</span>
+</span><span class='line'>Using domain server:
+</span><span class='line'>Name: 8.8.8.8
+</span><span class='line'>Address: 8.8.8.8#53
+</span><span class='line'>Aliases:
+</span><span class='line'>
+</span><span class='line'>www.google.com has address 173.194.72.147
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>host</code>当然也支持反解析</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host 173.194.72.147</span>
+</span><span class='line'>147.72.194.173.in-addr.arpa domain name pointer tf-in-f147.1e100.net.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定查询类型可以使用<code>-t</code>选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -t SOA google.com  #查询SOA记录信息</span>
+</span><span class='line'>google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查询<code>MX</code>记录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>host -t MX google.com
+</span><span class='line'>google.com mail is handled by 10 aspmx.l.google.com.
+</span><span class='line'>google.com mail is handled by 40 alt3.aspmx.l.google.com.
+</span><span class='line'>google.com mail is handled by 20 alt1.aspmx.l.google.com.
+</span><span class='line'>google.com mail is handled by 50 alt4.aspmx.l.google.com.
+</span><span class='line'>google.com mail is handled by 30 alt2.aspmx.l.google.com.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>-C</code>对比认证DNS SOA信息</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -C google.com</span>
+</span><span class='line'>Nameserver 216.239.34.10:
+</span><span class='line'>        google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</span><span class='line'>Nameserver 216.239.36.10:
+</span><span class='line'>        google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</span><span class='line'>Nameserver 216.239.32.10:
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查询DNS Server软件版本信息,10.10.10.2为DNS Server</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -c CH -t txt version.bind 10.10.10.2  </span>
+</span><span class='line'>Using domain server:
+</span><span class='line'>Name: 10.10.10.2
+</span><span class='line'>Address: 10.10.10.2#53
+</span><span class='line'>Aliases:
+</span><span class='line'>
+</span><span class='line'>version.bind descriptive text <span class="s2">&quot;9.8.1-P2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>host帮助</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host</span>
+</span><span class='line'>Usage: host <span class="o">[</span>-aCdlriTwv<span class="o">]</span> <span class="o">[</span>-c class<span class="o">]</span> <span class="o">[</span>-N ndots<span class="o">]</span> <span class="o">[</span>-t <span class="nb">type</span><span class="o">]</span> <span class="o">[</span>-W <span class="nb">time</span><span class="o">]</span>
+</span><span class='line'>            <span class="o">[</span>-R number<span class="o">]</span> <span class="o">[</span>-m flag<span class="o">]</span> hostname <span class="o">[</span>server<span class="o">]</span>
+</span><span class='line'>       -a is equivalent to -v -t ANY
+</span><span class='line'>       -c specifies query class <span class="k">for </span>non-IN data  搜索非网络数据时要指定要查找的类
+</span><span class='line'>       -C compares SOA records on authoritative nameservers
+</span><span class='line'>       -d is equivalent to -v
+</span><span class='line'>       -l lists all hosts in a domain, using AXFR
+</span><span class='line'>       -i IP6.INT reverse lookups
+</span><span class='line'>       -N changes the number of dots allowed before root lookup is <span class="k">done</span>
+</span><span class='line'>       -r disables recursive processing
+</span><span class='line'>       -R specifies number of retries <span class="k">for </span>UDP packets
+</span><span class='line'>       -s a SERVFAIL response should stop query
+</span><span class='line'>       -t specifies the query <span class="nb">type</span> 指定要查询的记录类型
+</span><span class='line'>       -T enables TCP/IP mode
+</span><span class='line'>       -v enables verbose output  输出更详细的信息
+</span><span class='line'>       -w specifies to <span class="nb">wait </span>forever <span class="k">for </span>a reply
+</span><span class='line'>       -W specifies how long to <span class="nb">wait </span><span class="k">for </span>a reply
+</span><span class='line'>       -4 use IPv4 query transport only
+</span><span class='line'>       -6 use IPv6 query transport only
+</span><span class='line'>       -m <span class="nb">set </span>memory debugging flag <span class="o">(</span>trace|record|usage<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>dig</h2>
+
+<p>dig也是一个很强大的命令，相对host来说输出较为繁杂，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig www.google.com
+</span><span class='line'>... ...
+</span><span class='line'>
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>www.google.com.         297     IN      A       74.125.135.106
+</span><span class='line'>www.google.com.         297     IN      A       74.125.135.104
+</span><span class='line'>... ...
+</span><span class='line'>
+</span><span class='line'>;; AUTHORITY SECTION:
+</span><span class='line'>google.com.             172796  IN      NS      ns3.google.com.
+</span><span class='line'>google.com.             172796  IN      NS      ns1.google.com.
+</span><span class='line'>google.com.             172796  IN      NS      ns4.google.com.
+</span><span class='line'>google.com.             172796  IN      NS      ns2.google.com.
+</span><span class='line'>
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查询<code>MX</code>记录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig google.com MX | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 5
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>google.com.             368     IN      MX      50 alt4.aspmx.l.google.com.
+</span><span class='line'>google.com.             368     IN      MX      40 alt3.aspmx.l.google.com.
+</span><span class='line'>google.com.             368     IN      MX      10 aspmx.l.google.com.
+</span><span class='line'>google.com.             368     IN      MX      30 alt2.aspmx.l.google.com.
+</span><span class='line'>google.com.             368     IN      MX      20 alt1.aspmx.l.google.com.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>查询<code>SOA</code>记录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig google.com SOA | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>google.com.             85539   IN      SOA     ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定DNS Server查询</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig www.baidu.com @8.8.8.8
+</span><span class='line'>... ...
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>www.baidu.com.          1024    IN      CNAME   www.a.shifen.com.
+</span><span class='line'>www.a.shifen.com.       166     IN      A       119.75.217.56
+</span><span class='line'>www.a.shifen.com.       166     IN      A       119.75.218.77
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>dig</code>查询版本号</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig chaos txt version.bind  10.0.0.2 | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>version.bind.           0       CH      TXT     <span class="s2">&quot;9.8.1-P2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[pdsh使用方法]]></title>
@@ -2871,321 +3136,6 @@ slot        插槽信息
 <p>&#8211;EOF&#8211;</p>
 
 <p><strong>扯一句</strong>:本系列文章主要翻译自sed and awk 101 hacks一书，争取每日一篇，确保每两日一篇</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[LogAnalyzer网页日志分析之安装篇]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer/"/>
-    <updated>2013-04-23T14:50:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer</id>
-    <content type="html"><![CDATA[<h2>LogAnalyzer简介</h2>
-
-<p>LogAnalyzer 是一个syslog和其他网络事件数据的Web前端工具，提供简单易用的日志浏览、搜索和基本分析以及图表显示，PHP语言开发。<a href="http://loganalyzer.adiscon.com/">官方地址</a></p>
-
-<!--more-->
-
-
-<h2>LogAnalyzer在RHEL6上的安装</h2>
-
-<p>RHEL系列从RHEL6开始日志服务器，缺省的由原来RHEL5的syslog改为rsyslog。关于rsyslog和syslog的优缺点可以查看<a href="http://www.rsyslog.com/doc/rsyslog_ng_comparison.html">链接</a>，ryslog有很多优势，因此本文以rsyslog为例。rsyslog支持TCP/UDP协议，并且可以将日志直接写入到数据库中，如Mongodb、MySQL，本文将以MySQL为例。</p>
-
-<p>ryslog优势：</p>
-
-<ul>
-<li>支持Multi-threading功能，处理效率比传统的syslog服务器更高</li>
-<li>提供SSL加密功能，提高syslog传输安全性</li>
-<li>提供数据库输出功能&lt;MySQL、Mongodb &#8230; &#8230;></li>
-<li>提供过滤功能，可自定义相关的过滤条件</li>
-</ul>
-
-
-<h3>中心日志服务器配置</h3>
-
-<h4>Log Server端配置</h4>
-
-<p>安装<code>rsyslog</code>、<code>rsyslog-mysql</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog rsyslog-mysql -y
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装<code>MySQL</code>和<code>Apache</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install mysql-server
-</span><span class='line'>yum install httpd php php-mysyql php-gd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>导入rsyslog写入数据需要的MySQL库文件，默认安装好之后会在目录/usr/share/doc/rsyslog-mysql-x.x.x/createDB.sql有该文件，rsyslog-mysql的版本不同，具体的位置也相应的不同</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span> <span class="o">-</span><span class="n">u</span> <span class="n">root</span> <span class="o">-</span><span class="n">p</span> <span class="o">&lt;</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">rsyslog</span><span class="o">-</span><span class="n">mysql</span><span class="o">-</span><span class="mi">5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">10</span><span class="o">/</span><span class="n">createDB</span><span class="p">.</span><span class="k">sql</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果导入正常的话，MySQL会生成Syslog库</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">use</span> <span class="n">Syslog</span>
-</span><span class='line'><span class="n">Reading</span> <span class="k">table</span> <span class="n">information</span> <span class="k">for</span> <span class="n">completion</span> <span class="n">of</span> <span class="k">table</span> <span class="k">and</span> <span class="k">column</span> <span class="n">names</span>
-</span><span class='line'><span class="n">You</span> <span class="n">can</span> <span class="n">turn</span> <span class="n">off</span> <span class="n">this</span> <span class="n">feature</span> <span class="k">to</span> <span class="n">get</span> <span class="n">a</span> <span class="n">quicker</span> <span class="n">startup</span> <span class="k">with</span> <span class="o">-</span><span class="n">A</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">Database</span> <span class="n">changed</span>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">show</span> <span class="kp">tables</span><span class="p">;</span>
-</span><span class='line'><span class="o">+------------------------+</span>
-</span><span class='line'><span class="o">|</span> <span class="n">Tables_in_Syslog</span>       <span class="o">|</span>
-</span><span class='line'><span class="o">+------------------------+</span>
-</span><span class='line'><span class="o">|</span> <span class="n">SystemEvents</span>           <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">SystemEventsProperties</span> <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">charts</span>                 <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">config</span>                 <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">dbmappings</span>             <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">fields</span>                 <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">groupmembers</span>           <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">groups</span>                 <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">savedreports</span>           <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">searches</span>               <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">sources</span>                <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">users</span>                  <span class="o">|</span>
-</span><span class='line'><span class="o">|</span> <span class="n">views</span>                  <span class="o">|</span>
-</span><span class='line'><span class="o">+------------------------+</span>
-</span><span class='line'><span class="mi">13</span> <span class="n">rows</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>赋权，这里新增用户给insert权限即可，可参考<a href="http://www.rsyslog.com/doc/rsyslog_mysql.html">rsyslog_mysql</a></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">insert</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">34</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">08</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,添加mysql支持</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> ommysql.so
-</span><span class='line'>*.*       :ommysql:localhost,Syslog,sysloguser,123321
-</span><span class='line'><span class="c">#*.*       :ommysql:database-server,database-name,database-userid,database-password</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,配置udp和tcp接受监听</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> imudp
-</span><span class='line'><span class="nv">$UDPServerRun</span> 514
-</span><span class='line'><span class="nv">$ModLoad</span> imtcp
-</span><span class='line'><span class="nv">$InputTCPServerRun</span> 514
-</span><span class='line'><span class="nv">$AllowedSender</span> UDP, 127.0.0.1, 10.2.0.0/16  <span class="c">#10.2.0.0为接受某个网段发来的IP</span>
-</span><span class='line'><span class="nv">$AllowedSender</span> TCP, 127.0.0.1, 10.2.0.0/16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>完成以上步骤之后重新启动rsyslog即可</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/etc/init.d/rsyslog restart
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这时登陆MySQL执行<code>mysql&gt; select * from Syslog.SystemEvents;</code>就可以看到rsyslog日志内容了</p>
-
-<h4>Log Client端配置</h4>
-
-<p>安装<code>rsyslog</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install rsyslog -y
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>修改rsyslog配置文件<code>/etc/rsyslog.conf</code>,添加如下内容</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.* @@Server_ip <span class="c">#Server_ip为Log Server端的ip</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>完成以上步骤之后重新启动rsyslog即可</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/etc/init.d/rsyslog restart
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>安装LogAnalyzer</h3>
-
-<p>下载解压</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://download.adiscon.com/loganalyzer/loganalyzer-3.6.3.tar.gz
-</span><span class='line'>tar xf loganalyzer-3.6.3.tar.gz
-</span><span class='line'><span class="nb">cd </span>loganalyzer-3.6.3
-</span><span class='line'>mkdir /var/www/html/rsyslog
-</span><span class='line'>cp -r contrib/* src/* /var/www/html/rsyslog <span class="c">#拷贝到web家目录下</span>
-</span><span class='line'>chown apache:apache -R /var/www/html/rsyslog
-</span><span class='line'>bash /var/www/html/rsyslog/configure.sh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>浏览器打开http://web_url/rsyslog</p>
-
-<p>Next1，点击here执行安装</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer1.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next2</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer2.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next3</p>
-
-<p>在Server端创建一个用户管理库和一个用户,然后输入到web中，开启使用数据库管理用户选项</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">create</span> <span class="k">database</span> <span class="n">loganalyzer</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">1</span> <span class="n">row</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">loganalyzer</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;loganalyzer&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
-</span><span class='line'><span class="n">Query</span> <span class="n">OK</span><span class="p">,</span> <span class="mi">0</span> <span class="n">rows</span> <span class="nf">affected</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer4.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next4</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer5.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next5</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer6.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next6</p>
-
-<p>添加登陆用户</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer7.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next7</p>
-
-<p>选择数据库类型，并且添加相关数据库用户，修改用户权限如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果只是日志写入到数据库中，那么只需要insert权限即可。如果使用loganlyzer，那么安装过程需要额外的权限，可以新增用户，也可先给sysloguser所有的权限，安装完成之后，再次恢复权限如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='mysql'><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">grant</span> <span class="k">insert</span><span class="p">,</span><span class="k">select</span> <span class="k">on</span> <span class="n">Syslog</span><span class="p">.</span><span class="o">*</span> <span class="k">to</span> <span class="s1">&#39;sysloguser&#39;</span><span class="o">@</span><span class="s1">&#39;localhost&#39;</span> <span class="n">identified</span> <span class="k">by</span> <span class="s1">&#39;123321&#39;</span><span class="p">;</span> <span class="c1">#loganlyzer安装完成后需要使用select权限查询输出到页面，因此这里赋予select权限</span>
-</span><span class='line'><span class="n">mysql</span><span class="o">&gt;</span> <span class="n">flush</span> <span class="n">privileges</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer8.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>Next8安装成功</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer9.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>登陆，输入之前的用户名和密码即可：</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer10.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>登陆之后页面如下：</p>
-
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer11.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
-
-
-<p>&#8211;EOF&#8211;</p>
-
-<p>未完待续</p>
 ]]></content>
   </entry>
   

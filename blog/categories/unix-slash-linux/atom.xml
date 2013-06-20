@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-19T17:37:01+08:00</updated>
+  <updated>2013-06-20T16:37:54+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -194,10 +194,22 @@ www.a.shifen.com.       166     IN      A       119.75.218.77
 
 <p><code>dig</code>查询版本号
 <code>bash
-$ dig chaos txt version.bind  10.0.0.2 | grep '^;; ANSWER SECTION:' -A 1
+$ dig chaos txt version.bind  10.10.10.2 | grep '^;; ANSWER SECTION:' -A 1
 ;; ANSWER SECTION:
 version.bind.           0       CH      TXT     "9.8.1-P2"
 </code></p>
+
+<p><code>dig</code>反解析
+``` bash
+$ dig -x 10.0.0.2
+... ...
+;; QUESTION SECTION:
+;2.0.0.10.in-addr.arpa.         IN      PTR</p>
+
+<p>;; ANSWER SECTION:
+2.0.0.10.in-addr.arpa.  3600    IN      PTR     gw-beijing.intra.knownsec.com.
+... ...
+```</p>
 
 <p>--EOF--</p>
 ]]></content>

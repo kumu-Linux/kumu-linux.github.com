@@ -361,9 +361,30 @@
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig chaos txt version.bind  10.0.0.2 | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig chaos txt version.bind  10.10.10.2 | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
 </span><span class='line'>;; ANSWER SECTION:
 </span><span class='line'>version.bind.           0       CH      TXT     <span class="s2">&quot;9.8.1-P2&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>dig</code>反解析</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig -x 10.0.0.2
+</span><span class='line'>... ...
+</span><span class='line'>;; QUESTION SECTION:
+</span><span class='line'>;2.0.0.10.in-addr.arpa.         IN      PTR
+</span><span class='line'>
+</span><span class='line'>;; ANSWER SECTION:
+</span><span class='line'>2.0.0.10.in-addr.arpa.  3600    IN      PTR     gw-beijing.intra.knownsec.com.
+</span><span class='line'>... ...
 </span></code></pre></td></tr></table></div></figure>
 
 

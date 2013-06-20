@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-20T16:40:02+08:00</updated>
+  <updated>2013-06-20T16:42:43+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -201,15 +201,14 @@ version.bind.           0       CH      TXT     "9.8.1-P2"
 
 <p><code>dig</code>反解析<code>-x</code>
 ``` bash
-$ dig -x 10.0.0.2
-... ...
+$ dig -x 74.125.135.105
 ;; QUESTION SECTION:
-;2.0.0.10.in-addr.arpa.         IN      PTR</p>
+;105.135.125.74.in-addr.arpa.   IN      PTR</p>
 
 <p>;; ANSWER SECTION:
-2.0.0.10.in-addr.arpa.  3600    IN      PTR     gw-beijing.intra.knownsec.com.
-... ...
-```</p>
+105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.</p>
+
+<p>```</p>
 
 <p>--EOF--</p>
 ]]></content>

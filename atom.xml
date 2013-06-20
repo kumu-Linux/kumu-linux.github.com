@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-20T16:40:02+08:00</updated>
+  <updated>2013-06-20T16:42:43+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -284,16 +284,12 @@
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig -x 10.0.0.2
-</span><span class='line'>... ...
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig -x 74.125.135.105
 </span><span class='line'>;; QUESTION SECTION:
-</span><span class='line'>;2.0.0.10.in-addr.arpa.         IN      PTR
+</span><span class='line'>;105.135.125.74.in-addr.arpa.   IN      PTR
 </span><span class='line'>
 </span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>2.0.0.10.in-addr.arpa.  3600    IN      PTR     gw-beijing.intra.knownsec.com.
-</span><span class='line'>... ...
+</span><span class='line'>105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.
 </span></code></pre></td></tr></table></div></figure>
 
 

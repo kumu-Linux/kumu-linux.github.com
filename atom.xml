@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-20T16:44:34+08:00</updated>
+  <updated>2013-06-29T20:45:56+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,28 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[2013-06-29 两本书]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/29/life-06-29/"/>
+    <updated>2013-06-29T19:16:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/29/life-06-29</id>
+    <content type="html"><![CDATA[<p>最近一段时间看完了<code>《平凡的世界》</code>和<code>《艾伦·图灵传--如迷的解谜者》</code>，自从买<code>kindle paper white</code>以来，看书的效率比以前要高很多了。虽然自己还是更倾向纸质书的感觉，但是试想每天带着本书挤地铁那是相当的不便，而且纸质书搬家也是个大问题。而kindle让你随时随地都能享受阅读的乐趣，至少让笔者每天挤地铁不会感到很无趣。</p>
+
+<!--more-->
+
+
+<p>《平凡的世界》这本书其实很早之前就知道这本书了，直到现在才想起看这本书。看完这本书让我想起<code>《山楂树之恋》</code>中老三和静秋的故事，我觉得《平凡的世界》阐述的东西要比《山楂树之恋》要沉重的多。前者的阐述映射了当时的整个社会种种，包括对那个时代的控诉，人性的美与丑，生活的无奈，不安于现实的挣扎，以及那凄美的爱恋了。看这本书我觉得需要一种勇气，太多让人感触的地方，很多地方笔者都感到一阵心酸，特别是田晓霞死后，我已经不想再看之后的章节了，太让人心痛。本为少安和润叶的错过感到可惜，当看到小霞和少平的顽强和坚定，开始感觉有点希望，可是路遥却让这种希望再次幻灭，或许他们本就不能走到一起。唯一庆幸的是，后来总算在兰香身上看到了希望。</p>
+
+<pre><code>不惋惜，不呼唤，我也不啼哭，
+一切将逝去……如苹果花丛的薄雾
+金黄的落叶堆满我心间——
+我已经再不是青春少年。 
+</code></pre>
+
+<p>《艾伦·图灵传》让我对图灵有了一个更直观的认识，一个时代不应忘却的人物。孤僻、低调，一个显得和这个世界格格不入，一个为社会做出重大贡献，却又被社会置于死地的巨人。对于Turing的死现在仍然是个谜，我想也许死对于当时的他才是解脱，他杀、自杀也好，我只想说他在自己的世界真的很潇洒。对于图灵，如本书的副标题一样，如谜一样解迷者，有太多难解，推荐这本书，体会书中图灵的喜怒哀乐。现在，计算机的发展迅速，社会也变得越来越人性化。很多年前他播下了一颗种子，此时这颗种子正茁壮成长。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[nslookup、host和dig]]></title>
@@ -35,8 +57,8 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host www.google.com</span>
-</span><span class='line'>www.google.com has address 74.125.135.106
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># host www.google.com</span>
+</span><span class='line'>  www.google.com has address 74.125.135.106
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -3036,125 +3058,6 @@ slot        插槽信息
 
 
 <p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[1-1、sed Command Syntax[译]]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/24/sed-1/"/>
-    <updated>2013-04-24T23:33:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/24/sed-1</id>
-    <content type="html"><![CDATA[<p>本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
-基本的语法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> <span class="o">{</span>sed-commands<span class="o">}</span> <span class="o">{</span>input-file<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<!--more-->
-
-
-<p>Sed在同一个时间点从输入处理文件{input-file}中读取一行内容并在特定的行上执行sed的命令选项。也就是说sed从输入处理文件中读取第一行并且在第一行执行sed命令选项。然后读取第二行并且在第二行执行sed命令选项。sed重复这个过程直到文件读取结束。</p>
-
-<p>对于sed，这里当然也有一些可选的命令行选项通过[options]表示。</p>
-
-<p>接下来的例子演示了sed的基本用法，这个简单的sed例子将打印/etc/passwd中所有的行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed -n <span class="s1">&#39;p&#39;</span> /etc/passwd
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这里主要的一个点在{sed-commands}，它可以是一个单个的sed命令或者多个sed命令。你也可以结合多个sed-commands写入到一个文件当中，并让sed使用-f选项调用，如下所示：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> -f <span class="o">{</span>sed-commands-in-a-file<span class="o">}</span> <span class="o">{</span>input-file<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>接下来的例子演示了基本的sed语法。这个例子从/etc/passwd文件中打印以root和nobody开头的行。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat test-script.sed </span>
-</span><span class='line'>/^root/ p
-</span><span class='line'>/^nobody/ p
-</span><span class='line'><span class="c"># sed -n -f test-script.sed /etc/passwd</span>
-</span><span class='line'>root:x:0:0:root:/root:/bin/bash
-</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当执行多个sed命令的时候，你也可以通过-e选项直接在命令行上使用它们。
-基本的sed -e用法: sed [options] -e {sed-command-1} -e {sed-command-2} {input-file}
-接下来的行就演示了-e的基本使用方法。它打印/etc/passwd文件中所有以root和nobody开头的行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n -e &#39;/^root/p&#39; -e &#39;/^nobody/p&#39; /etc/passwd </span>
-</span><span class='line'>root:x:0:0:root:/root:/bin/bash
-</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果你要在单个的命令行上通过-e选项执行多个命令，你可以使用\换行让命令分行显示，这样将会更利于阅读，如下:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n \</span>
-</span><span class='line'>&gt; -e <span class="s1">&#39;/^root/ p&#39;</span> <span class="se">\</span>
-</span><span class='line'>&gt; -e <span class="s1">&#39;/^nobody/ p&#39;</span> <span class="se">\</span>
-</span><span class='line'>&gt; /etc/passwd
-</span><span class='line'>root:x:0:0:root:/root:/bin/bash
-</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>当然你也可以使用{}选项实现如上相同的功能：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> <span class="s1">&#39;{</span>
-</span><span class='line'><span class="s1">sed-command-1</span>
-</span><span class='line'><span class="s1">sed-command-2</span>
-</span><span class='line'><span class="s1">}&#39;</span> input-file
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>接下来的例子演示了{}的基本使用方法</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># sed -n &#39;{</span>
-</span><span class='line'>&gt; /^root/ p
-</span><span class='line'>&gt; /^nobody/ p
-</span><span class='line'>&gt; <span class="o">}</span><span class="err">&#39;</span> /etc/passwd
-</span><span class='line'>root:x:0:0:root:/root:/bin/bash
-</span><span class='line'>nobody:x:99:99:Nobody:/:/sbin/nologin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：Sed的以上选项都不会更改源文件，它打印输出到标准输出。如果你想保存文件，可以使用-i选项或者使用重定向输出，这个之后的章节将会介绍。</p>
-
-<p>&#8211;EOF&#8211;</p>
-
-<p><strong>扯一句</strong>:本系列文章主要翻译自sed and awk 101 hacks一书，争取每日一篇，确保每两日一篇</p>
 ]]></content>
   </entry>
   

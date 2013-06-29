@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-06-20T16:44:34+08:00</updated>
+  <updated>2013-06-29T20:45:56+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -34,10 +34,11 @@
 <p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例
 ``` bash</p>
 
-<h1>host www.google.com</h1>
+<pre><code>  # host www.google.com
+  www.google.com has address 74.125.135.106
+</code></pre>
 
-<p>www.google.com has address 74.125.135.106
-```</p>
+<p>```</p>
 
 <p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定
 ``` bash</p>

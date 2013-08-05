@@ -18,7 +18,7 @@
 7
 export LESS_TERMCAP_mb=$&#39;\E[01;31m&#39;
 export &hellip;">
-  
+  <meta name="keywords" content="Linux, Tips">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -97,8 +97,6 @@ export &hellip;">
   
   <p><u><strong>1</strong>、给<strong>Linux man</strong>一点颜色看看</u></p>
 
-<hr />
-
 <p>在<strong>~/.bashrc</strong>或者<strong>~/.bash_profile</strong>中加入如下内容,<strong>source</strong>即可生效</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -118,14 +116,10 @@ export &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
-<hr />
-
 <p></p>
 
 
 <p><u><strong>2</strong>、通过文件添加<strong>Swap</strong>分区</u></p>
-
-<hr />
 
 <ul>
 <li>a、生成实际需求大小的文件
@@ -161,14 +155,10 @@ export &hellip;">
 </ul>
 
 
-<hr />
-
 <p></p>
 
 
 <p><u><strong>3</strong>、查看某个进程占用<strong>Swap</strong>大小</u></p>
-
-<hr />
 
 <ul>
 <li>方法1、<code>top</code> 按<code>f</code>键输入<code>p</code>回车即可</li>
@@ -176,14 +166,10 @@ export &hellip;">
 </ul>
 
 
-<hr />
-
 <p></p>
 
 
 <p><u><strong>4</strong>、RHEL常用Yum源</u></p>
-
-<hr />
 
 <ul>
 <li>源1、<a href="http://fedoraproject.org/wiki/EPEL/zh-cn">epel企业版Linux附加软件包</a>
@@ -204,9 +190,24 @@ export &hellip;">
 </ul>
 
 
-<hr />
-
 <p></p>
+
+
+<p><u><strong>5</strong>、bash history记录命令执行时间</u></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># export HISTTIMEFORMAT=&#39;%F %T &#39;</span>
+</span><span class='line'>kumu-opsdev ~ <span class="c"># history | less</span>
+</span><span class='line'>   39  2013-07-31 09:54:33 ls
+</span><span class='line'>   40  2013-07-31 09:54:35 su - <span class="nb">test</span>
+</span><span class='line'><span class="nb">   </span>41  2013-07-31 09:54:39 ls
+</span><span class='line'>   42  2013-07-31 10:54:40 chmod 700 a
+</span></code></pre></td></tr></table></div></figure>
 
 
   

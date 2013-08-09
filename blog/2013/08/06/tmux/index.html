@@ -491,7 +491,7 @@
 </span><span class='line'>
 </span><span class='line'><span class="c"># 判断是否已有开启的tmux会话，没有则开启</span>
 </span><span class='line'><span class="k">if </span>which tmux 2&gt;&amp;1 &gt;/dev/null; <span class="k">then</span>
-</span><span class='line'><span class="k">  </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
+</span><span class='line'><span class="k">    </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
 </span><span class='line'><span class="k">fi</span>
 </span></code></pre></td></tr></table></div></figure>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-09T15:32:36+08:00</updated>
+  <updated>2013-08-10T00:47:04+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -302,7 +302,7 @@ $ pdsh -g dsh-test -l root uptime
 <p><strong>dshbak格式化输出</strong><br/>
 pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出多时会比较混乱，可以采用<code>dshbak</code>做一些格式化，让输出更清晰。
 <code>
-$ pdsh -g dsh-test -l root 'date'    #查看哪些主机时间不一样，主机一多，可读性不强
+$ pdsh -g dsh-test -l root 'date'       #查看哪些主机时间不一样，主机一多，可读性不强
 192.168.0.232: Wed Jun 19 16:24:40 CST 2013
 192.168.0.231: Wed Jun 19 16:24:40 CST 2013
 192.168.0.234: Wed Jun 19 16:24:40 CST 2013

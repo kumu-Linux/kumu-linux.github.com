@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-09T15:30:21+08:00</updated>
+  <updated>2013-08-10T00:47:04+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -400,7 +400,7 @@
 </span><span class='line'>
 </span><span class='line'><span class="c"># 判断是否已有开启的tmux会话，没有则开启</span>
 </span><span class='line'><span class="k">if </span>which tmux 2&gt;&amp;1 &gt;/dev/null; <span class="k">then</span>
-</span><span class='line'><span class="k">  </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
+</span><span class='line'><span class="k">    </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
 </span><span class='line'><span class="k">fi</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -883,21 +883,21 @@
 </pre></td><td class='code'><pre><code class='bash'><span class='line'> pdsh -h
 </span><span class='line'>Usage: pdsh <span class="o">[</span>-options<span class="o">]</span> <span class="nb">command</span> ...
 </span><span class='line'>-S                <span class="k">return </span>largest of remote <span class="nb">command </span><span class="k">return </span>values
-</span><span class='line'>-h                output usage menu and quit              获取帮助
-</span><span class='line'>-V                output version information and quit     查看版本
-</span><span class='line'>-q                list the option settings and quit           列出pdsh执行的一些信息
+</span><span class='line'>-h                output usage menu and quit                获取帮助
+</span><span class='line'>-V                output version information and quit       查看版本
+</span><span class='line'>-q                list the option settings and quit         列出pdsh执行的一些信息
 </span><span class='line'>-b                disable ^C status feature <span class="o">(</span>batch mode<span class="o">)</span>
 </span><span class='line'>-d                <span class="nb">enable </span>extra debug information from ^C status
-</span><span class='line'>-l user           execute remote commands as user         指定远程使用的用户
+</span><span class='line'>-l user           execute remote commands as user           指定远程使用的用户
 </span><span class='line'>-t seconds        <span class="nb">set </span>connect timeout <span class="o">(</span>default is 10 sec<span class="o">)</span>   指定超时时间
 </span><span class='line'>-u seconds        <span class="nb">set command </span>timeout <span class="o">(</span>no default<span class="o">)</span>          类似-t
-</span><span class='line'>-f n              use fanout of n nodes                       设置同时连接的目标主机的个数
-</span><span class='line'>-w host,host,...  <span class="nb">set </span>target node list on <span class="nb">command </span>line        指定主机，host可以是主机名也可以是ip
-</span><span class='line'>-x host,host,...  <span class="nb">set </span>node exclusion list on <span class="nb">command </span>line 排除某些或者某个主机
-</span><span class='line'>-R name           <span class="nb">set </span>rcmd module to name                 指定rcmd的模块名，默认使用ssh
-</span><span class='line'>-N                disable hostname: labels on output lines    输出不显示主机名或者ip
-</span><span class='line'>-L                list info on all loaded modules and <span class="nb">exit</span>    列出pdsh加载的模块信息
-</span><span class='line'>-a                target all nodes                            指定所有的节点
+</span><span class='line'>-f n              use fanout of n nodes                     设置同时连接的目标主机的个数
+</span><span class='line'>-w host,host,...  <span class="nb">set </span>target node list on <span class="nb">command </span>line      指定主机，host可以是主机名也可以是ip
+</span><span class='line'>-x host,host,...  <span class="nb">set </span>node exclusion list on <span class="nb">command </span>line   排除某些或者某个主机
+</span><span class='line'>-R name           <span class="nb">set </span>rcmd module to name                   指定rcmd的模块名，默认使用ssh
+</span><span class='line'>-N                disable hostname: labels on output lines  输出不显示主机名或者ip
+</span><span class='line'>-L                list info on all loaded modules and <span class="nb">exit</span>  列出pdsh加载的模块信息
+</span><span class='line'>-a                target all nodes                          指定所有的节点
 </span><span class='line'>-g groupname      target hosts in dsh group <span class="s2">&quot;groupname&quot;</span>     指定dsh组名
 </span><span class='line'>-X groupname      exclude hosts in dsh group <span class="s2">&quot;groupname&quot;</span>    排除组，一般和-a连用
 </span><span class='line'>available rcmd modules: <span class="nb">exec</span>,xcpu,ssh <span class="o">(</span>default: ssh<span class="o">)</span>        可用的执行命令模块，默认为ssh
@@ -989,7 +989,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span>    <span class="c">#查看哪些主机时间不一样，主机一多，可读性不强</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span>       <span class="c">#查看哪些主机时间不一样，主机一多，可读性不强</span>
 </span><span class='line'>192.168.0.232: Wed Jun 19 16:24:40 CST 2013
 </span><span class='line'>192.168.0.231: Wed Jun 19 16:24:40 CST 2013
 </span><span class='line'>192.168.0.234: Wed Jun 19 16:24:40 CST 2013

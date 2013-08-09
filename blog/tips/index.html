@@ -210,6 +210,28 @@ export &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
+
+
+<p></p>
+
+
+<p><u><strong>6</strong>、避免程序因网络原因/窗口意外断开中断</u></p>
+
+<ul>
+<li>使用<a href="http://kumu-linux.github.io/blog/2013/08/06/tmux/">tmux</a>/<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a>等工具</li>
+<li>使用<code>nohup 程序名 &amp;</code>或者<code>setsid 程序名 &amp;</code>或者<code>(命令名 &amp;)</code> <a href="http://hi.baidu.com/xtyangjie/item/3f5aaff7e9c145de6225d23f">参考文章</a></li>
+<li>如果服务已经在运行了，则可以使用<code>disown</code>来完成
+
+<ul>
+<li>1、<code>Ctrl+z</code> 使当前程序睡眠</li>
+<li>2、<code>jobs</code> 查看后台id号</li>
+<li>3、<code>bg %jobid</code> 让程序后台运行</li>
+<li>4、<code>disown -h %jobid</code> 使运行程序忽略HUP信号</li>
+</ul>
+</li>
+</ul>
+
+
   
 </article>
 
@@ -232,6 +254,10 @@ export &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/02/journey/">旅途</a>
       </li>
     
@@ -251,15 +277,11 @@ export &hellip;">
         <a href="/blog/2013/06/19/pdsh/">pdsh使用方法</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/06/07/top-hacks/">top实践小技巧</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (9)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (5)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (9)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

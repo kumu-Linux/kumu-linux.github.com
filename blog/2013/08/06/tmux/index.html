@@ -482,11 +482,11 @@
 <span class='line-number'>13</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>tmux_init<span class="o">()</span>
 </span><span class='line'><span class="o">{</span>
-</span><span class='line'>  tmux new-session -s <span class="s2">&quot;kumu&quot;</span> -d -n <span class="s2">&quot;local&quot;</span>    <span class="c"># 开启一个会话</span>
-</span><span class='line'>  tmux new-window -n <span class="s2">&quot;other&quot;</span>          <span class="c"># 开启一个窗口</span>
+</span><span class='line'>    tmux new-session -s <span class="s2">&quot;kumu&quot;</span> -d -n <span class="s2">&quot;local&quot;</span>    <span class="c"># 开启一个会话</span>
+</span><span class='line'>    tmux new-window -n <span class="s2">&quot;other&quot;</span>          <span class="c"># 开启一个窗口</span>
 </span><span class='line'>    tmux split-window -h                <span class="c"># 开启一个竖屏</span>
-</span><span class='line'>  tmux split-window -v <span class="s2">&quot;top&quot;</span>          <span class="c"># 开启一个横屏,并执行top命令</span>
-</span><span class='line'>  tmux -2 attach-session -d           <span class="c"># tmux -2强制启用256color，连接已开启的tmux</span>
+</span><span class='line'>    tmux split-window -v <span class="s2">&quot;top&quot;</span>          <span class="c"># 开启一个横屏,并执行top命令</span>
+</span><span class='line'>    tmux -2 attach-session -d           <span class="c"># tmux -2强制启用256color，连接已开启的tmux</span>
 </span><span class='line'><span class="o">}</span>
 </span><span class='line'>
 </span><span class='line'><span class="c"># 判断是否已有开启的tmux会话，没有则开启</span>

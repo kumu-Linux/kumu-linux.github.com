@@ -72,8 +72,10 @@
 <ul class="main-navigation">
   <li><a href="/">Blog首页</a></li>
   <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
   <li><a href="/blog/ops">运维利器</a></li>
-  <li><a href="/blog/tips">Linux Tips</a></li>  
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
   <li><a href="/blog/about">关于我</a></li>
 </ul>
 </nav>
@@ -395,10 +397,14 @@
 <span class='line-number'>52</span>
 <span class='line-number'>53</span>
 <span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set prefix key to Ctrl-a</span>
 </span><span class='line'>unbind-key C-b
 </span><span class='line'><span class="nb">set</span>-option -g prefix C-a
 </span><span class='line'><span class="nb">bind</span>-key C-a last-window <span class="c"># 方便切换，个人习惯</span>
+</span><span class='line'><span class="nb">bind</span>-key a send-prefix
+</span><span class='line'><span class="c"># shell下的Ctrl+a切换到行首在此配置下失效，此处设置之后Ctrl+a再按a即可切换至shell行首</span>
 </span><span class='line'>
 </span><span class='line'><span class="c"># reload settings # 重新读取加载配置文件</span>
 </span><span class='line'><span class="nb">bind </span>R <span class="nb">source</span>-file ~/.tmux.conf <span class="se">\;</span> display-message <span class="s2">&quot;Config reloaded...&quot;</span>
@@ -564,6 +570,8 @@
         <a class="basic-alignment left" href="/blog/2013/08/02/journey/" title="Previous Post: 旅途">&laquo; 旅途</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/08/12/pssh/" title="Next Post: pssh使用方法">pssh使用方法 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -587,6 +595,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/12/pssh/">pssh使用方法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
       </li>
     
@@ -606,15 +618,11 @@
         <a href="/blog/2013/06/19/nslookup-dig-host/">nslookup、host和dig</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/06/19/pdsh/">pdsh使用方法</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (9)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (10)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

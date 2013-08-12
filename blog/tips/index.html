@@ -80,8 +80,10 @@ export &hellip;">
 <ul class="main-navigation">
   <li><a href="/">Blog首页</a></li>
   <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
   <li><a href="/blog/ops">运维利器</a></li>
-  <li><a href="/blog/tips">Linux Tips</a></li>  
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
   <li><a href="/blog/about">关于我</a></li>
 </ul>
 </nav>
@@ -232,6 +234,75 @@ export &hellip;">
 </ul>
 
 
+<p><u><em>7</em>、Linux终端录制和回放</u></p>
+
+<ul>
+<li><code>script</code>和<code>scriptreplay</code>命令</li>
+<li>【 script负责录制 | scriptreplay负责回放 】 <a href="http://blog.csdn.net/signmem/article/details/8734476">参考文章</a></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># script -t 2&gt; test.time -a test.txt    # 录制，存入历史到test.txt</span>
+</span><span class='line'>... ...
+</span><span class='line'><span class="c"># exit                                  # 退出录制</span>
+</span><span class='line'><span class="c"># scriptreplay test.time test.txt       # 终端回放</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><u><em>8</em>、退出无响应的ssh连接</u></p>
+
+<ul>
+<li>快捷键<code>~.</code> [波浪线和点]</li>
+</ul>
+
+
+<p><u><em>9</em>、ssh配置文件定义ssh连接端口</u></p>
+
+<ul>
+<li>为方便连接，可以在<code>~/.ssh/config</code>文件中定义ssh连接端口和私钥等</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ~/.ssh/config</span>
+</span><span class='line'>HOST 172.16.*.*
+</span><span class='line'>    Port 22222
+</span><span class='line'>    IdentityFile ~/.ssh/kumu_id_rsa
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><u><em>10</em>、vim分屏功能</u></p>
+
+<ul>
+<li>vim打开多个文件横屏<code>-o</code>选项: <code>vim -o2 /etc/passwd test1 test2</code> [n是数字，表示分成几个屏]
+
+<ul>
+<li>上下切换使用<code>Ctrl+w</code>+上下方向键</li>
+</ul>
+</li>
+<li>vim打开多个文件竖屏<code>-O</code> 选项: <code>vim -O2 /etc/passwd test1 test2</code> [n是数字，表示分成几个屏]
+
+<ul>
+<li>上下切换使用<code>Ctrl+w</code>+左右方向键</li>
+</ul>
+</li>
+<li>在vim中打开文件分屏
+
+<ul>
+<li><code>split 文件名</code> 横屏</li>
+<li><code>vsplit 文件名</code> 竖屏</li>
+</ul>
+</li>
+</ul>
+
+
   
 </article>
 
@@ -254,6 +325,10 @@ export &hellip;">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/12/pssh/">pssh使用方法</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
       </li>
     
@@ -273,15 +348,11 @@ export &hellip;">
         <a href="/blog/2013/06/19/nslookup-dig-host/">nslookup、host和dig</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/06/19/pdsh/">pdsh使用方法</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (9)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (10)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

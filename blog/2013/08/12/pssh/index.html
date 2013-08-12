@@ -5,12 +5,16 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>dmidecode - Linux SA Notes By 枯木</title>
+  <title>pssh使用方法 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明， &hellip;">
-  <meta name="keywords" content="dmidecode, Linux">
+  <meta name="description" content="pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh pdsh使用方法 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: parallel-ssh 安装 1
+2
+3
+4
+wget http://parallel- &hellip;">
+  <meta name="keywords" content="linux, pssh">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -20,7 +24,7 @@
   <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
   
   
-  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/04/27/dmidecode">
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/08/12/pssh">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
@@ -86,7 +90,7 @@
   
   <header>
     
-      <h1 class="entry-title">Dmidecode</h1>
+      <h1 class="entry-title">Pssh使用方法</h1>
     
     
       <p class="meta">
@@ -102,7 +106,7 @@
   
 
 
-<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
+<time datetime="2013-08-12T14:53:00+08:00" pubdate data-updated="true">Aug 12<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -111,58 +115,105 @@
   </header>
 
 
-<div class="entry-content"><p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
+<div class="entry-content"><p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
 
-<!--more-->
+<!--more -->
 
 
-<p><code>dmidecode</code>的作用则是将DMI表中的信息用人可以读懂的方式显示出来。</p>
-
-<p>最简单的使用方法，它将显示dmidecode所能获取到的全部dmi信息：</p>
+<h3>安装</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
+</span><span class='line'>tar zxvf pssh-2.3.1.tar.gz
+</span><span class='line'><span class="nb">cd </span>pssh-2.3.1/
+</span><span class='line'>python setup.py install
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>但是显示所有的信息不便于我们获取想要获取的信息，那么就需要结合其它选项获取信息</p>
-
-<p><strong>常用参数:</strong></p>
+<h3>pssh相关参数</h3>
 
 <ul>
-<li>-q 或 &#8211;quiet
+<li>pssh在多个主机上并行地运行命令
 
 <ul>
-<li>不显示太多信息，比如某条数据是从哪里读来的等等，为了得到简洁的信息，此条很有用</li>
+<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
+
+<ul>
+<li> 如 test@172.16.10.10:229</li>
 </ul>
 </li>
-<li>-t 或 &#8211;type TYPE
-
-<ul>
-<li>指定要显示类型的信息</li>
+<li>-H 执行命令主机，主机格式 user@ip:port</li>
+<li>-l 远程机器的用户名</li>
+<li>-p 一次最大允许多少连接</li>
+<li>-P 执行时输出执行信息</li>
+<li>-o 输出内容重定向到一个文件</li>
+<li>-e 执行错误重定向到一个文件</li>
+<li>-t 设置命令执行超时时间</li>
+<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
+<li>-O 设置ssh一些选项</li>
+<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
+<li>-X 通-x,但是只能设置一个参数</li>
+<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
 </ul>
 </li>
-<li>-s 或 &#8211;string KEYWORD
+</ul>
+
+
+<h3>附加工具</h3>
 
 <ul>
-<li>显示特定的关键字</li>
+<li>pscp 传输文件到多个hosts，类似scp
+
+<ul>
+<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
+</ul>
+</li>
+<li>pslurp 从多台远程机器拷贝文件到本地</li>
+<li>pnuke 并行在远程主机杀进程
+
+<ul>
+<li>pnuke -h hosts.txt -l irb2 java</li>
+</ul>
+</li>
+<li>prsync 使用rsync协议从本地计算机同步到远程主机
+
+<ul>
+<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
 </ul>
 </li>
 </ul>
 
 
-<p><strong>-t或&#8211;type后的文本参数</strong></p>
+<h3>示例</h3>
 
-<pre><code>bios        bios的各项信息
-system      系统信息，在我的笔记本上可以看到版本、型号、序号等信息。
-baseboard   主板信息
-chassis     底板信息
-processor   CPU的详细信息
-memory      内存信息，包括目前插的内存条数及大小，支持的单条最大内存和总内存大小等
-cache       缓存信息
-connector   PCI设备信息
-slot        插槽信息 
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># cat host.txt </span>
+</span><span class='line'>root@192.168.230.128
+</span><span class='line'>wul@10.0.0.8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -i -h host.txt &#39;date&#39;</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
+</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>-x</code>选项</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -171,29 +222,17 @@ slot        插槽信息
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -t </span>
-</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;t&#39;</span>
-</span><span class='line'>Type number or keyword expected
-</span><span class='line'>Valid <span class="nb">type </span>keywords are:
-</span><span class='line'>  bios
-</span><span class='line'>  system
-</span><span class='line'>  baseboard
-</span><span class='line'>  chassis
-</span><span class='line'>  processor
-</span><span class='line'>  memory
-</span><span class='line'>  cache
-</span><span class='line'>  connector
-</span><span class='line'>  slot
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -h host.txt date</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
+</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
+</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
+</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>dmidecode -s</strong>:</p>
+<p><code>-H</code>选项</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -202,61 +241,21 @@ slot        插槽信息
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># dmidecode -s</span>
-</span><span class='line'>dmidecode: option requires an argument -- <span class="s1">&#39;s&#39;</span>
-</span><span class='line'>String keyword expected
-</span><span class='line'>Valid string keywords are:
-</span><span class='line'>  bios-vendor
-</span><span class='line'>  bios-version
-</span><span class='line'>  bios-release-date
-</span><span class='line'>  system-manufacturer
-</span><span class='line'>  system-product-name
-</span><span class='line'>  system-version
-</span><span class='line'>  system-serial-number
-</span><span class='line'>  system-uuid
-</span><span class='line'>  baseboard-manufacturer
-</span><span class='line'>  baseboard-product-name
-</span><span class='line'>  baseboard-version
-</span><span class='line'>  baseboard-serial-number
-</span><span class='line'>  baseboard-asset-tag
-</span><span class='line'>  chassis-manufacturer
-</span><span class='line'>  chassis-type
-</span><span class='line'>  chassis-version
-</span><span class='line'>  chassis-serial-number
-</span><span class='line'>  chassis-asset-tag
-</span><span class='line'>  processor-family
-</span><span class='line'>  processor-manufacturer
-</span><span class='line'>  processor-version
-</span><span class='line'>  processor-frequency
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -H 192.168.230.128 -H wul@10.0.0.8 date</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> 192.168.230.128
+</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
+</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
+</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>常用命令举例</strong></p>
+<h3>参考文档</h3>
 
 <ul>
-<li>1、查看服务器型号：dmidecode | grep &#8216;Product Name&#8217;</li>
-<li>2、查看系统序列号：dmidecode -s system-serial-number</li>
-<li>3、查看内存信息：dmidecode -t memory</li>
-<li>4、查看OEM信息：dmidecode -t 11</li>
+<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
+<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
 </ul>
 
 
@@ -283,12 +282,12 @@ slot        插槽信息
   
 
 
-<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
+<time datetime="2013-08-12T14:53:00+08:00" pubdate data-updated="true">Aug 12<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/yun-wei-li-qi/'>运维利器</a>
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
   
 </span>
 
@@ -307,10 +306,8 @@ slot        插槽信息
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/04/26/sed-2/" title="Previous Post: 1-2、Sed Scripting Flow[译]">&laquo; 1-2、Sed Scripting Flow[译]</a>
+        <a class="basic-alignment left" href="/blog/2013/08/06/tmux/" title="Previous Post: Linux下终端利器tmux">&laquo; Linux下终端利器tmux</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2013/04/28/sed-3/" title="Next Post: 1-3、Print Pattern Space[译]">1-3、Print Pattern Space[译] &raquo;</a>
       
     </p>
   </footer>
@@ -419,8 +416,8 @@ slot        插槽信息
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/';
-        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/';
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/08/12/pssh/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/08/12/pssh/';
         var disqus_script = 'embed.js';
       
     (function () {

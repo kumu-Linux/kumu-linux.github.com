@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-10T00:53:44+08:00</updated>
+  <updated>2013-08-12T18:09:13+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,130 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[pssh使用方法]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/12/pssh/"/>
+    <updated>2013-08-12T14:53:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/12/pssh</id>
+    <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
+
+<!--more -->
+
+
+<h3>安装</h3>
+
+<p><code>bash
+wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
+tar zxvf pssh-2.3.1.tar.gz
+cd pssh-2.3.1/
+python setup.py install
+</code></p>
+
+<h3>pssh相关参数</h3>
+
+<ul>
+<li>pssh在多个主机上并行地运行命令
+
+<ul>
+<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
+
+<ul>
+<li> 如 test@172.16.10.10:229</li>
+</ul>
+</li>
+<li>-H 执行命令主机，主机格式 user@ip:port</li>
+<li>-l 远程机器的用户名</li>
+<li>-p 一次最大允许多少连接</li>
+<li>-P 执行时输出执行信息</li>
+<li>-o 输出内容重定向到一个文件</li>
+<li>-e 执行错误重定向到一个文件</li>
+<li>-t 设置命令执行超时时间</li>
+<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
+<li>-O 设置ssh一些选项</li>
+<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
+<li>-X 通-x,但是只能设置一个参数</li>
+<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>附加工具</h3>
+
+<ul>
+<li>pscp 传输文件到多个hosts，类似scp
+
+<ul>
+<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
+</ul>
+</li>
+<li>pslurp 从多台远程机器拷贝文件到本地</li>
+<li>pnuke 并行在远程主机杀进程
+
+<ul>
+<li>pnuke -h hosts.txt -l irb2 java</li>
+</ul>
+</li>
+<li>prsync 使用rsync协议从本地计算机同步到远程主机
+
+<ul>
+<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>示例</h3>
+
+<p><code>bash
+kumu-opsdev ~ # cat host.txt
+root@192.168.230.128
+wul@10.0.0.8
+</code></p>
+
+<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项
+<code>bash
+kumu-opsdev ~ # pssh -i -h host.txt 'date'
+[1] 16:32:38 [SUCCESS] root@192.168.230.128
+Mon Aug 12 16:32:38 CST 2013
+[2] 16:32:38 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 16:32:38 CST 2013
+</code></p>
+
+<p><code>-x</code>选项
+<code>
+kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -h host.txt date
+[1] 17:20:01 [SUCCESS] root@192.168.230.128
+Mon Aug 12 17:20:01 CST 2013
+Stderr: Connection to 192.168.230.128 closed.
+[2] 17:20:01 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 17:20:01 CST 2013
+Stderr: Connection to 10.0.0.8 closed.
+</code></p>
+
+<p><code>-H</code>选项
+<code>
+kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -H 192.168.230.128 -H wul@10.0.0.8 date
+[1] 17:22:58 [SUCCESS] 192.168.230.128
+Mon Aug 12 17:22:58 CST 2013
+Stderr: Connection to 192.168.230.128 closed.
+[2] 17:22:58 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 17:22:58 CST 2013
+Stderr: Connection to 10.0.0.8 closed.
+</code></p>
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
+<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[nslookup、host和dig]]></title>
@@ -864,123 +988,6 @@ rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/na
 <p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
 
 <p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NTP服务]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/20/ntp/"/>
-    <updated>2013-05-20T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/20/ntp</id>
-    <content type="html"><![CDATA[<h2>简介</h2>
-
-<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
-
-<!--more-->
-
-
-<p>NTP提供准确时间，首先需要一个准确的UTC时间来源，NTP获得UTC的时间来源可以从原子钟、天文台、卫星，也可从Internet上获取。时间服务器按照NTP服务器的等级传播，根据离外部UTC源的远近将所有服务器归入不用的层(Stratum)中。Stratum-1在顶层由外部UTC接入，stratum-1的时间服务器为整个系统的基础，Stratum的总数限制在15以内。下图为NTP层次图：</p>
-
-<center><img src="http://kumu-Linux.github.com/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
-
-
-<h2>NTP Server安装配置</h2>
-
-<p>关于NTP服务器的安装，根据不同版本安装方法也不同。REDHAT系统则可以使用yum安装，Ubuntu系列可以使用apt-get安装，这里不做具体的介绍，主要详细介绍配置文件的信息。</p>
-
-<p>对于Centos过滤注释和空行后，ntp配置文件内容如下
-``` bash</p>
-
-<h1>grep -vE '<sup>#|<sup>$'</sup></sup> /etc/ntp.conf</h1>
-
-<p>driftfile /var/lib/ntp/drift
-restrict default kod nomodify notrap nopeer noquery
-restrict -6 default kod nomodify notrap nopeer noquery
-restrict 127.0.0.1
-restrict -6 ::1
-server 0.centos.pool.ntp.org
-server 1.centos.pool.ntp.org
-server 2.centos.pool.ntp.org
-includefile /etc/ntp/crypto/pw
-keys /etc/ntp/keys
-```</p>
-
-<h3>配置选项说明</h3>
-
-<ul>
-<li><code>driftfile</code>选项， 则指定了用来保存系统时钟频率偏差的文件。 ntpd程序使用它来自动地补偿时钟的自然漂移， 从而使时钟即使在切断了外来时源的情况下， 仍能保持相当的准确度。另外，driftfile 选项也保存上一次响应所使用的 NTP 服务器的信息。 这个文件包含了 NTP 的内部信息， 它不应被任何其他进程修改。<code>无需更改</code></li>
-<li><code>restrict default kod nomodify notrap nopeer noquery</code>  默认拒绝所有NTP客户端的操作【restrict <IP 地址> &lt;子网掩码>|&lt;网段> [ignore|nomodiy|notrap|notrust|nknod]】 指定可以通信的IP地址和网段。如果没有指定选项，表示客户端访问NTP服务器没有任何限制
-
-<ul>
-<li>ignore    关闭所有NTP服务</li>
-<li>nomodiy   表示客户端不能更改NTP服务器的时间参数，但可以通过NTP服务器进行时间同步</li>
-<li>notrust   拒绝没有通过认证的客户端</li>
-<li>knod      kod技术科阻止"Kiss of Death"包（一种DOS攻击）对服务器的破坏，使用knod开启功能</li>
-<li>nopeer    不与其它同一层的NTP服务器进行同步</li>
-</ul>
-</li>
-<li><code>server 【IP|FQDN|prefer】</code>指该服务器上层NTP Server，使用prefer的优先级最高，没有使用prefer则按照配置文件顺序由高到低，默认情况下至少15min和上层NTP服务器进行时间校对</li>
-<li><code>fudge</code>可以指定本地NTP Server层，如<code>fudge 127.0.0.1 stratum 9</code></li>
-<li><code>broadcast 网段 子网掩码</code>指定NTP进行时间广播的网段，如<code>broadcast 192.168.1.255</code></li>
-<li><code>logfile</code> 可以指定NTP Server日志文件</li>
-</ul>
-
-
-<p>几个与NTP相关的配置文件:<code>/usr/share/zoneinfo/</code>、<code>/etc/sysconfig/clock</code>、<code>/etc/localtime</code>
-* /usr/share/zoneinfo/ 存放时区文件目录
-* /etc/sysconfig/clock 指定当前系统时区信息
-* /etc/localtime 相应的时区文件</p>
-
-<p>如果需要修改当前时区，则可以从/usr/share/zoneinfo/目录拷贝相应时区文件覆盖/etc/localtime并修改/etc/sysconfig/clock 即可
-<code>bash
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-sed -i 's:ZONE=.*:ZONE="Asia/Shanghai":g' /etc/sysconfig/clock
-</code></p>
-
-<h2>相关命令</h2>
-
-<p><code>ntpstat</code>查看同步状态
-``` bash</p>
-
-<h1>ntpstat</h1>
-
-<p>synchronised to NTP server (192.168.0.18) at stratum 4
-   time correct to within 88 ms     #表面时间校正88ms
-   polling server every 1024 s      #每隔1024s更新一次
-```</p>
-
-<p><code>ntpq</code>列出上层状态
-``` bash</p>
-
-<h1>ntpq -np</h1>
-
-<pre><code> remote           refid      st t when poll reach   delay   offset  jitter
-</code></pre>
-
-<p>==============================================================================
-*192.168.0.18       202.112.31.197   3 u  101 1024  377   14.268    0.998   0.143
-```</p>
-
-<p>输出说明：</p>
-
-<ul>
-<li><code>remote</code>  NTP Server</li>
-<li><code>refid</code>   参考的上层ntp地址</li>
-<li><code>st</code>  层次</li>
-<li><code>when</code>    上次更新时间距离现在时常</li>
-<li><code>poll</code>    下次更新时间</li>
-<li><code>reach</code>   更新次数</li>
-<li><code>delay</code>   延迟</li>
-<li><code>offset</code>  时间补偿结果</li>
-<li><code>jitter</code>  与BIOS硬件时间差异</li>
-</ul>
-
-
-<h2>参考文档</h2>
-
-<p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
-<a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
-鸟哥Linux私房菜</p>
 ]]></content>
   </entry>
   

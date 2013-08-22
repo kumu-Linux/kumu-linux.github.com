@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-12T18:09:13+08:00</updated>
+  <updated>2013-08-22T11:37:02+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,117 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula在CentOS6.4安装备忘]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install/"/>
+    <updated>2013-08-22T11:10:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install</id>
+    <content type="html"><![CDATA[<h3>简介</h3>
+
+<p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你与Xen，KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。除了像Amazon一样的商业云服务提供商，在不同OpenNebula实例上运行私有云的Amazon合作伙伴也同样可以作为远程云服务供应商。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，它也支持印象档的传输、复制和虚拟网络管理网络。</p>
+
+<!--more-->
+
+
+<h3>OpenNebula 4.2 相关</h3>
+
+<ul>
+<li>(OpenNebula 4.2 Guides)[http://opennebula.org/documentation:rel4.2]</li>
+<li>ruby >= 1.8.7 #　CentOS6.4默认支持版本</li>
+<li>OpenNebula<a href="http://downloads.opennebula.org/">下载地址</a>
+
+<ul>
+<li>CentOS选择对应版本即可<strong>CentOS-6-opennebula-4.2.0-1.tar.gz</strong></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>更新配置源和update软件</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span>
+</span><span class='line'><span class="c"># rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</span>
+</span><span class='line'><span class="c"># yum update</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>安装OpenNubula4.2</h3>
+
+<h4>解压下载的OpenNebula4.2软件包</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tar xf CentOS-6-opennebula-4.2.0-1.tar.gz</span>
+</span><span class='line'><span class="c"># cd opennebula-4.2.0-1</span>
+</span><span class='line'><span class="c"># yum localinstall opennebula-4.2.0-1.x86_64.rpm \</span>
+</span><span class='line'>opennebula-common-4.2.0-1.x86_64.rpm opennebula-java-4.2.0-1.x86_64.rpm <span class="se">\</span>
+</span><span class='line'>opennebula-gate-4.2.0-1.x86_64.rpm opennebula-flow-4.2.0-1.x86_64.rpm <span class="se">\</span>
+</span><span class='line'>opennebula-server-4.2.0-1.x86_64.rpm opennebula-ozones-4.2.0-1.x86_64.rpm <span class="se">\</span>
+</span><span class='line'>opennebula-ruby-4.2.0-1.x86_64.rpm opennebula-sunstone-4.2.0-1.x86_64.rpm -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>启动相关服务</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/opennebula start</span>
+</span><span class='line'><span class="c"># /etc/init.d/opennebula-sunstone start</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>修改sunstone默认监听网址</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof -i:9869  # 默认监听本地9869端口，如果连接需要修改为和外网通信地址</span>
+</span><span class='line'>COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+</span><span class='line'>ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 <span class="o">(</span>LISTEN<span class="o">)</span>
+</span><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf</span>
+</span><span class='line'>:host: 127.0.0.1
+</span><span class='line'><span class="c"># sed -i &#39;/:host/s/127.0.0.1/192.168.80.130/g&#39; /etc/one/sunstone-server.conf</span>
+</span><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf </span>
+</span><span class='line'>:host: 192.168.80.130
+</span><span class='line'><span class="c"># /etc/init.d/opennebula-sunstone restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>浏览器登录测试</h3>
+
+<p>http://192.168.80.130:9869</p>
+
+<p><img src="http://kumu-Linux.github.com/images/OpenNebula_web.png" width="500" /></p>
+
+<p>用户名和密码在安装的时候已经随机生成，oneadmin 是用户名，后面的一串是密码</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /var/lib/one/.one/one_auth </span>
+</span><span class='line'>oneadmin:023c0bd7b09d0631074cc16aa61b7d60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考文档</h3>
+
+<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[pssh使用方法]]></title>
@@ -3194,164 +3305,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p><strong>注</strong>：你可能不经常使用w命令，大多数人使用UNIX输出重定向，来保存sed输出到一个文件，如: sed ‘p’ exployee.txt > output.txt</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[1-4、Delete Lines[译]]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/29/sed-4/"/>
-    <updated>2013-04-29T23:29:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/29/sed-4</id>
-    <content type="html"><![CDATA[<p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
-
-<!--more-->
-
-
-<p>默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指定删除的地址范围是非常有用的。接下来有很多类似的例子：</p>
-
-<p><strong>仅删除第二行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除1到4行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1,4 d&#39;</span> employee.txt
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除行2到最后一行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>仅删除奇数行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1~2 d&#39;</span> employee.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配词“Manager”的行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Manager/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配有”Jason”的行到第四行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,4 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：如果这儿没有匹配“Jason“的行在1到4行中，这条命令只删除第四行后匹配”Jason“的行</p>
-
-<p><strong>删除匹配“Raj“的行到最后一行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配”Raj”的行到匹配“Jane“的行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,/Jane/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配”Jason”的行和其之后的两行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,+2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>有用的删除实例</h2>
-
-<p>下面的实例在日常操作中是非常有用的</p>
-
-<p><strong>删除所有的空行</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^$/ d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grep实现过滤空行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^$&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除所有注释的行(假设注释行以#号开头)</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^#/ d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grep实现过滤注释行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^#&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：当你使用多个sed命令时，此时sed遇到&#8217;d&#8217;命令，整个匹配的匹配行将被删除，并且之后的命令对于删除的行将不会执行。</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

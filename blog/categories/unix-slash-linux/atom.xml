@@ -1,0 +1,994 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.com/"/>
+  <updated>2013-08-22T11:40:02+08:00</updated>
+  <id>http://kumu-Linux.github.com/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[pssh使用方法]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/12/pssh/"/>
+    <updated>2013-08-12T14:53:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/12/pssh</id>
+    <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
+
+<!--more -->
+
+
+<h3>安装</h3>
+
+<p><code>bash
+wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
+tar zxvf pssh-2.3.1.tar.gz
+cd pssh-2.3.1/
+python setup.py install
+</code></p>
+
+<h3>pssh相关参数</h3>
+
+<ul>
+<li>pssh在多个主机上并行地运行命令
+
+<ul>
+<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
+
+<ul>
+<li> 如 test@172.16.10.10:229</li>
+</ul>
+</li>
+<li>-H 执行命令主机，主机格式 user@ip:port</li>
+<li>-l 远程机器的用户名</li>
+<li>-p 一次最大允许多少连接</li>
+<li>-P 执行时输出执行信息</li>
+<li>-o 输出内容重定向到一个文件</li>
+<li>-e 执行错误重定向到一个文件</li>
+<li>-t 设置命令执行超时时间</li>
+<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
+<li>-O 设置ssh一些选项</li>
+<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
+<li>-X 通-x,但是只能设置一个参数</li>
+<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>附加工具</h3>
+
+<ul>
+<li>pscp 传输文件到多个hosts，类似scp
+
+<ul>
+<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
+</ul>
+</li>
+<li>pslurp 从多台远程机器拷贝文件到本地</li>
+<li>pnuke 并行在远程主机杀进程
+
+<ul>
+<li>pnuke -h hosts.txt -l irb2 java</li>
+</ul>
+</li>
+<li>prsync 使用rsync协议从本地计算机同步到远程主机
+
+<ul>
+<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>示例</h3>
+
+<p><code>bash
+kumu-opsdev ~ # cat host.txt
+root@192.168.230.128
+wul@10.0.0.8
+</code></p>
+
+<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项
+<code>bash
+kumu-opsdev ~ # pssh -i -h host.txt 'date'
+[1] 16:32:38 [SUCCESS] root@192.168.230.128
+Mon Aug 12 16:32:38 CST 2013
+[2] 16:32:38 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 16:32:38 CST 2013
+</code></p>
+
+<p><code>-x</code>选项
+<code>
+kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -h host.txt date
+[1] 17:20:01 [SUCCESS] root@192.168.230.128
+Mon Aug 12 17:20:01 CST 2013
+Stderr: Connection to 192.168.230.128 closed.
+[2] 17:20:01 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 17:20:01 CST 2013
+Stderr: Connection to 10.0.0.8 closed.
+</code></p>
+
+<p><code>-H</code>选项
+<code>
+kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -H 192.168.230.128 -H wul@10.0.0.8 date
+[1] 17:22:58 [SUCCESS] 192.168.230.128
+Mon Aug 12 17:22:58 CST 2013
+Stderr: Connection to 192.168.230.128 closed.
+[2] 17:22:58 [SUCCESS] wul@10.0.0.8
+Mon Aug 12 17:22:58 CST 2013
+Stderr: Connection to 10.0.0.8 closed.
+</code></p>
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
+<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[nslookup、host和dig]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host/"/>
+    <updated>2013-06-19T16:55:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host</id>
+    <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
+
+<!--more-->
+
+
+<h2>nslookup</h2>
+
+<blockquote><p>nslookup is a tried and true program that has weathered the ages. nslookup has been deprecated and may be removed from future releases. There is not even a man page for this program.</p></blockquote>
+
+<p>因此，这里不过多介绍这个古老的工具了</p>
+
+<h2>host</h2>
+
+<p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例
+``` bash</p>
+
+<pre><code>  # host www.google.com
+  www.google.com has address 74.125.135.106
+</code></pre>
+
+<p>```</p>
+
+<p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定
+``` bash</p>
+
+<h1>host www.google.com 8.8.8.8</h1>
+
+<p>Using domain server:
+Name: 8.8.8.8
+Address: 8.8.8.8#53
+Aliases:</p>
+
+<p>www.google.com has address 173.194.72.147
+```</p>
+
+<p><code>host</code>当然也支持反解析
+``` bash</p>
+
+<h1>host 173.194.72.147</h1>
+
+<p>147.72.194.173.in-addr.arpa domain name pointer tf-in-f147.1e100.net.
+```</p>
+
+<p>指定查询类型可以使用<code>-t</code>选项</p>
+
+<p>``` bash</p>
+
+<h1>host -t SOA google.com  #查询SOA记录信息</h1>
+
+<p>google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+```</p>
+
+<p>查询<code>MX</code>记录
+<code>
+$ host -t MX google.com
+google.com mail is handled by 10 aspmx.l.google.com.
+google.com mail is handled by 40 alt3.aspmx.l.google.com.
+google.com mail is handled by 20 alt1.aspmx.l.google.com.
+google.com mail is handled by 50 alt4.aspmx.l.google.com.
+google.com mail is handled by 30 alt2.aspmx.l.google.com.
+</code></p>
+
+<p><code>-C</code>对比认证DNS SOA信息
+```</p>
+
+<h1>host -C google.com</h1>
+
+<p>Nameserver 216.239.34.10:</p>
+
+<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></pre>
+
+<p>Nameserver 216.239.36.10:</p>
+
+<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></pre>
+
+<p>Nameserver 216.239.32.10:
+... ...
+```</p>
+
+<p>查询DNS Server软件版本信息,10.10.10.2为DNS Server
+``` bash</p>
+
+<h1>host -c CH -t txt version.bind 10.10.10.2</h1>
+
+<p>Using domain server:
+Name: 10.10.10.2
+Address: 10.10.10.2#53
+Aliases:</p>
+
+<p>version.bind descriptive text "9.8.1-P2"
+```</p>
+
+<p><strong>host帮助</strong>
+``` bash</p>
+
+<h1>host</h1>
+
+<p>Usage: host [-aCdlriTwv] [-c class] [-N ndots] [-t type] [-W time]</p>
+
+<pre><code>        [-R number] [-m flag] hostname [server]
+   -a is equivalent to -v -t ANY
+   -c specifies query class for non-IN data  搜索非网络数据时要指定要查找的类
+   -C compares SOA records on authoritative nameservers
+   -d is equivalent to -v
+   -l lists all hosts in a domain, using AXFR
+   -i IP6.INT reverse lookups
+   -N changes the number of dots allowed before root lookup is done
+   -r disables recursive processing
+   -R specifies number of retries for UDP packets
+   -s a SERVFAIL response should stop query
+   -t specifies the query type 指定要查询的记录类型
+   -T enables TCP/IP mode
+   -v enables verbose output  输出更详细的信息
+   -w specifies to wait forever for a reply
+   -W specifies how long to wait for a reply
+   -4 use IPv4 query transport only
+   -6 use IPv6 query transport only
+   -m set memory debugging flag (trace|record|usage)
+</code></pre>
+
+<p>```</p>
+
+<h2>dig</h2>
+
+<p>dig也是一个很强大的命令，相对host来说输出较为繁杂，如下：</p>
+
+<p>``` bash
+$ dig www.google.com
+... ...</p>
+
+<p>;; ANSWER SECTION:
+www.google.com.         297     IN      A       74.125.135.106
+www.google.com.         297     IN      A       74.125.135.104
+... ...</p>
+
+<p>;; AUTHORITY SECTION:
+google.com.             172796  IN      NS      ns3.google.com.
+google.com.             172796  IN      NS      ns1.google.com.
+google.com.             172796  IN      NS      ns4.google.com.
+google.com.             172796  IN      NS      ns2.google.com.</p>
+
+<p>... ...
+```</p>
+
+<p>查询<code>MX</code>记录
+<code>bash
+$ dig google.com MX | grep '^;; ANSWER SECTION:' -A 5
+;; ANSWER SECTION:
+google.com.             368     IN      MX      50 alt4.aspmx.l.google.com.
+google.com.             368     IN      MX      40 alt3.aspmx.l.google.com.
+google.com.             368     IN      MX      10 aspmx.l.google.com.
+google.com.             368     IN      MX      30 alt2.aspmx.l.google.com.
+google.com.             368     IN      MX      20 alt1.aspmx.l.google.com.
+</code></p>
+
+<p>查询<code>SOA</code>记录
+<code>bash
+$ dig google.com SOA | grep '^;; ANSWER SECTION:' -A 1
+;; ANSWER SECTION:
+google.com.             85539   IN      SOA     ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
+</code></p>
+
+<p>指定DNS Server查询
+<code>bash
+$ dig www.baidu.com @8.8.8.8
+... ...
+;; ANSWER SECTION:
+www.baidu.com.          1024    IN      CNAME   www.a.shifen.com.
+www.a.shifen.com.       166     IN      A       119.75.217.56
+www.a.shifen.com.       166     IN      A       119.75.218.77
+... ...
+</code></p>
+
+<p><code>dig</code>查询版本号
+<code>bash
+$ dig chaos txt version.bind  10.10.10.2 | grep '^;; ANSWER SECTION:' -A 1
+;; ANSWER SECTION:
+version.bind.           0       CH      TXT     "9.8.1-P2"
+</code></p>
+
+<p><code>dig</code>反解析<code>-x</code>
+``` bash
+$ dig -x 74.125.135.105
+;; QUESTION SECTION:
+;105.135.125.74.in-addr.arpa.   IN      PTR</p>
+
+<p>;; ANSWER SECTION:
+105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.</p>
+
+<p>```</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[pdsh使用方法]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/06/19/pdsh/"/>
+    <updated>2013-06-19T15:26:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/06/19/pdsh</id>
+    <content type="html"><![CDATA[<p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
+
+<!--more-->
+
+
+<h2>pdsh基本用法</h2>
+
+<p><code>bash
+ pdsh -h
+Usage: pdsh [-options] command ...
+-S                return largest of remote command return values
+-h                output usage menu and quit                获取帮助
+-V                output version information and quit       查看版本
+-q                list the option settings and quit         列出pdsh执行的一些信息
+-b                disable ^C status feature (batch mode)
+-d                enable extra debug information from ^C status
+-l user           execute remote commands as user           指定远程使用的用户
+-t seconds        set connect timeout (default is 10 sec)   指定超时时间
+-u seconds        set command timeout (no default)          类似-t
+-f n              use fanout of n nodes                     设置同时连接的目标主机的个数
+-w host,host,...  set target node list on command line      指定主机，host可以是主机名也可以是ip
+-x host,host,...  set node exclusion list on command line   排除某些或者某个主机
+-R name           set rcmd module to name                   指定rcmd的模块名，默认使用ssh
+-N                disable hostname: labels on output lines  输出不显示主机名或者ip
+-L                list info on all loaded modules and exit  列出pdsh加载的模块信息
+-a                target all nodes                          指定所有的节点
+-g groupname      target hosts in dsh group "groupname"     指定dsh组名
+-X groupname      exclude hosts in dsh group "groupname"    排除组，一般和-a连用
+available rcmd modules: exec,xcpu,ssh (default: ssh)        可用的执行命令模块，默认为ssh
+</code></p>
+
+<h2>使用实例</h2>
+
+<p><strong>单个主机测试</strong>
+<code>
+$ pdsh -w 192.168.0.231 -l root uptime
+192.168.0.231:  16:16:11 up 32 days, 22:14, ? users,  load average: 0.10, 0.14, 0.16
+</code></p>
+
+<p><strong>多个主机测试</strong>
+<code>
+$ pdsh -w 192.168.0.[231-233] -l root uptime
+192.168.0.233:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.13, 0.12, 0.10
+192.168.0.232:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.45, 0.34, 0.27
+192.168.0.231:  16:17:06 up 32 days, 22:15, ? users,  load average: 0.09, 0.13, 0.15
+</code></p>
+
+<p><strong>逗号分隔主机</strong>
+<code>
+$ pdsh -w 192.168.0.231,192.168.0.234 -l root uptime
+192.168.0.234:  16:19:44 up 32 days, 22:19, ? users,  load average: 0.17, 0.21, 0.20
+192.168.0.231:  16:19:44 up 32 days, 22:17, ? users,  load average: 0.29, 0.18, 0.16
+</code></p>
+
+<p><strong>-x排除某个主机</strong>
+<code>
+$ pdsh -w 192.168.0.[231-233] -x 192.168.0.232 -l root uptime
+192.168.0.233:  16:18:24 up 32 days, 22:19, ? users,  load average: 0.11, 0.12, 0.09
+192.168.0.231:  16:18:25 up 32 days, 22:16, ? users,  load average: 0.11, 0.13, 0.15
+</code></p>
+
+<p><strong>主机组</strong><br/>
+对于-g组，把对应的主机写入到<code>/etc/dsh/group/</code>或<code>~/.dsh/group/</code>目录下的文件中即可，文件名就是对应组名
+<code>bash
+$ cat ~/.dsh/group/dsh-test
+192.168.0.231
+192.168.0.232
+192.168.0.233
+192.168.0.234
+</code></p>
+
+<p><code>bash
+$ pdsh -g dsh-test -l root uptime
+192.168.0.232:  16:21:38 up 32 days, 22:22, ? users,  load average: 0.01, 0.15, 0.21
+192.168.0.231:  16:21:38 up 32 days, 22:19, ? users,  load average: 0.17, 0.16, 0.16
+192.168.0.234:  16:21:39 up 32 days, 22:21, ? users,  load average: 0.15, 0.19, 0.19
+192.168.0.233:  16:21:40 up 32 days, 22:22, ? users,  load average: 0.15, 0.15, 0.10
+</code></p>
+
+<p><strong>dshbak格式化输出</strong><br/>
+pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出多时会比较混乱，可以采用<code>dshbak</code>做一些格式化，让输出更清晰。
+<code>
+$ pdsh -g dsh-test -l root 'date'       #查看哪些主机时间不一样，主机一多，可读性不强
+192.168.0.232: Wed Jun 19 16:24:40 CST 2013
+192.168.0.231: Wed Jun 19 16:24:40 CST 2013
+192.168.0.234: Wed Jun 19 16:24:40 CST 2013
+192.168.0.233: Wed Jun 19 16:24:40 CST 2013
+</code></p>
+
+<p>使用dshbak之后可读性变得好了很多
+```</p>
+
+<h2>$ pdsh -g dsh-test -l root 'date' | dshbak -c  </h2>
+
+<h2>192.168.0.[231-232,234]</h2>
+
+<h2>Wed Jun 19 16:24:18 CST 2013</h2>
+
+<h2>192.168.0.233</h2>
+
+<p>Wed Jun 19 16:24:19 CST 2013
+```</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
+    <updated>2013-05-23T10:19:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
+    <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
+
+<!--more-->
+
+
+
+
+<center><img src="http://kumu-Linux.github.com/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
+
+
+<h2>准备软件：</h2>
+
+<p>本例以RHEL6.3为例</p>
+
+<ul>
+<li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
+<li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
+<li>[最新版本的openvpn-2.3.1官方不再集成<code>easy-rsa</code>] Note that easy-rsa is no longer bundled with OpenVPN source code archives. To get it, visit the easy-rsa page on GitHub, or download it from our Linux software repositories.</li>
+</ul>
+
+
+<p><code>bash
+git clone https://github.com/OpenVPN/easy-rsa
+</code></p>
+
+<h2>软件安装</h2>
+
+<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code>安装
+<code>bash
+yum install openssl openssl-devel pam pam-devel -y
+</code></p>
+
+<p><code>lzo-2.06</code>安装
+<code>bash
+./configure &amp;&amp; make &amp;&amp; make install
+</code></p>
+
+<p><code>openvpn-2.3.1</code>安装
+<code>bash
+./configure &amp;&amp; make &amp;&amp; make install
+</code></p>
+
+<h2>相关配置</h2>
+
+<h3>添加环境变量</h3>
+
+<p>在<code>~/.barc_profile</code>文件中加入如下内容,命名根据实际需求修改：
+<code>bash
+export D=/etc/openvpn
+export KEY_CONFIG=$D/openssl.cnf
+export KEY_DIR=$D/keys
+export KEY_SIZE=1024
+export KEY_COUNTRY=CN
+export KEY_PROVINCE=BJ
+export KEY_CITY=BJ
+export KEY_ORG=kumu
+export KEY_OU=kumu
+export KEY_NAME=kumu
+export KEY_EMAIL=root@kumu
+</code></p>
+
+<p>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code>
+``` bash</p>
+
+<h1>source ~/.barc_profile</h1>
+
+<h1>mkdir /etc/openvpn</h1>
+
+<p>```</p>
+
+<p><strong>注</strong>:也可修改easy-rsa中的vars【/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars】，source生效</p>
+
+<h3>生成密钥</h3>
+
+<p>进入之前下载的<code>easy-rsa</code>目录</p>
+
+<p><strong>初始化PKI、生成证书</strong>:
+``` bash</p>
+
+<h1>pwd</h1>
+
+<p>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0</p>
+
+<h1>ls</h1>
+
+<p>build-ca     build-key         build-key-server  clean-all      openssl-0.9.6.cnf  pkitool      vars
+build-dh     build-key-pass    build-req         inherit-inter  openssl-0.9.8.cnf  revoke-full  whichopensslcnf
+build-inter  build-key-pkcs12  build-req-pass    list-crl       openssl-1.0.0.cnf  sign-req</p>
+
+<h1>cp openssl-1.0.0.cnf /etc/openvpn/openssl.cnf</h1>
+
+<h1>./clean-all #初始化，清除原有不需要的文件</h1>
+
+<h1>./build-ca  #一直回车即可</h1>
+
+<p>Generating a 1024 bit RSA private key
+.......++++++
+............++++++</p>
+
+<h2>writing new private key to 'ca.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu CA]:
+Name []:kumu
+Email Address [root@kumu]:
+```</p>
+
+<p><strong>生成Server端证书Server Key</strong>
+``` bash</p>
+
+<h1>./build-key-server kumu_server #一路回车，密码处填写密码</h1>
+
+<p>Generating a 1024 bit RSA private key
+....................................++++++
+.........++++++</p>
+
+<h2>writing new private key to 'kumu_server.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu_server]:
+Name [kumu]:
+Email Address [root@kumu]:</p>
+
+<p>Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:123321  #输入密码
+An optional company name []:kumu
+Using configuration from /etc/openvpn/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CN'
+stateOrProvinceName   :PRINTABLE:'BJ'
+localityName          :PRINTABLE:'BJ'
+organizationName      :PRINTABLE:'kumu'
+organizationalUnitName:PRINTABLE:'kumu'
+commonName            :T61STRING:'kumu_server'
+name                  :PRINTABLE:'kumu'
+emailAddress          :IA5STRING:'root@kumu'
+Certificate is to be certified until May 11 22:54:08 2023 GMT (3650 days)
+Sign the certificate? [y/n]:y</p>
+
+<p>1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+```</p>
+
+<p><strong>生成Client端证书</strong>:
+``` bash</p>
+
+<h1>./build-key kumu_client1  #一路回车，密码处填写密码</h1>
+
+<p>Generating a 1024 bit RSA private key
+..++++++
+.....................++++++</p>
+
+<h2>writing new private key to 'kumu_client1.key'</h2>
+
+<p>You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,</p>
+
+<h2>If you enter '.', the field will be left blank.</h2>
+
+<p>Country Name (2 letter code) [CN]:
+State or Province Name (full name) [BJ]:
+Locality Name (eg, city) [BJ]:
+Organization Name (eg, company) [kumu]:
+Organizational Unit Name (eg, section) [kumu]:
+Common Name (eg, your name or your server's hostname) [kumu_client1]:
+Name [kumu]:
+Email Address [root@kumu]:</p>
+
+<p>Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:123321
+An optional company name []:kumu
+Using configuration from /etc/openvpn/openssl.cnf
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+countryName           :PRINTABLE:'CN'
+stateOrProvinceName   :PRINTABLE:'BJ'
+localityName          :PRINTABLE:'BJ'
+organizationName      :PRINTABLE:'kumu'
+organizationalUnitName:PRINTABLE:'kumu'
+commonName            :T61STRING:'kumu_client1'
+name                  :PRINTABLE:'kumu'
+emailAddress          :IA5STRING:'root@kumu'
+Certificate is to be certified until May 11 23:01:12 2023 GMT (3650 days)
+Sign the certificate? [y/n]:y</p>
+
+<p>1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated</p>
+
+<h1>ls /etc/openvpn/keys/</h1>
+
+<p>01.pem  ca.key      index.txt.attr      kumu_client1.crt  kumu_server.crt  openvpn-status.log
+02.pem  dh1024.pem  index.txt.attr.old  kumu_client1.csr  kumu_server.csr  serial
+ca.crt  index.txt   index.txt.old       kumu_client1.key  kumu_server.key  serial.old
+```</p>
+
+<p><strong>注</strong>：生成其他客户端证书以此类推，名字不相同即可</p>
+
+<p><strong>证书加密</strong>:
+``` bash</p>
+
+<h1>./build-dh</h1>
+
+<p>./build-dh: line 7: dhparam: command not found
+```</p>
+
+<p>出现如上问题，修改<code>./build-dh</code>命令中<code>$OPENSSL</code>为<code>openssl</code>即可，原因是默认<code>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars</code>文件定义了<code>OPENSSL=openssl</code>,而笔者没有引用<code>vars</code>文件
+``` bash</p>
+
+<h1>./build-dh</h1>
+
+<p>Generating DH parameters, 1024 bit long safe prime, generator 2
+This is going to take a long time
+... ...</p>
+
+<h1>openvpn --genkey --secret /etc/openvpn/keys/ta.key  #生成加密key</h1>
+
+<p>```</p>
+
+<h3>Server端配置文件修改:</h3>
+
+<p>``` bash</p>
+
+<h1>pwd</h1>
+
+<p>/usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files</p>
+
+<h1>ls</h1>
+
+<p>client.conf  loopback-client  openvpn-shutdown.sh  server.conf         tls-home.conf         xinetd-server-config
+firewall.sh  loopback-server  openvpn-startup.sh   static-home.conf    tls-office.conf
+home.up      office.up        README               static-office.conf  xinetd-client-config</p>
+
+<h1>cp server.conf /etc/openvpn/  #拷贝Server模板配置文件到配置目录</h1>
+
+<p>```</p>
+
+<p><strong>Server端配置文件内容如下</strong>
+``` bash</p>
+
+<h1>grep -vE '<sup>;|<sup>$|<sup>#'</sup></sup></sup> /etc/openvpn/server.conf</h1>
+
+<p>port 1194
+proto udp
+dev tun
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/kumu_server.crt
+key /etc/openvpn/keys/kumu_server.key  # This file should be kept secret
+dh /etc/openvpn/keys/dh1024.pem
+server 10.8.0.0 255.255.255.0
+push "route 192.168.10.0 255.255.255.0" # 推送路由
+client-to-client
+keepalive 10 120
+tls-auth /etc/openvpn/keys/ta.key 0 # This file is secret
+comp-lzo
+persist-key
+persist-tun
+status /etc/openvpn/keys/openvpn-status.log
+verb 3
+```</p>
+
+<h3>开启路由转发和启动Openvpn</h3>
+
+<p><strong>开启路由转发</strong>
+<code>bash
+echo 1 &gt; /proc/sys/net/ipv4/ip_forward #临时开启
+</code></p>
+
+<p>或者修改/etc/sysctl.conf中<code>net.ipv4.ip_forward = 1</code>，执行<code>sysctl -p</code>永久生效</p>
+
+<p><strong>启动服务</strong>
+<code>bash
+openvpn --config /etc/openvpn/server.conf --daemon
+</code></p>
+
+<h3>Windows客户端连接配置</h3>
+
+<ul>
+<li>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a></li>
+<li>32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></li>
+</ul>
+
+
+<p>拷贝Server端生成的如下客户端证书到Windows软件安装目录<code>OpenVPN\config</code>下</p>
+
+<ul>
+<li>kumu_client1.crt</li>
+<li>kumu_client1.key</li>
+<li>ca.key</li>
+<li>ta.key</li>
+</ul>
+
+
+<p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code>
+<code>bash
+client
+dev tun
+proto udp
+remote 10.2.0.110 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert kumu_client1.crt
+key kumu_client1.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+</code></p>
+
+<p>Win7/Win8以管理员身份启动Openvpn Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，Openvpn Gui客户端显示绿色，ping测试无误，如下
+``` bash
+C:\Users\kumu>ping 10.8.0.1  #测试VPN</p>
+
+<p>正在 Ping 10.8.0.1 具有 32 字节的数据:
+来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
+来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
+... ...
+C:\Users\kumu>ping 192.168.10.19 #测试内网</p>
+
+<p>正在 Ping 192.168.10.19 具有 32 字节的数据:
+来自 192.168.10.19 的回复: 字节=32 时间=1ms TTL=64
+来自 192.168.10.19 的回复: 字节=32 时间=2ms TTL=64
+... ...
+```</p>
+
+<h3>Linux客户端配置</h3>
+
+<p><strong>安装</strong>参见Server端安装</p>
+
+<h4>相关配置</h4>
+
+<p>``` bash</p>
+
+<h1>mkdir /etc/openvpn</h1>
+
+<h1>cp /usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files/client.conf /etc/openvpn/</h1>
+
+<h1>grep -vE '<sup>$|<sup>#|<sup>;'</sup></sup></sup> /etc/openvpn/client.conf</h1>
+
+<p>client
+dev tun
+proto udp
+remote 10.2.0.110 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ca ca.crt
+cert kumu_client1.crt
+key kumu_client1.key
+ns-cert-type server
+tls-auth ta.key 1
+comp-lzo
+verb 3
+```</p>
+
+<p>拷贝Server端生成的如下客户端证书到Linux客户端/etc/openvpn下(这里为了方便不再生成一套客户端证书了)</p>
+
+<ul>
+<li>kumu_client1.crt</li>
+<li>kumu_client1.key</li>
+<li>ca.key</li>
+<li>ta.key</li>
+</ul>
+
+
+<p><strong>启动Openvpn客户端服务</strong></p>
+
+<p><code>bash
+openvpn --config /etc/openvpn/client.conf --daemon
+</code></p>
+
+<h4>测试</h4>
+
+<p>``` bash</p>
+
+<h1>ifconfig tun0</h1>
+
+<p>tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00</p>
+
+<pre><code>      inet addr:10.8.0.6  P-t-P:10.8.0.5  Mask:255.255.255.255
+</code></pre>
+
+<p>... ...</p>
+
+<h1>route -n</h1>
+
+<p>Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+10.8.0.5        0.0.0.0         255.255.255.255 UH    0      0        0 tun0
+10.8.0.0        10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+192.168.10.0    10.8.0.5        255.255.255.0   UG    0      0        0 tun0
+... ...</p>
+
+<h1>ping 192.168.10.19</h1>
+
+<p>PING 192.168.10.19 (192.168.10.19) 56(84) bytes of data.
+64 bytes from 192.168.10.19: icmp_seq=1 ttl=64 time=0.690 ms
+64 bytes from 192.168.10.19: icmp_seq=2 ttl=64 time=1.21 ms
+... ...
+```</p>
+
+<p>测试正常，无误！</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/05/21/named-chroot/"/>
+    <updated>2013-05-21T10:53:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/05/21/named-chroot</id>
+    <content type="html"><![CDATA[<h2>问题描述</h2>
+
+<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
+
+<!--more-->
+
+
+<p>环境： DNS查询日志存放独立分区/data/目录下</p>
+
+<h2>问题解决</h2>
+
+<p>``` bash</p>
+
+<h1>ps -ef | grep name[d]</h1>
+
+<p>named     9960     1  0 May20 ?        00:02:09 /usr/sbin/named-sdb -u named -t /var/named/chroot</p>
+
+<h1>strace -fp 9960</h1>
+
+<h1>使用strace跟踪named进程，在其它终端使用dig查询，截取到如下信息</h1>
+
+<p>... ...
+[pid  9966] connect(6, {sa_family=AF_FILE, path="/dev/log"}, 110 <unfinished ...>
+[pid  9963] recvmsg(537,  <unfinished ...>
+[pid  9962] futex(0x7f520dc26028, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid  9963] &lt;... recvmsg resumed> 0x7f5205eaec00, 0) = -1 EAGAIN (Resource temporarily unavailable)
+[pid  9970] &lt;... epoll_ctl resumed> )   = 0
+[pid  9966] &lt;... connect resumed> )     = -1 ENOENT (No such file or directory)</p>
+
+<h1>信息显示没有/dev/log该文件</h1>
+
+<p>... ...
+```</p>
+
+<p>Google搜索<code>named chroot /dev/log</code>相关获得[CentOS 6: Configure bind logging with bind-chroot] (http://floriancrouzat.net/2011/09/centos-6-configure-bind-logging-bind-chroot-rsyslog/)</p>
+
+<p>修改配置文件<code>/etc/rsyslog.conf</code>添加
+<code>
+$AddUnixListenSocket /var/named/chroot/dev/log
+</code></p>
+
+<p>重启rsyslog,dig查询测试，DNS查询日志接收正常</p>
+
+<p>``` bash</p>
+
+<h1>ll /var/named/chroot/dev/log</h1>
+
+<p>srw-rw-rw- 1 root root 0 May 21 11:30 /var/named/chroot/dev/log
+```</p>
+
+<h2>lsof查看效果</h2>
+
+<p>未添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试，使用lsof查看rsyslog重启前后named程序占用/dev/log文件对比</p>
+
+<p>``` bash</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/log</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c10b1840      0t0 14544315 /dev/log</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/log</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
+```</p>
+
+<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>后测试rsyslog重启前后named程序占用情况</p>
+
+<p>``` bash</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bedac0      0t0 14605223 /dev/log
+rsyslogd   5883    root    1u  unix 0xffff8801b39c0840      0t0 14605225 /var/named/chroot/dev/log</p>
+
+<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
+
+<p>rsyslogd   5883    root    0u  unix 0xffff8801c0913300      0t0 14630150 /dev/log
+rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/named/chroot/dev/log
+```</p>
+
+<p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+</feed>

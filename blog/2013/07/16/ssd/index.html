@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>也谈伸手党 - Linux SA Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化， 而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。 --&gt; 摘自百度百科 &lt;-- 什么是伸手党 今天我也学学基友 Tankywoo 来说说伸手党的事情，Tankywoo &hellip;">
+  <meta name="keywords" content="伸手党,Linux">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+  
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/07/16/ssd">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux SA Notes By 枯木</a></h1>
+  
+    <h2>Linux、Python、MySQL -- 像黑客一样写作</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kumu-Linux.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog首页</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
+  <li><a href="/blog/ops">运维利器</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
+  <li><a href="/blog/about">关于我</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">也谈伸手党</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-16T12:43:00+08:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><pre><code>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，  
+而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  --&gt; 摘自百度百科 &lt;--
+</code></pre>
+
+<!--more-->
+
+
+<h3>什么是伸手党</h3>
+
+<p>今天我也学学基友 <a href="http://www.wutianqi.com/">Tankywoo</a> 来说说伸手党的事情，<a href="http://www.wutianqi.com/">Tankywoo</a> 的文章标题大意是伸手党是大学教育的产物。这里我不想扯上大学教育，中国的大学教育已经被人诟病很久了，一旦扯上中国教育就有点没完没了的调侃了，我觉得这是不公平的。毕竟，伸手党不仅仅局限于受过大学教育的，社会的每个角落都有他们的身影，这很明显是一个社会的普遍现象。何谓伸手党，我觉得这里有必要给伸手党讨个说法分个类。个人认为伸手党可以分为下几类：</p>
+
+<ul>
+<li>1、第一种伸手党我称为<code>“爷”级伸手党</code>，好比收保护费的。这种伸手党比较横，问你个问题他把自己当爷了，孙子给爷解决问题理所当然。这类人一般自认为很拽，直接抛个问题，口气还很横，并且从来不说谢谢。当然这种牛逼型伸手党，一般直接负分，滚粗！</li>
+<li>2、第二种伸手党是那种新手类，这里称之为<code>“小白型”伸手党</code>。这种人每次问问题，先把自己身份降低，一般开头是“菜鸟问个小白问题&#8230; &#8230;”。这类人比较多，不过这类伸手党还是情有可原的，可以读读<a href="http://www.wapm.cn/smart-questions/smart-questions-zh.html">《提问的智慧》</a>， 改善改善提问的方法。</li>
+<li>3、第三种伸手党就是那种<code>“资料型”伸手党</code>。每当要做某个东西的时候，就会问你，有这个的资料吗，有那个的文档吗，这种人是常年要资料的，很大一部分要了也未必看[看了也就罢了]。这种人从来不写文档，一味的向别人索取文档。尤其是笔者遇到过1年前问你要某个资料，当时给他了，然后隔了一年后还问你要那个资料，真想吐槽说这尼玛这里不是图书馆啊。</li>
+<li>4、第四种是<code>完全不动脑型伸手党</code>，对于这种人只能无语，遇到一个问题就问，给文档也不要，就是张嘴就问，巴不得手把手帮他把事给做了，这类人真的是无药可救了，无力吐槽。</li>
+</ul>
+
+
+<h3>关于杜绝伸手党</h3>
+
+<p>其实关于杜绝伸手党，还是要从提问开始。提问是一门很深的学问，之前也提到了 <a href="http://www.wapm.cn/smart-questions/smart-questions-zh.html">《提问的智慧》</a> ，这篇文章介绍了提问的一些技巧，非常值得一读。至少让别人乐意帮助你，而不会让别人觉得你就是一味地索取。曾经在北京西单那边看到一个行乞的老大爷，写得一手的好粉笔字，身旁摆着个大碗，自己头也不抬，自顾自的在地上写字，而行人路过纷纷给钱。相反，那些在地铁背个音响放噪音的，挨个挨个要钱却鲜有人给钱的。两个鲜明的对比，这就是行乞的艺术，我们提问也要有提问的艺术。</p>
+
+<p>有些伸手党是尝到甜头之后，就一直想不劳而获，这是行不通的，古人已经告诉我们了，这叫守株待兔。所以对于一味伸手的那种，你得适时的给点打击给他们。如果他们态度恶劣的，那只能让他们滚粗了。对于第四类直接无视就行了，时间一久估计他们自己也感到无趣了。遇到问题，首先想到的不应该是别人，而应该是自己，个人觉得解决问题可以3步走：</p>
+
+<ul>
+<li>1、<code>遇到问题不要怕</code>，自己先尝试解决，对于技术类的，如果程序运行错误，记得一定要看日志和错误提示，认真仔细了看，可能解决方法就在错误提示中，如果无果，那么走第二条</li>
+<li>2、<code>善用搜索引擎</code>，当然对于技术类的搜索，百度可以直接无视了。套用一句话，不用Google的技术人不是好技术人，所以这里推荐使用Google来搜索问题，把一些关键性的错误信息输入到Google中搜索，保准能看到别人和你犯的类似的错误，找一些解决方案测试。另外，推荐下<a href="http://www.google.com.hk/advanced_search">Google的高级搜索</a> ，方便过滤一些不需要的信息，找文档也非常有效，还有一篇文章<a href="http://jaychang.iteye.com/blog/1860361">善用GOOGLE &#8211; 从入门到精通</a> 。</li>
+<li>3、<code>懂得提问</code>，如果搜索引擎也解决不了，那么就考虑问同事，或去论坛和好一点的QQ群去咨询了。千万要描述清自己的问题，最好分点说明，这样调理清晰一点。而不是直接贴上大片的代码或者大片的Error，条理清楚很重要，你要明白问问题不是贴贴大字报就可以搞定的。</li>
+</ul>
+
+
+<p>这里推荐几个比较好的社区，国外的<a href="http://stackoverflow.com/">stackoverflow</a> 和<a href="http://serverfault.com/">serverfault</a> ，一个偏向编程一个偏向系统，可以说是全球最好的QA社区了。国内这类社区的技术氛围一直很一般，这里推荐<a href="http://www.zhihu.com">知乎</a> 和 <a href="http://www.v2ex.com/">v2ex</a> 。</p>
+
+<p>基本上是这样了，其实扯了那么多，无非就是希望每个技术人都能独立思考。当然独立思考并不是不交流，这是两码事，伸手党不是交流而是一味利己的索取，交流应该是共赢的，很遗憾目前国内还是很缺这种气氛的。当然你可以认为这篇文章完全是我的无病呻吟，看客若觉得不爽，可完全无视。最后，对广大伸手党同志说一句，回头吧！</p>
+
+<p>&#8211;EOF&#8211;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-16T12:43:00+08:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sheng-huo-sui-xiang/'>生活随想</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/06/29/life-06-29/" title="Previous Post: 2013-06-29 两本书">&laquo; 2013-06-29 两本书</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/02/journey/" title="Next Post: 旅途">旅途 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Sina Weibo</h1>
+  <iframe id="sina_widget_1912914742" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1912914742&height=500&skin=wd_02&showpic=1">
+  </iframe>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/12/pssh/">pssh使用方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/journey/">旅途</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/16/ssd/">也谈伸手党</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/29/life-06-29/">2013-06-29 两本书</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (10)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (1)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+</section><section>
+  <h1>Cool Links</h1>
+  <ul>
+    <li>
+      <a href="http://coolshell.cn/" target="new_window">【 酷壳 CoolShell 】</a> 
+	</li>
+	<li>
+      <a href="http://dbanotes.net/" target="new_window">【  Fenng 闲思录  】</a>
+	</li>
+	<li>
+      <a href="http://www.ruanyifeng.com/blog/" target="new_window">【阮一峰网络日志】</a>
+    </li>
+	<li>
+	  <a href="http://blog.linuxhonker.com/" target="new_window">【服务器架构研究】</a>
+    </li>
+	<li>
+	  <a href="http://blog.csdn.net/kumu_Linux" target="new_window">【 枯木CSDN Blog 】</a>
+	</li>
+	<li>
+	  <a href="http://lin-credible.github.io/" target="new_window">【Lin-credible blog】</a>
+	</li>
+	<li>
+      <a href="http://www.wutianqi.com/" target="new_window">【 Tanky Woo blog 】</a>
+	</li>
+	<li>
+      <a href="http://xiaomao.us/" target="new_window">【小毛的宇宙天地】</a>
+	</li>
+  </ul>
+</section><section id="comment_sidebar">
+<h1>Recent Conmments</h1>
+  <script type="text/javascript" src="http://kumusanotes.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=20"></script><a href="http://disqus.com/">Powered by Disqus</a>
+</section><section>
+<h1>Just Douban</h1>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/39084560/?show=collection&amp;n=8&amp;columns=2" ></script> 
+</div>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/07/16/ssd/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/07/16/ssd/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

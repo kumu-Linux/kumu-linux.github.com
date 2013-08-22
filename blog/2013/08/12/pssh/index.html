@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>pssh使用方法 - Linux SA Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh pdsh使用方法 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: parallel-ssh 安装 1
+2
+3
+4
+wget http://parallel- &hellip;">
+  <meta name="keywords" content="linux, pssh">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+  
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/08/12/pssh">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux SA Notes By 枯木</a></h1>
+  
+    <h2>Linux、Python、MySQL -- 像黑客一样写作</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kumu-Linux.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog首页</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
+  <li><a href="/blog/ops">运维利器</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
+  <li><a href="/blog/about">关于我</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pssh使用方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-12T14:53:00+08:00" pubdate data-updated="true">Aug 12<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
+
+<!--more -->
+
+
+<h3>安装</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
+</span><span class='line'>tar zxvf pssh-2.3.1.tar.gz
+</span><span class='line'><span class="nb">cd </span>pssh-2.3.1/
+</span><span class='line'>python setup.py install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>pssh相关参数</h3>
+
+<ul>
+<li>pssh在多个主机上并行地运行命令
+
+<ul>
+<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
+
+<ul>
+<li> 如 test@172.16.10.10:229</li>
+</ul>
+</li>
+<li>-H 执行命令主机，主机格式 user@ip:port</li>
+<li>-l 远程机器的用户名</li>
+<li>-p 一次最大允许多少连接</li>
+<li>-P 执行时输出执行信息</li>
+<li>-o 输出内容重定向到一个文件</li>
+<li>-e 执行错误重定向到一个文件</li>
+<li>-t 设置命令执行超时时间</li>
+<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
+<li>-O 设置ssh一些选项</li>
+<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
+<li>-X 通-x,但是只能设置一个参数</li>
+<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>附加工具</h3>
+
+<ul>
+<li>pscp 传输文件到多个hosts，类似scp
+
+<ul>
+<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
+</ul>
+</li>
+<li>pslurp 从多台远程机器拷贝文件到本地</li>
+<li>pnuke 并行在远程主机杀进程
+
+<ul>
+<li>pnuke -h hosts.txt -l irb2 java</li>
+</ul>
+</li>
+<li>prsync 使用rsync协议从本地计算机同步到远程主机
+
+<ul>
+<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>示例</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># cat host.txt </span>
+</span><span class='line'>root@192.168.230.128
+</span><span class='line'>wul@10.0.0.8
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -i -h host.txt &#39;date&#39;</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
+</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>-x</code>选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -h host.txt date</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
+</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
+</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
+</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>-H</code>选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -H 192.168.230.128 -H wul@10.0.0.8 date</span>
+</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> 192.168.230.128
+</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
+</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
+</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
+</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
+</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
+<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-12T14:53:00+08:00" pubdate data-updated="true">Aug 12<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/06/tmux/" title="Previous Post: Linux下终端利器tmux">&laquo; Linux下终端利器tmux</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/22/opennebula-install/" title="Next Post: OpenNebula在CentOS6.4安装备忘">OpenNebula在CentOS6.4安装备忘 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Sina Weibo</h1>
+  <iframe id="sina_widget_1912914742" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1912914742&height=500&skin=wd_02&showpic=1">
+  </iframe>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/12/pssh/">pssh使用方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/journey/">旅途</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/16/ssd/">也谈伸手党</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/29/life-06-29/">2013-06-29 两本书</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (10)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (1)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+</section><section>
+  <h1>Cool Links</h1>
+  <ul>
+    <li>
+      <a href="http://coolshell.cn/" target="new_window">【 酷壳 CoolShell 】</a> 
+	</li>
+	<li>
+      <a href="http://dbanotes.net/" target="new_window">【  Fenng 闲思录  】</a>
+	</li>
+	<li>
+      <a href="http://www.ruanyifeng.com/blog/" target="new_window">【阮一峰网络日志】</a>
+    </li>
+	<li>
+	  <a href="http://blog.linuxhonker.com/" target="new_window">【服务器架构研究】</a>
+    </li>
+	<li>
+	  <a href="http://blog.csdn.net/kumu_Linux" target="new_window">【 枯木CSDN Blog 】</a>
+	</li>
+	<li>
+	  <a href="http://lin-credible.github.io/" target="new_window">【Lin-credible blog】</a>
+	</li>
+	<li>
+      <a href="http://www.wutianqi.com/" target="new_window">【 Tanky Woo blog 】</a>
+	</li>
+	<li>
+      <a href="http://xiaomao.us/" target="new_window">【小毛的宇宙天地】</a>
+	</li>
+  </ul>
+</section><section id="comment_sidebar">
+<h1>Recent Conmments</h1>
+  <script type="text/javascript" src="http://kumusanotes.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=20"></script><a href="http://disqus.com/">Powered by Disqus</a>
+</section><section>
+<h1>Just Douban</h1>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/39084560/?show=collection&amp;n=8&amp;columns=2" ></script> 
+</div>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/08/12/pssh/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/08/12/pssh/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

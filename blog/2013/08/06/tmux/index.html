@@ -1,0 +1,700 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Linux下终端利器tmux - Linux SA Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="&#8220;君子生非异也，善假于物也&#8221; 。&#8211;语出《荀子·劝学》 如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说， &hellip;">
+  <meta name="keywords" content="tmux,linux">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+  
+  
+  <link rel="canonical" href="http://kumu-Linux.github.com/blog/2013/08/06/tmux">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Linux SA Notes By 枯木</a></h1>
+  
+    <h2>Linux、Python、MySQL -- 像黑客一样写作</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kumu-Linux.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog首页</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
+  <li><a href="/blog/ops">运维利器</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
+  <li><a href="/blog/about">关于我</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Linux下终端利器tmux</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-06T11:05:00+08:00" pubdate data-updated="true">Aug 6<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>&#8220;君子生非异也，善假于物也&#8221; 。&#8211;语出《荀子·劝学》</p></blockquote>
+
+<p>如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说，好工具的选择和使用往往可以省去很多不必要的麻烦，好的开源工具很多，看你如何去使用。对于终端复用工具这里推荐使用tmux，当然此类工具比较好的还有screen，不过相对<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a> 这里我更倾向于推荐tmux[强悍的分屏等]。</p>
+
+<!--more-->
+
+
+<p>如果仅仅只是多标签的功能，那么putty结合一些工具也可以做到，或者干脆使用xshell，当然tmux此类工具不仅仅是那么简单。另外一个选择使用tmux/screen工具的原因是，有时我们会经常需要SSH或者telent远程登录到Linux服务器，有一些任务需要长时间运行，比如系统备份、数据传输等。通常情况下我们都是开一个远程终端窗口，因为执行时间比较长，一般需要等待它执行完毕，在此过程中不能关闭窗口或者网络原因断开连接，断开之后就Game Over了。这个功能就有点类似<code>nohup</code>和<code>setsid</code>命令的实现了，而tmux/screen则集nohup/setsid和多标签于一身。废话少说，我们接下来看如何安装使用它。</p>
+
+<h3>安装</h3>
+
+<p>安装的话这里就不过说明了，不同的Linux发行版相应的包管理机制不同，安装tmux包即可。</p>
+
+<h3>使用技巧</h3>
+
+<h4>几个名词</h4>
+
+<p>tmux主要包括以下几个模块：</p>
+
+<table>
+    <tr>
+        <td>session</td>
+        <td>会话:一个服务器可以包含多个会话</td>
+    </tr>
+    <tr>
+        <td>window</td>
+        <td>窗口:一个会话可以包含多个窗口</td>
+    </tr>
+    <tr>
+        <td>pane</td>
+        <td>面板:一个窗口可以包含多个面板[强悍的分屏]</td>
+    </tr>
+</table>
+
+
+
+
+<p></p>
+
+
+<h4>小试牛刀</h4>
+
+<p>列出了tmux的几个基本模块之后，就要来点实实在在的干货了，和<code>screen</code>默认激活控制台的<code>Ctrl+a</code>不同，tmux默认的是<code>Ctrl+b</code>，使用快捷键之后就可以执行一些相应的指令了。当然如果你不习惯使用<code>Ctrl+b</code>，也可以在<code>~/.tmux</code>文件中加入以下内容把快捷键变为<code>Ctrl+a</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set prefix key to Ctrl-a</span>
+</span><span class='line'>unbind-key C-b
+</span><span class='line'><span class="nb">set</span>-option -g prefix C-a
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以下所有的操作都是激活控制台之后，即键入<code>Ctrl+b</code>前提下才可以使用的命令【这里假设快捷键没改，改了的话则用<code>Ctrl+b</code>】。</p>
+
+<p><u>基本操作</u>：</p>
+
+<table>
+    <tr>
+        <td>?</td>
+        <td>列出所有快捷键；按q返回</td>
+    </tr>
+    <tr>
+        <td>d</td>
+        <td>脱离当前会话,可暂时返回Shell界面，输入tmux attach能够重新进入之前会话</td>
+    </tr>
+    <tr>
+        <td>s</td>
+        <td>选择并切换会话；在同时开启了多个会话时使用</td>
+    </tr>
+    <tr>
+        <td>D</td>
+        <td>选择要脱离的会话；在同时开启了多个会话时使用</td>
+    </tr>   
+    <tr>
+        <td>:</td>
+        <td>进入命令行模式；此时可输入支持的命令，例如kill-server所有tmux会话</td>
+    </tr>
+    <tr>
+        <td>[</td>
+        <td>复制模式，光标移动到复制内容位置，空格键开始，方向键选择复制，回车确认，q/Esc退出</td>
+    </tr>
+    <tr>
+        <td>]</td>
+        <td>进入粘贴模式，粘贴之前复制的内容，按q/Esc退出</td>
+    </tr>
+    <tr>
+        <td>~</td>
+        <td>列出提示信息缓存；其中包含了之前tmux返回的各种提示信息</td>
+    </tr>
+    <tr>
+        <td>t</td>
+        <td>显示当前的时间</td>
+    </tr>
+    <tr>
+        <td>Ctrl+z</td>
+        <td>挂起当前会话</td>
+    </tr>
+</table>
+
+
+
+
+<p></p>
+
+
+<p><u>窗口操作</u>:</p>
+
+<table>
+    <tr>
+        <td>c</td>
+        <td>创建新窗口</td>
+    </tr>
+    <tr>
+        <td>&</td>
+        <td>关闭当前窗口</td>
+    </tr>
+    <tr>
+        <td>数字键</td>
+        <td>切换到指定窗口</td>
+    </tr>
+    <tr>
+        <td>p</td>
+        <td>切换至上一窗口</td>
+    </tr>
+    <tr>
+        <td>n</td>
+        <td>切换至下一窗口</td>
+    </tr>
+    <tr>
+        <td>l</td>
+        <td>前后窗口间互相切换</td>
+    </tr>
+    <tr>
+        <td>w</td>
+        <td>通过窗口列表切换窗口</td>
+    </tr>
+    <tr>
+        <td>,</td>
+        <td>重命名当前窗口，便于识别</td>
+    </tr>
+    <tr>
+        <td>.</td>
+        <td>修改当前窗口编号，相当于重新排序</td>
+    </tr>
+    <tr>
+        <td>f</td>
+        <td>在所有窗口中查找关键词，便于窗口多了切换</td>
+    </tr>
+</table>
+
+
+
+
+<p></p>
+
+
+<p><u>面板操作</u>:</p>
+
+<table>
+    <tr>
+        <td>&#8220;</td>
+        <td>将当前面板上下分屏</td>
+    </tr>
+    <tr>
+        <td>%</td>
+        <td>将当前面板左右分屏</td>
+    </tr>
+    <tr>
+        <td>x</td>
+        <td>关闭当前分屏</td>
+    </tr>
+    <tr>
+        <td>!</td>
+        <td>将当前面板置于新窗口,即新建一个窗口,其中仅包含当前面板</td>
+    </tr>
+    <tr>
+        <td>Ctrl+方向键</td>
+        <td>以1个单元格为单位移动边缘以调整当前面板大小</td>
+    </tr>
+    <tr>
+        <td>Alt+方向键</td>
+        <td>以5个单元格为单位移动边缘以调整当前面板大小</td>
+    </tr>
+    <tr>
+        <td>空格键</td>
+        <td>可以在默认面板布局中切换，试试就知道了</td>
+    </tr>
+    <tr>
+        <td>q</td>
+        <td>显示面板编号</td>
+    </tr>
+    <tr>
+        <td>o</td>
+        <td>选择当前窗口中下一个面板</td>
+    </tr>
+    <tr>
+        <td>方向键</td>
+        <td>移动光标选择对应面板</td>
+    </tr>
+    <tr>
+        <td>{</td>
+        <td>向前置换当前面板</td>
+    </tr>
+    <tr>
+        <td>}</td>
+        <td>向后置换当前面板</td>
+    </tr>
+    <tr>
+        <td>Alt+o</td>
+        <td>逆时针旋转当前窗口的面板</td>
+    </tr>
+    <tr>
+        <td>Ctrl+o</td>
+        <td>顺时针旋转当前窗口的面板</td>
+    </tr>
+    <tr>
+        <td>z</td>
+        <td>tmux 1.8新特性，最大化当前所在面板</td>
+    </tr>
+</table>
+
+
+
+
+<p></p>
+
+
+<h4>.tmux.conf基本配置</h4>
+
+<p>软件到手了，自己怎么舒服就怎么用。定制主要还是在于<code>.tmux.conf</code>配置文件的配置，以下列出我的配置文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set prefix key to Ctrl-a</span>
+</span><span class='line'>unbind-key C-b
+</span><span class='line'><span class="nb">set</span>-option -g prefix C-a
+</span><span class='line'><span class="nb">bind</span>-key C-a last-window <span class="c"># 方便切换，个人习惯</span>
+</span><span class='line'><span class="nb">bind</span>-key a send-prefix
+</span><span class='line'><span class="c"># shell下的Ctrl+a切换到行首在此配置下失效，此处设置之后Ctrl+a再按a即可切换至shell行首</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># reload settings # 重新读取加载配置文件</span>
+</span><span class='line'><span class="nb">bind </span>R <span class="nb">source</span>-file ~/.tmux.conf <span class="se">\;</span> display-message <span class="s2">&quot;Config reloaded...&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Ctrl-Left/Right cycles thru windows (no prefix) </span>
+</span><span class='line'><span class="c"># 不使用prefix键，使用Ctrl和左右方向键方便切换窗口</span>
+</span><span class='line'><span class="nb">bind</span>-key -n <span class="s2">&quot;C-Left&quot;</span> <span class="k">select</span>-window -t :-
+</span><span class='line'><span class="nb">bind</span>-key -n <span class="s2">&quot;C-Right&quot;</span> <span class="k">select</span>-window -t :+
+</span><span class='line'>
+</span><span class='line'><span class="c"># displays </span>
+</span><span class='line'><span class="nb">bind</span>-key * list-clients
+</span><span class='line'>
+</span><span class='line'><span class="nb">set</span> -g default-terminal <span class="s2">&quot;screen-256color&quot;</span>   <span class="c"># use 256 colors</span>
+</span><span class='line'><span class="nb">set</span> -g display-time 5000                    <span class="c"># status line messages display</span>
+</span><span class='line'><span class="nb">set</span> -g status-utf8 on                       <span class="c"># enable utf-8 </span>
+</span><span class='line'><span class="nb">set</span> -g <span class="nb">history</span>-limit 100000                 <span class="c"># scrollback buffer n lines</span>
+</span><span class='line'>setw -g mode-keys vi                        <span class="c"># use vi mode</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># start window indexing at one instead of zero 使窗口从1开始，默认从0开始 </span>
+</span><span class='line'><span class="nb">set</span> -g base-index 1
+</span><span class='line'>
+</span><span class='line'><span class="c"># key bindings for horizontal and vertical panes</span>
+</span><span class='line'>unbind %
+</span><span class='line'><span class="nb">bind</span> | split-window -h      <span class="c"># 使用|竖屏，方便分屏</span>
+</span><span class='line'>unbind <span class="s1">&#39;&quot;&#39;</span>
+</span><span class='line'><span class="nb">bind</span> - split-window -v      <span class="c"># 使用-横屏，方便分屏</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># window title string (uses statusbar variables)</span>
+</span><span class='line'><span class="nb">set</span> -g <span class="nb">set</span>-titles-string <span class="s1">&#39;#T&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># status bar with load and time </span>
+</span><span class='line'><span class="nb">set</span> -g status-bg blue
+</span><span class='line'><span class="nb">set</span> -g status-fg <span class="s1">&#39;#bbbbbb&#39;</span>
+</span><span class='line'><span class="nb">set</span> -g status-left-fg green
+</span><span class='line'><span class="nb">set</span> -g status-left-bg blue
+</span><span class='line'><span class="nb">set</span> -g status-right-fg green
+</span><span class='line'><span class="nb">set</span> -g status-right-bg blue
+</span><span class='line'><span class="nb">set</span> -g status-left-length 90
+</span><span class='line'><span class="nb">set</span> -g status-right-length 90
+</span><span class='line'><span class="nb">set</span> -g status-left <span class="s1">&#39;[#(whoami)]&#39;</span>
+</span><span class='line'><span class="nb">set</span> -g status-right <span class="s1">&#39;[#(date +&quot; %m-%d %H:%M &quot;)]&#39;</span>
+</span><span class='line'><span class="nb">set</span> -g status-justify <span class="s2">&quot;centre&quot;</span>
+</span><span class='line'><span class="nb">set</span> -g window-status-format <span class="s1">&#39;#I #W&#39;</span>
+</span><span class='line'><span class="nb">set</span> -g window-status-current-format <span class="s1">&#39; #I #W &#39;</span>
+</span><span class='line'>setw -g window-status-current-bg blue
+</span><span class='line'>setw -g window-status-current-fg green
+</span><span class='line'>
+</span><span class='line'><span class="c"># pane border colors</span>
+</span><span class='line'><span class="nb">set</span> -g pane-active-border-fg <span class="s1">&#39;#55ff55&#39;</span>
+</span><span class='line'><span class="nb">set</span> -g pane-border-fg <span class="s1">&#39;#555555&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>开启批量执行</h4>
+
+<p>如果已经修改prefix键位<code>Ctrl+a</code>，则<code>Ctrl+a</code>[默认Ctrl+b]后输入<code>:set synchronize-panes</code> ，输入:set sync [TAB]键可自动补齐</p>
+
+<p><img src="/images/tmux.jpg"></p>
+
+<p></p>
+
+
+<p>取消批量执行模式重复之前操作即可</p>
+
+<h4>脚本化启动</h4>
+
+<p>把以下脚本内容加入到~/.bashrc，即可每次登录进入到tmux</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tmux_init<span class="o">()</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>    tmux new-session -s <span class="s2">&quot;kumu&quot;</span> -d -n <span class="s2">&quot;local&quot;</span>    <span class="c"># 开启一个会话</span>
+</span><span class='line'>    tmux new-window -n <span class="s2">&quot;other&quot;</span>          <span class="c"># 开启一个窗口</span>
+</span><span class='line'>    tmux split-window -h                <span class="c"># 开启一个竖屏</span>
+</span><span class='line'>    tmux split-window -v <span class="s2">&quot;top&quot;</span>          <span class="c"># 开启一个横屏,并执行top命令</span>
+</span><span class='line'>    tmux -2 attach-session -d           <span class="c"># tmux -2强制启用256color，连接已开启的tmux</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 判断是否已有开启的tmux会话，没有则开启</span>
+</span><span class='line'><span class="k">if </span>which tmux 2&gt;&amp;1 &gt;/dev/null; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果如下：</p>
+
+<p><img src="/images/tmux1.jpg"></p>
+
+<p></p>
+
+
+<p>&#8211;EOF&#8211;</p>
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="https://wiki.freebsdchina.org/software/t/tmux">使用tmux</a></li>
+<li><a href="https://wiki.archlinux.org/index.php/Tmux">archlinux tmux</a></li>
+<li><a href="http://wiki.wutianqi.com/software/tmux.html">Tankywoo tmux wiki</a></li>
+<li><a href="http://www.lovelin.info/blog/2012/10/25/tmuxshi-yong-xin-de-xiao-ji/">Tmux 使用心得小记 </a></li>
+<li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&amp;sektion=1">Tmux Openbsd Manual Pages</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-06T11:05:00+08:00" pubdate data-updated="true">Aug 6<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/yun-wei-li-qi/'>运维利器</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/08/02/journey/" title="Previous Post: 旅途">&laquo; 旅途</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/12/pssh/" title="Next Post: pssh使用方法">pssh使用方法 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Sina Weibo</h1>
+  <iframe id="sina_widget_1912914742" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1912914742&height=500&skin=wd_02&showpic=1">
+  </iframe>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/12/pssh/">pssh使用方法</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/02/journey/">旅途</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/16/ssd/">也谈伸手党</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/29/life-06-29/">2013-06-29 两本书</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (10)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (1)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+</section><section>
+  <h1>Cool Links</h1>
+  <ul>
+    <li>
+      <a href="http://coolshell.cn/" target="new_window">【 酷壳 CoolShell 】</a> 
+	</li>
+	<li>
+      <a href="http://dbanotes.net/" target="new_window">【  Fenng 闲思录  】</a>
+	</li>
+	<li>
+      <a href="http://www.ruanyifeng.com/blog/" target="new_window">【阮一峰网络日志】</a>
+    </li>
+	<li>
+	  <a href="http://blog.linuxhonker.com/" target="new_window">【服务器架构研究】</a>
+    </li>
+	<li>
+	  <a href="http://blog.csdn.net/kumu_Linux" target="new_window">【 枯木CSDN Blog 】</a>
+	</li>
+	<li>
+	  <a href="http://lin-credible.github.io/" target="new_window">【Lin-credible blog】</a>
+	</li>
+	<li>
+      <a href="http://www.wutianqi.com/" target="new_window">【 Tanky Woo blog 】</a>
+	</li>
+	<li>
+      <a href="http://xiaomao.us/" target="new_window">【小毛的宇宙天地】</a>
+	</li>
+  </ul>
+</section><section id="comment_sidebar">
+<h1>Recent Conmments</h1>
+  <script type="text/javascript" src="http://kumusanotes.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=20"></script><a href="http://disqus.com/">Powered by Disqus</a>
+</section><section>
+<h1>Just Douban</h1>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/39084560/?show=collection&amp;n=8&amp;columns=2" ></script> 
+</div>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.com/blog/2013/08/06/tmux/';
+        var disqus_url = 'http://kumu-Linux.github.com/blog/2013/08/06/tmux/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

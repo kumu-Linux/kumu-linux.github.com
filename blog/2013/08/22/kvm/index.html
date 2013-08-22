@@ -703,7 +703,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 <span class='line-number'>29</span>
 <span class='line-number'>30</span>
 <span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh <span class="c"># list    # 显示运行的Guest</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh <span class="c"># list    # 显示运行或者暂停的Guest</span>
 </span><span class='line'> Id    Name                           State
 </span><span class='line'>----------------------------------------------------
 </span><span class='line'> 28    centos6_1                      running
@@ -745,6 +745,90 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh destroy guest_name
 </span><span class='line'>virsh undefine guest_name
 </span><span class='line'>rm -rf guest_img  <span class="c"># 删除虚拟存储</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>挂起主机</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh <span class="c"># list</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      running
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># suspend centos6_1   # 挂起主机</span>
+</span><span class='line'>Domain centos6_1 suspended
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># list</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      paused
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># resume centos6_1    # 把主机从挂起状态切换至运行状态</span>
+</span><span class='line'>Domain centos6_1 resumed
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># list</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      running
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>virt-clone 克隆Guest</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># virt-clone --connect=qemu:///system --original=centos6_1 \</span>
+</span><span class='line'>--name<span class="o">=</span>centos6_2 -f /var/lib/libvirt/images/centos6_2.img
+</span><span class='line'>ERROR    Domain with devices to clone must be paused or shutoff.
+</span><span class='line'><span class="c"># virsh suspend centos6_1</span>
+</span><span class='line'>Domain centos6_1 suspended
+</span><span class='line'>
+</span><span class='line'><span class="c"># virsh list</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      paused
+</span><span class='line'>
+</span><span class='line'><span class="c"># virt-clone --connect=qemu:///system --original=centos6_1 \</span>
+</span><span class='line'>--name<span class="o">=</span>centos6_2 -f /var/lib/libvirt/images/centos6_2.img
+</span><span class='line'>Allocating <span class="s1">&#39;centos6_2.img&#39;</span>           1% <span class="o">[</span>-             <span class="o">]</span> 9.0 MB/s | 112 MB     18:44 ETA
 </span></code></pre></td></tr></table></div></figure>
 
 

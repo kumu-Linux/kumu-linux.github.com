@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-22T15:08:24+08:00</updated>
+  <updated>2013-08-22T15:47:17+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -490,7 +490,7 @@ tcp        0      0 0.0.0.0:5901                0.0.0.0:</em>                   
 <p>virsh简单操作</p>
 
 <p>``` bash
-virsh # list    # 显示运行的Guest</p>
+virsh # list    # 显示运行或者暂停的Guest</p>
 
 <h2> Id    Name                           State</h2>
 
@@ -535,6 +535,60 @@ virsh destroy guest_name
 virsh undefine guest_name
 rm -rf guest_img  # 删除虚拟存储
 </code></p>
+
+<p>挂起主机
+``` bash
+virsh # list</p>
+
+<h2> Id    Name                           State</h2>
+
+<p> 28    centos6_1                      running</p>
+
+<p>virsh # suspend centos6_1   # 挂起主机
+Domain centos6_1 suspended</p>
+
+<p>virsh # list</p>
+
+<h2> Id    Name                           State</h2>
+
+<p> 28    centos6_1                      paused</p>
+
+<p>virsh # resume centos6_1    # 把主机从挂起状态切换至运行状态
+Domain centos6_1 resumed</p>
+
+<p>virsh # list</p>
+
+<h2> Id    Name                           State</h2>
+
+<p> 28    centos6_1                      running</p>
+
+<p>virsh #
+```</p>
+
+<h4>virt-clone 克隆Guest</h4>
+
+<p>``` bash</p>
+
+<h1>virt-clone --connect=qemu:///system --original=centos6_1 \</h1>
+
+<p>--name=centos6_2 -f /var/lib/libvirt/images/centos6_2.img
+ERROR    Domain with devices to clone must be paused or shutoff.</p>
+
+<h1>virsh suspend centos6_1</h1>
+
+<p>Domain centos6_1 suspended</p>
+
+<h1>virsh list</h1>
+
+<h2> Id    Name                           State</h2>
+
+<p> 28    centos6_1                      paused</p>
+
+<h1>virt-clone --connect=qemu:///system --original=centos6_1 \</h1>
+
+<p>--name=centos6_2 -f /var/lib/libvirt/images/centos6_2.img
+Allocating 'centos6_2.img'           1% [-              ] 9.0 MB/s | 112 MB     18:44 ETA
+```</p>
 
 <h3>参考和拓展资料</h3>
 

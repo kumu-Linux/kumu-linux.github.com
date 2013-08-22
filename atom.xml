@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-22T11:52:41+08:00</updated>
+  <updated>2013-08-22T15:08:17+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,658 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CentOS6.4 X86_64 kvm备忘]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/22/kvm/"/>
+    <updated>2013-08-22T13:10:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/22/kvm</id>
+    <content type="html"><![CDATA[<h3>Install 安装</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install qemu-kvm qemu-img </span>
+</span><span class='line'><span class="c"># 使用kvm至少要安装的包，一个提供用户级别kvm模拟器，一个提供磁盘镜像的管理</span>
+</span><span class='line'><span class="c"># 安装虚拟化管理的相关工具</span>
+</span><span class='line'><span class="c"># yum install virt-manager libvirt \     </span>
+</span><span class='line'>libvirt-python python-virtinst libvirt-client
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以yum groupinstall虚拟化组件，具体可参考<a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Host_Configuration_and_Guest_Installation_Guide/sect-Virtualization_Host_Configuration_and_Guest_Installation_Guide-Host_Installation-Installing_KVM_packages_on_an_existing_Red_Hat_Enterprise_Linux_system.html">Redhat官方文档</a></p>
+
+<!--more-->
+
+
+<ul>
+<li>KVM 管理工具
+
+<ul>
+<li>kvm 内核模块 &lt;- qemu 管理工具 (可用性低)</li>
+<li>qemu 是开源虚拟化软件, 虚拟不同 CPU 架构, 可以 x86 虚拟 power cpu</li>
+<li>libvirt, virsh, virt-manager (redhat 的辅助工具)</li>
+<li>libvirt api 提供管理接口工具</li>
+<li>virt-manager 调用 libvirt 工具</li>
+</ul>
+</li>
+</ul>
+
+
+<p></p>
+
+
+<ul>
+<li>ibvirt接口
+
+<ul>
+<li>virsh 命令行工具</li>
+<li>virt-manager 图形工具</li>
+<li>RHEV-M (redhat专用收费软件)</li>
+</ul>
+</li>
+</ul>
+
+
+<p></p>
+
+
+<ul>
+<li>支持三种虚拟设备
+
+<ul>
+<li>Emulated software devices 仿真设备 ->  南北桥, USB, PS/2 ISA PCI</li>
+<li>Para-virtualized devices  -> 时钟, 网络, 串口</li>
+<li>Physically shared devices &#8211;> 光纤设备</li>
+</ul>
+</li>
+</ul>
+
+
+<p>安装完之后就可以启动kvm了</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd start</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>桥接网络</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install bridge-utils -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>桥接实例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-eth0 </span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span>eth0
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span>Ethernet
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">NAME</span><span class="o">=</span><span class="s2">&quot;System eth0&quot;</span>
+</span><span class='line'><span class="nv">BRIDGE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-br0</span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;Bridge&quot;</span>  <span class="c"># 注意大小写</span>
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.80.131
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.80.2
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>
+</span><span class='line'><span class="nv">DELAY</span><span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>具体可参考: <a href="http://www.cyberciti.biz/faq/rhel-linux-kvm-virtualization-bridged-networking-with-libvirt/">CentOS / Redhat: KVM Bridged Network Configuration</a></p>
+
+<h3>构建无人值守，实现KVM PXE安装</h3>
+
+<h4>安装相关软件</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install tftp-server syslinux dhcp vsftpd -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>dhcp</h5>
+
+<p><strong>dhcp</strong> example:</p>
+
+<figure class='code'><figcaption><span>dhcp    </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/dhcp/dhcpd.conf </span>
+</span><span class='line'>subnet 192.168.80.0 netmask 255.255.255.0 <span class="o">{</span>
+</span><span class='line'>    range 192.168.80.10 192.168.80.100;
+</span><span class='line'>    default-lease-time 600;
+</span><span class='line'>    max-lease-time 7200;
+</span><span class='line'>    next-server 192.168.80.131; <span class="c"># PXE Server地址</span>
+</span><span class='line'>    filename <span class="s2">&quot;pxelinux.0&quot;</span>;      <span class="c"># 引导文件名</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c"># /etc/init.d/dhcpd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>tftp</h4>
+
+<p><strong>tftp</strong> example:</p>
+
+<figure class='code'><figcaption><span>tftp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/xinetd.d/tftp </span>
+</span><span class='line'>service tftp
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>    <span class="nv">socket_type</span>     <span class="o">=</span> dgram
+</span><span class='line'>    <span class="nv">protocol</span>        <span class="o">=</span> udp
+</span><span class='line'>    <span class="nb">wait</span>            <span class="o">=</span> yes
+</span><span class='line'>    <span class="nv">user</span>            <span class="o">=</span> root
+</span><span class='line'>    <span class="nv">server</span>          <span class="o">=</span> /usr/sbin/in.tftpd
+</span><span class='line'>    <span class="nv">server_args</span>     <span class="o">=</span> -s /var/lib/tftpboot
+</span><span class='line'>    <span class="nv">disable</span>         <span class="o">=</span> no <span class="c"># 默认yes，改为no即可</span>
+</span><span class='line'>    <span class="nv">per_source</span>      <span class="o">=</span> 11
+</span><span class='line'>    <span class="nv">cps</span>             <span class="o">=</span> 100 2
+</span><span class='line'>    <span class="nv">flags</span>           <span class="o">=</span> IPv4
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="c"># /etc/init.d/xinetd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>vsftpd</h4>
+
+<p>新建/var/ftp/centos目录，把CentOS光盘镜像挂载至/var/ftp/centos下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mkdir /var/ftp/centos</span>
+</span><span class='line'><span class="c"># mount /dev/cdrom /var/ftp/centos # 挂载镜像使用-o loop</span>
+</span><span class='line'><span class="c"># /etc/init.d/vsftpd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>无人值守</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mkdir /var/lib/tftpboot/CentOS6</span>
+</span><span class='line'><span class="c"># cp /var/ftp/centos/images/pxeboot/{initrd.img,vmlinuz} /var/lib/tftpboot/CentOS6</span>
+</span><span class='line'><span class="c"># cp /var/ftp/centos/isolinux/{boot.msg,vesamenu.c32} /var/lib/tftpboot/</span>
+</span><span class='line'><span class="c"># cp /usr/share/syslinux/pxelinux.0 /var/lib/tftpboot/</span>
+</span><span class='line'><span class="c"># mkdir /var/ftp/tftpboot/pxelinux.cfg</span>
+</span><span class='line'><span class="c"># cp /var/ftp/centos/isolinux/isolinux.cfg /var/lib/tftpboot/pxelinux.cfg/default</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>tftpboot目录树结构</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tree /var/lib/tftpboot/</span>
+</span><span class='line'>/var/lib/tftpboot/
+</span><span class='line'>├── boot.msg
+</span><span class='line'>├── CentOS6
+</span><span class='line'>│   ├── initrd.img
+</span><span class='line'>│   └── vmlinuz
+</span><span class='line'>├── pxelinux.0
+</span><span class='line'>├── pxelinux.cfg
+</span><span class='line'>│   └── default
+</span><span class='line'>└── vesamenu.c32
+</span><span class='line'>
+</span><span class='line'>2 directories, 6 files
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>pxelinux.cfg/default</strong> example:</p>
+
+<figure class='code'><figcaption><span>pxe default</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /var/lib/tftpboot/pxelinux.cfg/default                                                                                                                      </span>
+</span><span class='line'><span class="c"># default CentOS6_PXE # 默认启动&#39;default CentOS6_PXE&#39;标记的内核</span>
+</span><span class='line'>default vesamenu.c32  <span class="c"># 菜单选项</span>
+</span><span class='line'>timeout 100 <span class="c"># 单位是1/10s</span>
+</span><span class='line'><span class="c"># prompt 1  # 为 &#39;0&#39; 时则不提示&#39;boot: &#39;，将会直接启动 &#39;default&#39; 参数中指定的内容</span>
+</span><span class='line'>
+</span><span class='line'>display boot.msg    <span class="c"># 启动时显示</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># menu background splash.jpg    # 菜单背景等</span>
+</span><span class='line'>menu title Welcome to CentOS 6.4!
+</span><span class='line'>menu color border 0 <span class="c">#ffffffff #00000000</span>
+</span><span class='line'>menu color sel 7 <span class="c">#ffffffff #ff000000</span>
+</span><span class='line'>menu color title 0 <span class="c">#ffffffff #00000000</span>
+</span><span class='line'>menu color tabmsg 0 <span class="c">#ffffffff #00000000</span>
+</span><span class='line'>menu color unsel 0 <span class="c">#ffffffff #00000000</span>
+</span><span class='line'>menu color hotsel 0 <span class="c">#ff000000 #ffffffff</span>
+</span><span class='line'>menu color hotkey 7 <span class="c">#ffffffff #ff000000</span>
+</span><span class='line'>menu color scrollbar 0 <span class="c">#ffffffff #00000000</span>
+</span><span class='line'>
+</span><span class='line'>label CentOS6_PXE
+</span><span class='line'>  menu label ^PXE Install CentOS KVM
+</span><span class='line'>  kernel /CentOS6/vmlinuz
+</span><span class='line'>  append <span class="nv">ks</span><span class="o">=</span>ftp://192.168.80.131/ks.cfg <span class="nv">initrd</span><span class="o">=</span>/CentOS6/initrd.img
+</span><span class='line'>label rescue
+</span><span class='line'>  menu label ^Rescue installed system
+</span><span class='line'>  kernel /CentOS6/vmlinuz
+</span><span class='line'>  append <span class="nv">initrd</span><span class="o">=</span>/CentOS6/initrd.img rescue
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>关于PXE的进一步细节可以参考<a href="http://www.syslinux.org/wiki/index.php/PXELINUX">pxelinux官方文档</a></p>
+
+<p><strong>ks.cfg</strong> example:</p>
+
+<figure class='code'><figcaption><span>ks.cfg</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /var/ftp/ks.cfg</span>
+</span><span class='line'><span class="c"># System authorization information</span>
+</span><span class='line'>auth  --useshadow  --enablemd5
+</span><span class='line'><span class="c"># System bootloader configuration</span>
+</span><span class='line'>bootloader --location<span class="o">=</span>mbr
+</span><span class='line'><span class="c"># Clear the Master Boot Record</span>
+</span><span class='line'>zerombr
+</span><span class='line'><span class="c"># Partition clearing information</span>
+</span><span class='line'>clearpart --all --initlabel
+</span><span class='line'><span class="c"># Use text mode install</span>
+</span><span class='line'>text
+</span><span class='line'><span class="c"># Firewall configuration</span>
+</span><span class='line'>firewall --disabled
+</span><span class='line'>skipx
+</span><span class='line'><span class="c"># Run the Setup Agent on first boot</span>
+</span><span class='line'>firstboot --disable
+</span><span class='line'><span class="c"># System keyboard</span>
+</span><span class='line'>keyboard us
+</span><span class='line'><span class="c"># System language</span>
+</span><span class='line'>lang en_US
+</span><span class='line'><span class="c"># Installation logging level</span>
+</span><span class='line'>logging --level<span class="o">=</span>info
+</span><span class='line'><span class="c"># Use network installation</span>
+</span><span class='line'>url --url<span class="o">=</span>ftp://192.168.80.131/centos
+</span><span class='line'><span class="c"># Network information</span>
+</span><span class='line'>network --bootproto<span class="o">=</span>dhcp --device<span class="o">=</span>eth0 --onboot<span class="o">=</span>on
+</span><span class='line'><span class="c"># Reboot after installation</span>
+</span><span class='line'>reboot
+</span><span class='line'><span class="c">#Root password</span>
+</span><span class='line'>rootpw --iscrypted <span class="nv">$1$duSkJ1$1P5qGnqUGn3S1MTTFiPJY</span>.
+</span><span class='line'>
+</span><span class='line'><span class="c"># SELinux configuration</span>
+</span><span class='line'>selinux --disabled
+</span><span class='line'><span class="c"># System timezone</span>
+</span><span class='line'>timezone  Asia/Shanghai
+</span><span class='line'><span class="c"># Install OS instead of upgrade</span>
+</span><span class='line'>install
+</span><span class='line'>
+</span><span class='line'><span class="c"># Disk partitioning information</span>
+</span><span class='line'>part /boot --asprimary --bytes-per-inode<span class="o">=</span>4096 --fstype<span class="o">=</span><span class="s2">&quot;ext3&quot;</span> --size<span class="o">=</span>100
+</span><span class='line'>part / --bytes-per-inode<span class="o">=</span>4096 --fstype<span class="o">=</span><span class="s2">&quot;ext3&quot;</span> --size<span class="o">=</span>5000
+</span><span class='line'>part swap --bytes-per-inode<span class="o">=</span>4096 --fstype<span class="o">=</span><span class="s2">&quot;swap&quot;</span> --size<span class="o">=</span>512
+</span><span class='line'>
+</span><span class='line'>%packages --nobase
+</span><span class='line'>@core
+</span><span class='line'>@Development tools
+</span><span class='line'>acpid   <span class="c"># 如果不安装acpid服务，virsh shutdown virtual_name 命令会失效</span>
+</span><span class='line'>vim
+</span><span class='line'>wget
+</span><span class='line'>lsof
+</span><span class='line'>%end
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果最小化安装则软件包选择如下：</p>
+
+<figure class='code'><figcaption><span>Minimal install</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>%packages --nobase
+</span><span class='line'>@core
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于kickstart的更进一步了解可参考红帽官档<a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Installation_Guide/s1-kickstart2-options.html">Kickstart Options</a> <a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Host_Configuration_and_Guest_Installation_Guide/sect-Virtualization_Host_Configuration_and_Guest_Installation_Guide-Guest_Installation-Installing_guests_with_PXE.html">Installing guest virtual machines with PXE</a></p>
+
+<h3>PXE 安装KVM虚拟机</h3>
+
+<p>如果要开启&#8211;graphics vnc选项，则需要修改vnc监听端口，默认监听的是127.0.0.1，修改为0.0.0.0即可</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;^vnc_listen&#39; /etc/libvirt/qemu.conf</span>
+</span><span class='line'><span class="nv">vnc_listen</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+</span><span class='line'><span class="c"># /etc/init.d/libvirtd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>man手册关于vnc端口介绍摘录：</p>
+
+<pre><code>Address to listen on for VNC/Spice connections. Default is typically 127.0.0.1   
+(localhost only), but some hypervisors allow changing this globally     
+(for example, the qemu driver default can be changed   in /etc/libvirt/qemu.conf).   
+Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and ’spice.  
+</code></pre>
+
+<h4>安装实例：</h4>
+
+<h5>通过location方式结合Kickstart安装</h5>
+
+<ul>
+<li>&#8211;extra-args指定ks相关选项，并且指定console类型使得virsh console可以连接操作，也可指定客户机IP、网关、DNS等，无需DHCP：</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># virt-install --name centos --ram=1024 --vcpus=1 --os-type=linux --os-variant=rhel6 \</span>
+</span><span class='line'>--network bridge:br0 --disk <span class="nv">path</span><span class="o">=</span>/var/lib/libvirt/images/centos6-machine1.img,size<span class="o">=</span>10 <span class="se">\</span>
+</span><span class='line'>--location ftp://192.168.80.131/centos/ --extra-args <span class="s2">&quot;ks=ftp://192.168.80.131/ks.cfg \</span>
+</span><span class='line'><span class="s2">ksdevice=eth0 ip=192.168.80.150  netmask=255.255.255.0 console=ttyS0&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>PXE方式安装</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># virt-install --connect qemu:///system --network=bridge:br0 \</span>
+</span><span class='line'>--pxe --name rhel6-machine1 --ram<span class="o">=</span>1024 --vcpus<span class="o">=</span>1 <span class="se">\</span>
+</span><span class='line'>--os-type<span class="o">=</span>linux --os-variant<span class="o">=</span>rhel6 --disk <span class="se">\</span>
+</span><span class='line'><span class="nv">path</span><span class="o">=</span>/var/lib/libvirt/images/rhel6-machine1.img,size<span class="o">=</span>10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注意</strong>: 如果需要指定console，&#8211;pxe是不支持&#8211;extra-args额外选项的，所以需要在pxe <code>default</code> 文件添加相关内容[SERIAL和console]，如下example</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>SERIAL 0 115200
+</span><span class='line'>label CentOS6_PXE
+</span><span class='line'>    menu label ^PXE Install CentOS KVM
+</span><span class='line'>    kernel /CentOS6/vmlinuz
+</span><span class='line'>    append <span class="nv">ks</span><span class="o">=</span>ftp://192.168.80.131/ks.cfg <span class="nv">initrd</span><span class="o">=</span>/CentOS6/initrd.img <span class="nv">console</span><span class="o">=</span>tty0 <span class="nv">console</span><span class="o">=</span>ttyS0,115200
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>本地安装：</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># virt-install --name centos --ram=1024 --vcpus=1 --os-type=linux \</span>
+</span><span class='line'>--os-variant<span class="o">=</span>rhel6 --location /mnt/ --network bridge:br0 <span class="se">\</span>
+</span><span class='line'>--disk <span class="nv">path</span><span class="o">=</span>/var/lib/libvirt/images/rhel6.img,size<span class="o">=</span>10 --extra-args <span class="s2">&quot;console=ttyS0&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>关于KVM的Guest安装方式，virt-install man手册中也有很多实例，这里不一一介绍。</p>
+
+<p>开启&#8211;graphics vnc选项可在Windows下下载vncviewer客户端，输入对应IP和端口即可[ 笔者各人还是习惯通过console连接安装，不开启vnc选项 ]，如下</p>
+
+<figure class='code'><figcaption><span>查看对应端口</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># netstat -tulnp | grep kvm</span>
+</span><span class='line'>tcp        0      0 0.0.0.0:5900                0.0.0.0:*                   LISTEN      55762/qemu-kvm
+</span><span class='line'>tcp        0      0 0.0.0.0:5901                0.0.0.0:*                   LISTEN      56656/qemu-kvm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>连接对应端口<br/>
+<img src="http://kumu-Linux.github.com/images/vnc1.png" width="500"></p>
+
+<p></p>
+
+
+<p>连接之后,就可以正常安装了</p>
+
+<p><img src="http://kumu-Linux.github.com/images/vnc2.png" width="500"></p>
+
+<h3>virsh 操作命令</h3>
+
+<p>这里只介绍一些常用的virsh使用方法，具体的命令可以参看virsh的man手册介绍或者参考红帽官方文档<a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/5/html/Virtualization/chap-Virtualization-Managing_guests_with_virsh.html">Managing guests with virsh</a></p>
+
+<p>默认只输入virsh命令会进入virsh的终端：如下，help可以获取命令帮助</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># virsh </span>
+</span><span class='line'>Welcome to virsh, the virtualization interactive terminal.
+</span><span class='line'>
+</span><span class='line'>Type:  <span class="s1">&#39;help&#39;</span> <span class="k">for </span><span class="nb">help </span>with commands
+</span><span class='line'>       <span class="s1">&#39;quit&#39;</span> to quit
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>virsh简单操作</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh <span class="c"># list    # 显示运行的Guest</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      running
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># list --all  # 显示所有的Guest，包括状态为shut off的</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      running
+</span><span class='line'> -     centos                         shut off
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># console centos6_1   # console方式连接Guest</span>
+</span><span class='line'>Connected to domain centos6_1
+</span><span class='line'>Escape character is ^<span class="o">]</span>      <span class="c"># 使用Ctrl+]即可退出</span>
+</span><span class='line'>
+</span><span class='line'>CentOS release 6.4 <span class="o">(</span>Final<span class="o">)</span>
+</span><span class='line'>Kernel 2.6.32-358.el6.x86_64 on an x86_64
+</span><span class='line'>
+</span><span class='line'>localhost.localdomain login:
+</span><span class='line'>virsh <span class="c"># start centos        # 开启某个Guest</span>
+</span><span class='line'>Domain centos started
+</span><span class='line'>
+</span><span class='line'>virsh <span class="c"># list</span>
+</span><span class='line'> Id    Name                           State
+</span><span class='line'>----------------------------------------------------
+</span><span class='line'> 28    centos6_1                      running
+</span><span class='line'> 32    centos                         running
+</span><span class='line'>virsh <span class="c"># shutdown centos     </span>
+</span><span class='line'><span class="c"># 关闭某个Guest，这里一定要注意，如果Guest没有安装运行acpid服务，</span>
+</span><span class='line'><span class="c"># 则此方式失效，可以kill强制关闭，或者console/ssh连接执行关闭                                                                                                                       </span>
+</span><span class='line'>Domain centos is being shutdown
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>删除某个Guest，一般需要两步走，对于正在运行的Guest则需要先关闭再继续两步走[也可以直接virsh destroy virtual_name], 这里就演示三步：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>virsh destroy guest_name
+</span><span class='line'>virsh undefine guest_name
+</span><span class='line'>rm -rf guest_img  <span class="c"># 删除虚拟存储</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考和拓展资料</h3>
+
+<ul>
+<li><a href="http://www.joshbolling.com/blog/2013/01/automate-rhel-based-os-deployments-with-pxe-boot-and-kickstart/">Automate RHEL Based OS Deployments with PXE Boot and Kickstart</a></li>
+<li><a href="http://www.linuxquestions.org/questions/linux-networking-3/centos-and-and-serial-console-login-894380/">Centos&amp; and serial console login</a></li>
+<li><a href="http://zhumeng8337797.blog.163.com/blog/static/1007689142011715111317513/">kvm virsh console</a></li>
+<li><a href="http://docs.fedoraproject.org/zh-CN/Fedora/12/html/Virtualization_Guide/chap-Virtualization_Guide-KVM_live_migration.html">KVM 实时迁移</a></li>
+<li><a href="http://blog.csdn.net/signmem/article/details/7489135">rhel6 kvm备忘</a></li>
+</ul>
+
+
+<p>自己之前的两篇挫文： <a href="http://blog.csdn.net/kumu_linux/article/details/8263987">KVM在线迁移(动态迁移)</a> <a href="http://blog.csdn.net/kumu_linux/article/details/8263326">RHEL6 KVM安装备忘</a></p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula在CentOS6.4安装备忘]]></title>
@@ -3122,189 +3774,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[1-5. Write Pattern Space to File[译]]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/02/sed-5/"/>
-    <updated>2013-05-02T00:06:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/02/sed-5</id>
-    <content type="html"><![CDATA[<p>使用sed <code>w</code>命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。</p>
-
-<!--more-->
-
-
-<p>接下来的是一些例子。</p>
-
-<p><strong>把employee.txt文件内容写入到output.txt（并且打印到屏幕）:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;w output.txt&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>… …
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>… …   
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>把employee.txt文件内容写入到output.txt，但是不打印到屏幕：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>… …
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>只写入第二行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2 w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>写入1到4行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1,4 w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>… …
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>写入第二行到最后一行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;2,$ w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>… …
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>只写入奇数行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;1~2 w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>写入匹配词”Jane”的行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jane/ w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>从第一行开始写入匹配”Jason”的行到第四行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,4 w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：如果1到4行没有匹配到”Jason”，这条命令只写入第四行后匹配”Jason”的行</p>
-
-<p><strong>写入行从第一行开始匹配”Raj”的行到结束行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,$ w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>写入匹配”Raj”行开始直到匹配到“Jane”行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Raj/,/Jane/ w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>写入匹配“Jason”的行和其之后的2行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed -n <span class="s1">&#39;/Jason/,+2 w output.txt&#39;</span> employee.txt
-</span><span class='line'><span class="nv">$ </span>cat output.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：你可能不经常使用w命令，大多数人使用UNIX输出重定向，来保存sed输出到一个文件，如: sed ‘p’ exployee.txt > output.txt</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

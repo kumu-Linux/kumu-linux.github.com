@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-22T11:37:02+08:00</updated>
+  <updated>2013-08-22T11:39:26+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -20,7 +20,7 @@
     <id>http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install</id>
     <content type="html"><![CDATA[<h3>简介</h3>
 
-<p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你与Xen，KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。除了像Amazon一样的商业云服务提供商，在不同OpenNebula实例上运行私有云的Amazon合作伙伴也同样可以作为远程云服务供应商。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，它也支持印象档的传输、复制和虚拟网络管理网络。</p>
+<p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，OpenNebula可以构建私有云、混合云、公开云。。</p>
 
 <!--more-->
 

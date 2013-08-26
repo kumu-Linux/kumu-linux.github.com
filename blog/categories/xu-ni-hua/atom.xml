@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-22T15:55:53+08:00</updated>
+  <updated>2013-08-26T11:28:28+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -447,7 +447,7 @@ append ks=ftp://192.168.80.131/ks.cfg initrd=/CentOS6/initrd.img console=tty0 co
 
 <p>关于KVM的Guest安装方式，virt-install man手册中也有很多实例，这里不一一介绍。</p>
 
-<p>开启--graphics vnc选项可在Windows下下载vncviewer客户端，输入对应IP和端口即可[ 笔者各人还是习惯通过console连接安装，不开启vnc选项 ]，如下</p>
+<p>开启--graphics vnc选项可在Windows下下载vncviewer客户端，输入对应IP和端口即可[ 笔者个人还是习惯通过console连接安装，不开启vnc选项 ]，如下</p>
 
 <p>``` bash 查看对应端口</p>
 

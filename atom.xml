@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-22T15:55:47+08:00</updated>
+  <updated>2013-08-26T11:28:28+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -526,7 +526,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <p>关于KVM的Guest安装方式，virt-install man手册中也有很多实例，这里不一一介绍。</p>
 
-<p>开启&#8211;graphics vnc选项可在Windows下下载vncviewer客户端，输入对应IP和端口即可[ 笔者各人还是习惯通过console连接安装，不开启vnc选项 ]，如下</p>
+<p>开启&#8211;graphics vnc选项可在Windows下下载vncviewer客户端，输入对应IP和端口即可[ 笔者个人还是习惯通过console连接安装，不开启vnc选项 ]，如下</p>
 
 <figure class='code'><figcaption><span>查看对应端口</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -728,7 +728,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 </span><span class='line'>
 </span><span class='line'><span class="c"># virt-clone --connect=qemu:///system --original=centos6_1 \</span>
 </span><span class='line'>--name<span class="o">=</span>centos6_2 -f /var/lib/libvirt/images/centos6_2.img
-</span><span class='line'>Allocating <span class="s1">&#39;centos6_2.img&#39;</span>           1% <span class="o">[</span>-             <span class="o">]</span> 9.0 MB/s | 112 MB     18:44 ETA
+</span><span class='line'>Allocating <span class="s1">&#39;centos6_2.img&#39;</span>           1% <span class="o">[</span>-              <span class="o">]</span> 9.0 MB/s | 112 MB     18:44 ETA
 </span></code></pre></td></tr></table></div></figure>
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Tag: Octopress | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/tags/octopress/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-27T16:30:04+08:00</updated>
+  <updated>2013-08-27T17:36:41+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -73,36 +73,28 @@
 <p>ruby安装选项时选择<code>Add Ruby exectutables to your path</code>，如果安装时没有选择，则可以使用 <code>我的电脑</code> -- <code>属性</code> -- <code>高级系统设置</code> -- <code>环境变量</code>，添加<strong>ruby命令路径</strong>到系统环境变量即可，另外也要加入<strong>git的命令路径</strong>。</p>
 
 <p>对于Gem下载完成后，将其解压，如 D:\DevKit，然后在cmd窗口中执行如下命令安装：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="nl">D:</span>
-</span><span class='line'><span class="n">cd</span> <span class="n">DevKit</span>
-</span><span class='line'><span class="n">ruby</span> <span class="n">dk</span><span class="p">.</span><span class="n">rb</span> <span class="n">init</span>
-</span><span class='line'><span class="n">ruby</span> <span class="n">dk</span><span class="p">.</span><span class="n">rb</span> <span class="n">instal</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}
+D:
+cd DevKit
+ruby dk.rb init
+ruby dk.rb instal
+{% endcodeblock %}</p>
 
 <p>python安装完后执行如下安装
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">easy_install</span> <span class="n">pygments</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}
+easy_install pygments
+{% endcodeblock %}</p>
 
 <h4>Octopress和相关插件安装</h4>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">git</span> <span class="n">clone</span> <span class="nl">git:</span><span class="c1">//github.com/imathis/octopress.git</span>
-</span><span class='line'><span class="n">cd</span> <span class="n">octopress</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'><span class="n">ruby</span> <span class="o">--</span><span class="n">version</span>  <span class="err">#确保</span><span class="n">ruby</span><span class="err">安装版本为</span><span class="mf">1.9.2</span>
-</span><span class='line'><span class="n">gem</span> <span class="n">install</span> <span class="n">bundler</span> <span class="n">rdoc</span>
-</span><span class='line'><span class="n">bundle</span> <span class="n">install</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">install</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}
+git clone git://github.com/imathis/octopress.git
+cd octopress  <br/>
+ruby --version  #确保ruby安装版本为1.9.2
+gem install bundler rdoc
+bundle install
+rake install
+{% endcodeblock %}</p>
 
 <p>执行rake install时可能出现如下错误</p>
 
@@ -121,27 +113,23 @@ Using bundle exec may solve this.
 
 <h3>相关操作</h3>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">rake</span> <span class="n">setup_github_pages</span> <span class="err">#</span> <span class="err">配置</span> <span class="n">octopress</span> <span class="err">与</span> <span class="n">github</span> <span class="err">的连接</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">generate</span>           <span class="err">#</span> <span class="err">生成静态文件</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">preview</span>            <span class="err">#</span> <span class="err">在本机</span><span class="mi">4000</span><span class="err">端口生成访问内容</span>
-</span><span class='line'><span class="n">rake</span> <span class="n">deploy</span>             <span class="err">#</span> <span class="err">发布文件到</span> <span class="n">github</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:cpp %}
+rake setup_github_pages # 配置 octopress 与 github 的连接
+rake generate           # 生成静态文件
+rake preview            # 在本机4000端口生成访问内容
+rake deploy             # 发布文件到 github
+{% endcodeblock %}</p>
 
 <p>执行rake generate可能产生如下错误
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">Liquid</span> <span class="nl">Exception:</span> <span class="n">invalid</span> <span class="n">byte</span> <span class="n">sequence</span> <span class="n">in</span> <span class="n">GBK</span> <span class="n">in</span> <span class="n">page</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}
+Liquid Exception: invalid byte sequence in GBK in page
+{% endcodeblock %}</p>
 
 <p><strong>解决方法</strong>： CMD命令窗口执行如下操作
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">set</span> <span class="n">LANG</span><span class="o">=</span><span class="n">zh_CN</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
-</span><span class='line'><span class="n">set</span> <span class="n">LC_ALL</span><span class="o">=</span><span class="n">zh_CN</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:cpp %}
+set LANG=zh_CN.UTF-8
+set LC_ALL=zh_CN.UTF-8
+{% endcodeblock %}</p>
 
 <h3>参考</h3>
 

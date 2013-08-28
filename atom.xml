@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-27T16:30:04+08:00</updated>
+  <updated>2013-08-28T13:50:05+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,193 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote/"/>
+    <updated>2013-08-28T10:51:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote</id>
+    <content type="html"><![CDATA[<h3>基本介绍</h3>
+
+<p>Rsyslog是一个syslogd的多线程增强版，<a href="www.rsyslog.com/doc/rsyslog_ng_comparison.html">rsyslog vs. syslog-ng</a> 链接是rsyslog官方和syslog特性和性能上的一些对比，目前大部分Linux发行版本默认也是使用rsyslog记录日志。这里介绍rsyslog远程传输的几种方式，对远程日志传输可以有一个了解。</p>
+
+<!--more-->
+
+
+<p>rsyslog提供三个远程日志传输方式：</p>
+
+<ul>
+<li>UDP: 数据包传输可信度不高</li>
+<li>TCP: 数据包传输可信度比较高</li>
+<li>RELP: 数据包传输可信度最高，避免数据丢失，比较新的协议，目前应用较少</li>
+</ul>
+
+
+<p>以下为man手册对RELP协议的一个介绍：</p>
+
+<blockquote><p>RELP can be used instead of UDP or plain TCP syslog to  provide  reliable  delivery  of syslog  messages.  Please  note that plain TCP syslog does NOT provide truly reliable delivery, with it messages may be  lost when there is a connection problem or the server shuts down. RELP prevents message loss in hose cases.</p></blockquote>
+
+<p>关于RELP的更进一步了解可以参考 <a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a> <a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a>  <a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></p>
+
+<h3>相关配置</h3>
+
+<p>To forward messages to another host via UDP, prepend the hostname with the at sign (&#8220;@&#8221;).  To forward it via plain tcp, prepend two at signs (&#8220;@@&#8221;). To forward via RELP, prepend the string &#8220;:omrelp:&#8221; in front of the hostname.</p>
+
+<h4>UDP传输</h4>
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Provides UDP syslog reception</span>
+</span><span class='line'><span class="nv">$ModLoad</span> imudp
+</span><span class='line'><span class="nv">$UDPServerRun</span> 514
+</span><span class='line'><span class="nv">$AllowedSender</span> UDP, 192.168.80.0/24
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address. </span>
+</span><span class='line'><span class="c"># 根据客户端的IP单独存放主机日志在不同目录，syslog需要手动创建             </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span><span class='line'><span class="c"># 排除本地主机IP日志记录，只记录远程主机日志</span>
+</span><span class='line'><span class="c"># 注意此规则需要在其它规则之前，否则配置没有意义，远程主机的日志也会记录到Server的日志文件中</span>
+</span><span class='line'>&amp; ~ <span class="c"># 忽略之前所有的日志，远程主机日志记录完之后不再继续往下记录</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者把以上配置单独存放在<code>/etc/rsyslog.d/</code>中的xxx.conf配置文件中，尽量避免修改主配置文件，当然如果要独立文件主配置文件中必须含有以下配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;rsyslog.d&#39; /etc/rsyslog.conf </span>
+</span><span class='line'><span class="c"># Include all config files in /etc/rsyslog.d/</span>
+</span><span class='line'><span class="nv">$IncludeConfig</span> /etc/rsyslog.d/*.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.*                     @192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上配置完成之后<code>/etc/init.d/rsyslog restart</code></p>
+
+<h4>TCP传输</h4>
+
+<p>TCP配置和UDP类似，如下</p>
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Provides TCP syslog reception</span>
+</span><span class='line'><span class="nv">$ModLoad</span> imtcp
+</span><span class='line'><span class="nv">$InputTCPServerRun</span> 514
+</span><span class='line'><span class="nv">$AllowedSender</span> TCP, 192.168.80.0/24
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address.          </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span><span class='line'>&amp; ~
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.*                     @@192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<h4>RELP传输</h4>
+
+<p>RELP需要安装<code>rsyslog-relp</code>相应模块</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install rsyslog-relp -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> imrelp <span class="c"># 加载相应模块</span>
+</span><span class='line'><span class="nv">$InputRELPServerRun</span> 20514 <span class="c"># 监听端口</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address.          </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ActionQueueType</span> LinkedList     <span class="c"># use asynchronous processing</span>
+</span><span class='line'><span class="nv">$ActionQueueFileName</span> srvrfwd    <span class="c"># set file name, also enables disk mode</span>
+</span><span class='line'><span class="nv">$ActionResumeRetryCount</span> -1      <span class="c"># infinite retries on insert failure</span>
+</span><span class='line'><span class="nv">$ActionQueueSaveOnShutdown</span> on   <span class="c"># save in-memory data if rsyslog shuts down</span>
+</span><span class='line'>*.* :omrelp:192.168.80.130:20514
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<h3>参考和拓展资料</h3>
+
+<ul>
+<li><a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a></li>
+<li><a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a></li>
+<li><a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></li>
+<li><a href="http://gertverdemme.nl/sysadm/security/rsyslog_relp_remote_logging">Rsyslog remote logging using RELP</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS6.4 X86_64 kvm+PXE备忘]]></title>
@@ -3810,54 +3997,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p><strong>注</strong>:使用地址范围造成只替换了一个，而之前例子显示是替换两个</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[通过sysfs获取dmi硬件信息]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/02/hardware/"/>
-    <updated>2013-05-02T22:27:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/02/hardware</id>
-    <content type="html"><![CDATA[<p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
-
-<!--more-->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/sys/class/dmi/id
-</span><span class='line'><span class="c"># ls </span>
-</span><span class='line'>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
-</span><span class='line'>bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
-</span><span class='line'>bios_version     board_vendor   chassis_type       power            product_version  uevent
-</span><span class='line'>board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</span>
-</span><span class='line'>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16
-</span><span class='line'><span class="c"># cat product_name </span>
-</span><span class='line'>VMware Virtual Platform
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

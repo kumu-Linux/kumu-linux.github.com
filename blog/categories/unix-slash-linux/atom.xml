@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-08-27T17:36:41+08:00</updated>
+  <updated>2013-08-28T13:50:05+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,168 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote/"/>
+    <updated>2013-08-28T10:51:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote</id>
+    <content type="html"><![CDATA[<h3>基本介绍</h3>
+
+<p>Rsyslog是一个syslogd的多线程增强版，<a href="www.rsyslog.com/doc/rsyslog_ng_comparison.html">rsyslog vs. syslog-ng</a> 链接是rsyslog官方和syslog特性和性能上的一些对比，目前大部分Linux发行版本默认也是使用rsyslog记录日志。这里介绍rsyslog远程传输的几种方式，对远程日志传输可以有一个了解。</p>
+
+<!--more-->
+
+
+<p>rsyslog提供三个远程日志传输方式：</p>
+
+<ul>
+<li>UDP: 数据包传输可信度不高</li>
+<li>TCP: 数据包传输可信度比较高</li>
+<li>RELP: 数据包传输可信度最高，避免数据丢失，比较新的协议，目前应用较少</li>
+</ul>
+
+
+<p>以下为man手册对RELP协议的一个介绍：</p>
+
+<blockquote><p>RELP can be used instead of UDP or plain TCP syslog to  provide  reliable  delivery  of syslog  messages.  Please  note that plain TCP syslog does NOT provide truly reliable delivery, with it messages may be  lost when there is a connection problem or the server shuts down. RELP prevents message loss in hose cases.</p></blockquote>
+
+<p>关于RELP的更进一步了解可以参考 <a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a> <a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a>  <a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></p>
+
+<h3>相关配置</h3>
+
+<p>To forward messages to another host via UDP, prepend the hostname with the at sign ("@").  To forward it via plain tcp, prepend two at signs ("@@"). To forward via RELP, prepend the string ":omrelp:" in front of the hostname.</p>
+
+<h4>UDP传输</h4>
+
+<h5>Server端配置</h5>
+
+<p>``` bash /etc/rsyslog.conf</p>
+
+<h1>Provides UDP syslog reception</h1>
+
+<p>$ModLoad imudp
+$UDPServerRun 514
+$AllowedSender UDP, 192.168.80.0/24</p>
+
+<h1>This one is the template to generate the log filename dynamically, depending on the client's IP address.</h1>
+
+<h1>根据客户端的IP单独存放主机日志在不同目录，syslog需要手动创建</h1>
+
+<p>$template Remote,"/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log"</p>
+
+<h1>Log all messages to the dynamically formed file.</h1>
+
+<p>:fromhost-ip, !isequal, "127.0.0.1" ?Remote</p>
+
+<h1>排除本地主机IP日志记录，只记录远程主机日志</h1>
+
+<h1>注意此规则需要在其它规则之前，否则配置没有意义，远程主机的日志也会记录到Server的日志文件中</h1>
+
+<p>&amp; ~ # 忽略之前所有的日志，远程主机日志记录完之后不再继续往下记录
+```</p>
+
+<p>或者把以上配置单独存放在<code>/etc/rsyslog.d/</code>中的xxx.conf配置文件中，尽量避免修改主配置文件，当然如果要独立文件主配置文件中必须含有以下配置</p>
+
+<p>``` bash</p>
+
+<h1>grep 'rsyslog.d' /etc/rsyslog.conf</h1>
+
+<h1>Include all config files in /etc/rsyslog.d/</h1>
+
+<p>$IncludeConfig /etc/rsyslog.d/*.conf
+```</p>
+
+<h5>Client端配置</h5>
+
+<p><code>bash /etc/rsyslog.conf
+*.*                     @192.168.80.130
+</code></p>
+
+<p>以上配置完成之后<code>/etc/init.d/rsyslog restart</code></p>
+
+<h4>TCP传输</h4>
+
+<p>TCP配置和UDP类似，如下</p>
+
+<h5>Server端配置</h5>
+
+<p>``` bash /etc/rsyslog.conf</p>
+
+<h1>Provides TCP syslog reception</h1>
+
+<p>$ModLoad imtcp
+$InputTCPServerRun 514
+$AllowedSender TCP, 192.168.80.0/24</p>
+
+<h1>This one is the template to generate the log filename dynamically, depending on the client's IP address.</h1>
+
+<p>$template Remote,"/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log"</p>
+
+<h1>Log all messages to the dynamically formed file.</h1>
+
+<p>:fromhost-ip, !isequal, "127.0.0.1" ?Remote
+&amp; ~
+```</p>
+
+<h5>Client端配置</h5>
+
+<p><code>bash /etc/rsyslog.conf
+*.*                     @@192.168.80.130
+</code></p>
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<h4>RELP传输</h4>
+
+<p>RELP需要安装<code>rsyslog-relp</code>相应模块</p>
+
+<p>``` bash</p>
+
+<h1>yum install rsyslog-relp -y</h1>
+
+<p>```</p>
+
+<h5>Server端配置</h5>
+
+<p>``` bash /etc/rsyslog.conf
+$ModLoad imrelp # 加载相应模块
+$InputRELPServerRun 20514 # 监听端口</p>
+
+<h1>This one is the template to generate the log filename dynamically, depending on the client's IP address.</h1>
+
+<p>$template Remote,"/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log"</p>
+
+<h1>Log all messages to the dynamically formed file.</h1>
+
+<p>:fromhost-ip, !isequal, "127.0.0.1" ?Remote
+```</p>
+
+<h5>Client端配置</h5>
+
+<p><code>bash /etc/rsyslog.conf
+$ActionQueueType LinkedList     # use asynchronous processing
+$ActionQueueFileName srvrfwd    # set file name, also enables disk mode
+$ActionResumeRetryCount -1      # infinite retries on insert failure
+$ActionQueueSaveOnShutdown on   # save in-memory data if rsyslog shuts down
+*.* :omrelp:192.168.80.130:20514
+</code></p>
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<h3>参考和拓展资料</h3>
+
+<ul>
+<li><a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a></li>
+<li><a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a></li>
+<li><a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></li>
+<li><a href="http://gertverdemme.nl/sysadm/security/rsyslog_relp_remote_logging">Rsyslog remote logging using RELP</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[pssh使用方法]]></title>
@@ -895,97 +1057,6 @@ Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 ```</p>
 
 <p>测试正常，无误！</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/21/named-chroot/"/>
-    <updated>2013-05-21T10:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/21/named-chroot</id>
-    <content type="html"><![CDATA[<h2>问题描述</h2>
-
-<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
-
-<!--more-->
-
-
-<p>环境： DNS查询日志存放独立分区/data/目录下</p>
-
-<h2>问题解决</h2>
-
-<p>``` bash</p>
-
-<h1>ps -ef | grep name[d]</h1>
-
-<p>named     9960     1  0 May20 ?        00:02:09 /usr/sbin/named-sdb -u named -t /var/named/chroot</p>
-
-<h1>strace -fp 9960</h1>
-
-<h1>使用strace跟踪named进程，在其它终端使用dig查询，截取到如下信息</h1>
-
-<p>... ...
-[pid  9966] connect(6, {sa_family=AF_FILE, path="/dev/log"}, 110 <unfinished ...>
-[pid  9963] recvmsg(537,  <unfinished ...>
-[pid  9962] futex(0x7f520dc26028, FUTEX_WAKE_PRIVATE, 1) = 0
-[pid  9963] &lt;... recvmsg resumed> 0x7f5205eaec00, 0) = -1 EAGAIN (Resource temporarily unavailable)
-[pid  9970] &lt;... epoll_ctl resumed> )   = 0
-[pid  9966] &lt;... connect resumed> )     = -1 ENOENT (No such file or directory)</p>
-
-<h1>信息显示没有/dev/log该文件</h1>
-
-<p>... ...
-```</p>
-
-<p>Google搜索<code>named chroot /dev/log</code>相关获得[CentOS 6: Configure bind logging with bind-chroot] (http://floriancrouzat.net/2011/09/centos-6-configure-bind-logging-bind-chroot-rsyslog/)</p>
-
-<p>修改配置文件<code>/etc/rsyslog.conf</code>添加
-<code>
-$AddUnixListenSocket /var/named/chroot/dev/log
-</code></p>
-
-<p>重启rsyslog,dig查询测试，DNS查询日志接收正常</p>
-
-<p>``` bash</p>
-
-<h1>ll /var/named/chroot/dev/log</h1>
-
-<p>srw-rw-rw- 1 root root 0 May 21 11:30 /var/named/chroot/dev/log
-```</p>
-
-<h2>lsof查看效果</h2>
-
-<p>未添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试，使用lsof查看rsyslog重启前后named程序占用/dev/log文件对比</p>
-
-<p>``` bash</p>
-
-<h1>lsof  -U -p 5986 | grep /dev/log</h1>
-
-<p>rsyslogd   5883    root    0u  unix 0xffff8801c10b1840      0t0 14544315 /dev/log</p>
-
-<h1>lsof  -U -p 5986 | grep /dev/log</h1>
-
-<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
-```</p>
-
-<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>后测试rsyslog重启前后named程序占用情况</p>
-
-<p>``` bash</p>
-
-<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
-
-<p>rsyslogd   5883    root    0u  unix 0xffff8801c2bedac0      0t0 14605223 /dev/log
-rsyslogd   5883    root    1u  unix 0xffff8801b39c0840      0t0 14605225 /var/named/chroot/dev/log</p>
-
-<h1>lsof  -U -p 5986 | grep /dev/lo[g]</h1>
-
-<p>rsyslogd   5883    root    0u  unix 0xffff8801c0913300      0t0 14630150 /dev/log
-rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/named/chroot/dev/log
-```</p>
-
-<p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
 
 <p>--EOF--</p>
 ]]></content>

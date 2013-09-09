@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-05T10:07:04+08:00</updated>
+  <updated>2013-09-09T12:53:16+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,106 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ssh代理认证]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent/"/>
+    <updated>2013-09-09T10:55:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent</id>
+    <content type="html"><![CDATA[<h3>简介</h3>
+
+<p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
+
+<!--more-->
+
+
+<h3>实例</h3>
+
+<h4>Before ssh-agent</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
+</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:  <span class="c"># 正常输入密码</span>
+</span><span class='line'>Last login: Sat Sep  7 12:40:02 2013 from 192.168.80.131
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>After ssh-agent</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh-agent bash</span>
+</span><span class='line'><span class="c"># ssh-add     </span>
+</span><span class='line'><span class="c"># 默认ssh-add添加~/.ssh/id_rsa私钥，按提示输入密码即可，可添加多个密钥</span>
+</span><span class='line'><span class="c"># 如果要加入其它密钥直接 ssh-add 私钥文件 即可</span>
+</span><span class='line'>Enter passphrase <span class="k">for</span> /root/.ssh/id_rsa:
+</span><span class='line'>Identity added: /root/.ssh/id_rsa <span class="o">(</span>/root/.ssh/id_rsa<span class="o">)</span>
+</span><span class='line'><span class="c"># ssh-add -l  # 显示添加密钥添加列表</span>
+</span><span class='line'>2048 4f:a8:76:04:42:90:b4:18:c1:6b:13:06:31:c8:59:bf /root/.ssh/id_rsa <span class="o">(</span>RSA<span class="o">)</span>
+</span><span class='line'><span class="c"># ssh root@192.168.80.130     # 不需要密码登录了</span>
+</span><span class='line'>Last login: Sat Sep  7 12:58:09 2013 from 192.168.80.128
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>ssh-agent + ForwardAgent</h4>
+
+<p>A->B->C&#8230;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
+</span><span class='line'>Last login: Sat Sep  7 14:05:34 2013 from 192.168.80.128
+</span><span class='line'><span class="c"># ssh root@192.168.80.131 # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</span>
+</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果想A->B->C&#8230;都不需要密码则可以设置<code>~/.ssh/config</code>如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host *
+</span><span class='line'>    ForwardAgent yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>设置之后</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
+</span><span class='line'>Last login: Sat Sep  7 14:06:01 2013 from 192.168.80.128
+</span><span class='line'><span class="c"># ssh root@192.168.80.131 # 没有再次提示输入密码，直接登录</span>
+</span><span class='line'>Last login: Sat Sep  7 14:05:20 2013 from 192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考和拓展文档</h3>
+
+<ul>
+<li><a href="http://blog.hellosa.org/2010/03/07/ssh-agent-secure.html">ssh-agent 的安全隐患</a></li>
+<li><a href="http://blog.pkufranky.com/2012/08/ssh-agent-forwarding-guide/">SSH Agent Forwarding原理</a></li>
+<li><a href="http://livecipher.blogspot.tw/2013/02/ssh-agent-forwarding.html">SSH key agent forwarding</a></li>
+<li><a href="https://help.github.com/articles/using-ssh-agent-forwarding">Using ssh agent forwarding</a></li>
+<li><a href="upc.lbl.gov/docs/user/sshagent.shtml">A short ssh-agent tutorial</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
@@ -3928,81 +4028,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p><strong>注</strong>:因为没有指定地址范围，所以以上例子都是针对文件所有行的</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2-1、Sed Substitute Command[译]]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/04/sed-6/"/>
-    <updated>2013-05-04T23:29:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/04/sed-6</id>
-    <content type="html"><![CDATA[<h2>Sed 替换命令语法</h2>
-
-<p>Sed替换命令语法如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;[address-range|pattern-range] s/originalstring/</span>
-</span><span class='line'><span class="s1">replacement-string/[substitute-flags]&#39;</span> inputfile
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<!--more-->
-
-
-<p>在上面的sed语法中:</p>
-
-<ul>
-<li>地址范围或者模式范围是可选的，如果你没有指定任何一个，那么sed会在所有的行中执行替换命令</li>
-<li><code>s</code>&#8211;告诉sed执行替换命令</li>
-<li>原始字符串&#8211;这个字符串将会在输入文件中被搜索。原始字符串也可以是一个正则表达式</li>
-<li>替换字符串&#8211;Sed将会通过这个字符串替换原始字符串</li>
-</ul>
-
-
-<p><strong>注</strong>:记住源文件不改变;替换是在模式空间的buffer中完成并且打印输出。</p>
-
-<h2>以下是几个简单的sed替代的例子</h2>
-
-<p><strong>更换所有出现的Director:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/Manager/Director/&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Director
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span><span class='line'>105,Jane Miller,Sales Director
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>只替换行中含有关键词&#8217;Sales&#8217;行中的Manager为Director:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Sales/s/Manager/Director/&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
-</span><span class='line'>105,Jane Miller,Sales Director
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>:使用地址范围造成只替换了一个，而之前例子显示是替换两个</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

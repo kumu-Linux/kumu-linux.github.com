@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-05T10:07:04+08:00</updated>
+  <updated>2013-09-09T12:53:16+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,102 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ssh代理认证]]></title>
+    <link href="http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent/"/>
+    <updated>2013-09-09T10:55:00+08:00</updated>
+    <id>http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent</id>
+    <content type="html"><![CDATA[<h3>简介</h3>
+
+<p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
+
+<!--more-->
+
+
+<h3>实例</h3>
+
+<h4>Before ssh-agent</h4>
+
+<p>``` bash</p>
+
+<h1>ssh root@192.168.80.130</h1>
+
+<p>Enter passphrase for key '/root/.ssh/id_rsa':   # 正常输入密码
+Last login: Sat Sep  7 12:40:02 2013 from 192.168.80.131
+```</p>
+
+<h4>After ssh-agent</h4>
+
+<p>``` bash</p>
+
+<h1>ssh-agent bash</h1>
+
+<h1>ssh-add</h1>
+
+<h1>默认ssh-add添加~/.ssh/id_rsa私钥，按提示输入密码即可，可添加多个密钥</h1>
+
+<h1>如果要加入其它密钥直接 ssh-add 私钥文件 即可</h1>
+
+<p>Enter passphrase for /root/.ssh/id_rsa:
+Identity added: /root/.ssh/id_rsa (/root/.ssh/id_rsa)</p>
+
+<h1>ssh-add -l    # 显示添加密钥添加列表</h1>
+
+<p>2048 4f:a8:76:04:42:90:b4:18:c1:6b:13:06:31:c8:59:bf /root/.ssh/id_rsa (RSA)</p>
+
+<h1>ssh root@192.168.80.130       # 不需要密码登录了</h1>
+
+<p>Last login: Sat Sep  7 12:58:09 2013 from 192.168.80.128
+```</p>
+
+<h4>ssh-agent + ForwardAgent</h4>
+
+<p>A->B->C...
+``` bash</p>
+
+<h1>ssh root@192.168.80.130</h1>
+
+<p>Last login: Sat Sep  7 14:05:34 2013 from 192.168.80.128</p>
+
+<h1>ssh root@192.168.80.131   # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</h1>
+
+<p>Enter passphrase for key '/root/.ssh/id_rsa':
+```</p>
+
+<p>如果想A->B->C...都不需要密码则可以设置<code>~/.ssh/config</code>如下
+``` bash
+Host *</p>
+
+<pre><code>ForwardAgent yes
+</code></pre>
+
+<p>```</p>
+
+<p><strong>设置之后</strong>
+``` bash</p>
+
+<h1>ssh root@192.168.80.130</h1>
+
+<p>Last login: Sat Sep  7 14:06:01 2013 from 192.168.80.128</p>
+
+<h1>ssh root@192.168.80.131   # 没有再次提示输入密码，直接登录</h1>
+
+<p>Last login: Sat Sep  7 14:05:20 2013 from 192.168.80.130
+```</p>
+
+<h3>参考和拓展文档</h3>
+
+<ul>
+<li><a href="http://blog.hellosa.org/2010/03/07/ssh-agent-secure.html">ssh-agent 的安全隐患</a></li>
+<li><a href="http://blog.pkufranky.com/2012/08/ssh-agent-forwarding-guide/">SSH Agent Forwarding原理</a></li>
+<li><a href="http://livecipher.blogspot.tw/2013/02/ssh-agent-forwarding.html">SSH key agent forwarding</a></li>
+<li><a href="https://help.github.com/articles/using-ssh-agent-forwarding">Using ssh agent forwarding</a></li>
+<li><a href="upc.lbl.gov/docs/user/sshagent.shtml">A short ssh-agent tutorial</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
@@ -614,455 +710,6 @@ $ pdsh -g dsh-test -l root 'date'       #查看哪些主机时间不一样，主
 
 <p>Wed Jun 19 16:24:19 CST 2013
 ```</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
-    <updated>2013-05-23T10:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
-    <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
-
-<!--more-->
-
-
-
-
-<center><img src="http://kumu-Linux.github.com/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
-
-
-<h2>准备软件：</h2>
-
-<p>本例以RHEL6.3为例</p>
-
-<ul>
-<li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
-<li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
-<li>[最新版本的openvpn-2.3.1官方不再集成<code>easy-rsa</code>] Note that easy-rsa is no longer bundled with OpenVPN source code archives. To get it, visit the easy-rsa page on GitHub, or download it from our Linux software repositories.</li>
-</ul>
-
-
-<p><code>bash
-git clone https://github.com/OpenVPN/easy-rsa
-</code></p>
-
-<h2>软件安装</h2>
-
-<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code>安装
-<code>bash
-yum install openssl openssl-devel pam pam-devel -y
-</code></p>
-
-<p><code>lzo-2.06</code>安装
-<code>bash
-./configure &amp;&amp; make &amp;&amp; make install
-</code></p>
-
-<p><code>openvpn-2.3.1</code>安装
-<code>bash
-./configure &amp;&amp; make &amp;&amp; make install
-</code></p>
-
-<h2>相关配置</h2>
-
-<h3>添加环境变量</h3>
-
-<p>在<code>~/.barc_profile</code>文件中加入如下内容,命名根据实际需求修改：
-<code>bash
-export D=/etc/openvpn
-export KEY_CONFIG=$D/openssl.cnf
-export KEY_DIR=$D/keys
-export KEY_SIZE=1024
-export KEY_COUNTRY=CN
-export KEY_PROVINCE=BJ
-export KEY_CITY=BJ
-export KEY_ORG=kumu
-export KEY_OU=kumu
-export KEY_NAME=kumu
-export KEY_EMAIL=root@kumu
-</code></p>
-
-<p>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code>
-``` bash</p>
-
-<h1>source ~/.barc_profile</h1>
-
-<h1>mkdir /etc/openvpn</h1>
-
-<p>```</p>
-
-<p><strong>注</strong>:也可修改easy-rsa中的vars【/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars】，source生效</p>
-
-<h3>生成密钥</h3>
-
-<p>进入之前下载的<code>easy-rsa</code>目录</p>
-
-<p><strong>初始化PKI、生成证书</strong>:
-``` bash</p>
-
-<h1>pwd</h1>
-
-<p>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0</p>
-
-<h1>ls</h1>
-
-<p>build-ca     build-key         build-key-server  clean-all      openssl-0.9.6.cnf  pkitool      vars
-build-dh     build-key-pass    build-req         inherit-inter  openssl-0.9.8.cnf  revoke-full  whichopensslcnf
-build-inter  build-key-pkcs12  build-req-pass    list-crl       openssl-1.0.0.cnf  sign-req</p>
-
-<h1>cp openssl-1.0.0.cnf /etc/openvpn/openssl.cnf</h1>
-
-<h1>./clean-all #初始化，清除原有不需要的文件</h1>
-
-<h1>./build-ca  #一直回车即可</h1>
-
-<p>Generating a 1024 bit RSA private key
-.......++++++
-............++++++</p>
-
-<h2>writing new private key to 'ca.key'</h2>
-
-<p>You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,</p>
-
-<h2>If you enter '.', the field will be left blank.</h2>
-
-<p>Country Name (2 letter code) [CN]:
-State or Province Name (full name) [BJ]:
-Locality Name (eg, city) [BJ]:
-Organization Name (eg, company) [kumu]:
-Organizational Unit Name (eg, section) [kumu]:
-Common Name (eg, your name or your server's hostname) [kumu CA]:
-Name []:kumu
-Email Address [root@kumu]:
-```</p>
-
-<p><strong>生成Server端证书Server Key</strong>
-``` bash</p>
-
-<h1>./build-key-server kumu_server #一路回车，密码处填写密码</h1>
-
-<p>Generating a 1024 bit RSA private key
-....................................++++++
-.........++++++</p>
-
-<h2>writing new private key to 'kumu_server.key'</h2>
-
-<p>You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,</p>
-
-<h2>If you enter '.', the field will be left blank.</h2>
-
-<p>Country Name (2 letter code) [CN]:
-State or Province Name (full name) [BJ]:
-Locality Name (eg, city) [BJ]:
-Organization Name (eg, company) [kumu]:
-Organizational Unit Name (eg, section) [kumu]:
-Common Name (eg, your name or your server's hostname) [kumu_server]:
-Name [kumu]:
-Email Address [root@kumu]:</p>
-
-<p>Please enter the following 'extra' attributes
-to be sent with your certificate request
-A challenge password []:123321  #输入密码
-An optional company name []:kumu
-Using configuration from /etc/openvpn/openssl.cnf
-Check that the request matches the signature
-Signature ok
-The Subject's Distinguished Name is as follows
-countryName           :PRINTABLE:'CN'
-stateOrProvinceName   :PRINTABLE:'BJ'
-localityName          :PRINTABLE:'BJ'
-organizationName      :PRINTABLE:'kumu'
-organizationalUnitName:PRINTABLE:'kumu'
-commonName            :T61STRING:'kumu_server'
-name                  :PRINTABLE:'kumu'
-emailAddress          :IA5STRING:'root@kumu'
-Certificate is to be certified until May 11 22:54:08 2023 GMT (3650 days)
-Sign the certificate? [y/n]:y</p>
-
-<p>1 out of 1 certificate requests certified, commit? [y/n]y
-Write out database with 1 new entries
-Data Base Updated
-```</p>
-
-<p><strong>生成Client端证书</strong>:
-``` bash</p>
-
-<h1>./build-key kumu_client1  #一路回车，密码处填写密码</h1>
-
-<p>Generating a 1024 bit RSA private key
-..++++++
-.....................++++++</p>
-
-<h2>writing new private key to 'kumu_client1.key'</h2>
-
-<p>You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,</p>
-
-<h2>If you enter '.', the field will be left blank.</h2>
-
-<p>Country Name (2 letter code) [CN]:
-State or Province Name (full name) [BJ]:
-Locality Name (eg, city) [BJ]:
-Organization Name (eg, company) [kumu]:
-Organizational Unit Name (eg, section) [kumu]:
-Common Name (eg, your name or your server's hostname) [kumu_client1]:
-Name [kumu]:
-Email Address [root@kumu]:</p>
-
-<p>Please enter the following 'extra' attributes
-to be sent with your certificate request
-A challenge password []:123321
-An optional company name []:kumu
-Using configuration from /etc/openvpn/openssl.cnf
-Check that the request matches the signature
-Signature ok
-The Subject's Distinguished Name is as follows
-countryName           :PRINTABLE:'CN'
-stateOrProvinceName   :PRINTABLE:'BJ'
-localityName          :PRINTABLE:'BJ'
-organizationName      :PRINTABLE:'kumu'
-organizationalUnitName:PRINTABLE:'kumu'
-commonName            :T61STRING:'kumu_client1'
-name                  :PRINTABLE:'kumu'
-emailAddress          :IA5STRING:'root@kumu'
-Certificate is to be certified until May 11 23:01:12 2023 GMT (3650 days)
-Sign the certificate? [y/n]:y</p>
-
-<p>1 out of 1 certificate requests certified, commit? [y/n]y
-Write out database with 1 new entries
-Data Base Updated</p>
-
-<h1>ls /etc/openvpn/keys/</h1>
-
-<p>01.pem  ca.key      index.txt.attr      kumu_client1.crt  kumu_server.crt  openvpn-status.log
-02.pem  dh1024.pem  index.txt.attr.old  kumu_client1.csr  kumu_server.csr  serial
-ca.crt  index.txt   index.txt.old       kumu_client1.key  kumu_server.key  serial.old
-```</p>
-
-<p><strong>注</strong>：生成其他客户端证书以此类推，名字不相同即可</p>
-
-<p><strong>证书加密</strong>:
-``` bash</p>
-
-<h1>./build-dh</h1>
-
-<p>./build-dh: line 7: dhparam: command not found
-```</p>
-
-<p>出现如上问题，修改<code>./build-dh</code>命令中<code>$OPENSSL</code>为<code>openssl</code>即可，原因是默认<code>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars</code>文件定义了<code>OPENSSL=openssl</code>,而笔者没有引用<code>vars</code>文件
-``` bash</p>
-
-<h1>./build-dh</h1>
-
-<p>Generating DH parameters, 1024 bit long safe prime, generator 2
-This is going to take a long time
-... ...</p>
-
-<h1>openvpn --genkey --secret /etc/openvpn/keys/ta.key  #生成加密key</h1>
-
-<p>```</p>
-
-<h3>Server端配置文件修改:</h3>
-
-<p>``` bash</p>
-
-<h1>pwd</h1>
-
-<p>/usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files</p>
-
-<h1>ls</h1>
-
-<p>client.conf  loopback-client  openvpn-shutdown.sh  server.conf         tls-home.conf         xinetd-server-config
-firewall.sh  loopback-server  openvpn-startup.sh   static-home.conf    tls-office.conf
-home.up      office.up        README               static-office.conf  xinetd-client-config</p>
-
-<h1>cp server.conf /etc/openvpn/  #拷贝Server模板配置文件到配置目录</h1>
-
-<p>```</p>
-
-<p><strong>Server端配置文件内容如下</strong>
-``` bash</p>
-
-<h1>grep -vE '<sup>;|<sup>$|<sup>#'</sup></sup></sup> /etc/openvpn/server.conf</h1>
-
-<p>port 1194
-proto udp
-dev tun
-ca /etc/openvpn/keys/ca.crt
-cert /etc/openvpn/keys/kumu_server.crt
-key /etc/openvpn/keys/kumu_server.key  # This file should be kept secret
-dh /etc/openvpn/keys/dh1024.pem
-server 10.8.0.0 255.255.255.0
-push "route 192.168.10.0 255.255.255.0" # 推送路由
-client-to-client
-keepalive 10 120
-tls-auth /etc/openvpn/keys/ta.key 0 # This file is secret
-comp-lzo
-persist-key
-persist-tun
-status /etc/openvpn/keys/openvpn-status.log
-verb 3
-```</p>
-
-<h3>开启路由转发和启动Openvpn</h3>
-
-<p><strong>开启路由转发</strong>
-<code>bash
-echo 1 &gt; /proc/sys/net/ipv4/ip_forward #临时开启
-</code></p>
-
-<p>或者修改/etc/sysctl.conf中<code>net.ipv4.ip_forward = 1</code>，执行<code>sysctl -p</code>永久生效</p>
-
-<p><strong>启动服务</strong>
-<code>bash
-openvpn --config /etc/openvpn/server.conf --daemon
-</code></p>
-
-<h3>Windows客户端连接配置</h3>
-
-<ul>
-<li>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a></li>
-<li>32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></li>
-</ul>
-
-
-<p>拷贝Server端生成的如下客户端证书到Windows软件安装目录<code>OpenVPN\config</code>下</p>
-
-<ul>
-<li>kumu_client1.crt</li>
-<li>kumu_client1.key</li>
-<li>ca.key</li>
-<li>ta.key</li>
-</ul>
-
-
-<p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code>
-<code>bash
-client
-dev tun
-proto udp
-remote 10.2.0.110 1194
-resolv-retry infinite
-nobind
-persist-key
-persist-tun
-ca ca.crt
-cert kumu_client1.crt
-key kumu_client1.key
-ns-cert-type server
-tls-auth ta.key 1
-comp-lzo
-verb 3
-</code></p>
-
-<p>Win7/Win8以管理员身份启动Openvpn Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，Openvpn Gui客户端显示绿色，ping测试无误，如下
-``` bash
-C:\Users\kumu>ping 10.8.0.1  #测试VPN</p>
-
-<p>正在 Ping 10.8.0.1 具有 32 字节的数据:
-来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
-来自 10.8.0.1 的回复: 字节=32 时间<1ms TTL=64
-... ...
-C:\Users\kumu>ping 192.168.10.19 #测试内网</p>
-
-<p>正在 Ping 192.168.10.19 具有 32 字节的数据:
-来自 192.168.10.19 的回复: 字节=32 时间=1ms TTL=64
-来自 192.168.10.19 的回复: 字节=32 时间=2ms TTL=64
-... ...
-```</p>
-
-<h3>Linux客户端配置</h3>
-
-<p><strong>安装</strong>参见Server端安装</p>
-
-<h4>相关配置</h4>
-
-<p>``` bash</p>
-
-<h1>mkdir /etc/openvpn</h1>
-
-<h1>cp /usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files/client.conf /etc/openvpn/</h1>
-
-<h1>grep -vE '<sup>$|<sup>#|<sup>;'</sup></sup></sup> /etc/openvpn/client.conf</h1>
-
-<p>client
-dev tun
-proto udp
-remote 10.2.0.110 1194
-resolv-retry infinite
-nobind
-persist-key
-persist-tun
-ca ca.crt
-cert kumu_client1.crt
-key kumu_client1.key
-ns-cert-type server
-tls-auth ta.key 1
-comp-lzo
-verb 3
-```</p>
-
-<p>拷贝Server端生成的如下客户端证书到Linux客户端/etc/openvpn下(这里为了方便不再生成一套客户端证书了)</p>
-
-<ul>
-<li>kumu_client1.crt</li>
-<li>kumu_client1.key</li>
-<li>ca.key</li>
-<li>ta.key</li>
-</ul>
-
-
-<p><strong>启动Openvpn客户端服务</strong></p>
-
-<p><code>bash
-openvpn --config /etc/openvpn/client.conf --daemon
-</code></p>
-
-<h4>测试</h4>
-
-<p>``` bash</p>
-
-<h1>ifconfig tun0</h1>
-
-<p>tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00</p>
-
-<pre><code>      inet addr:10.8.0.6  P-t-P:10.8.0.5  Mask:255.255.255.255
-</code></pre>
-
-<p>... ...</p>
-
-<h1>route -n</h1>
-
-<p>Kernel IP routing table
-Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-10.8.0.5        0.0.0.0         255.255.255.255 UH    0      0        0 tun0
-10.8.0.0        10.8.0.5        255.255.255.0   UG    0      0        0 tun0
-192.168.10.0    10.8.0.5        255.255.255.0   UG    0      0        0 tun0
-... ...</p>
-
-<h1>ping 192.168.10.19</h1>
-
-<p>PING 192.168.10.19 (192.168.10.19) 56(84) bytes of data.
-64 bytes from 192.168.10.19: icmp_seq=1 ttl=64 time=0.690 ms
-64 bytes from 192.168.10.19: icmp_seq=2 ttl=64 time=1.21 ms
-... ...
-```</p>
-
-<p>测试正常，无误！</p>
 
 <p>--EOF--</p>
 ]]></content>

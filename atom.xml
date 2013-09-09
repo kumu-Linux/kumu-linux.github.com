@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T12:53:16+08:00</updated>
+  <updated>2013-09-09T12:56:19+08:00</updated>
   <id>http://kumu-Linux.github.com/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[ssh代理认证]]></title>
+    <title type="html"><![CDATA[ssh认证代理]]></title>
     <link href="http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent/"/>
     <updated>2013-09-09T10:55:00+08:00</updated>
     <id>http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent</id>
@@ -33,7 +33,7 @@
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:  <span class="c"># 正常输入密码</span>
+</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:   <span class="c"># 正常输入密码</span>
 </span><span class='line'>Last login: Sat Sep  7 12:40:02 2013 from 192.168.80.131
 </span></code></pre></td></tr></table></div></figure>
 
@@ -51,14 +51,14 @@
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh-agent bash</span>
-</span><span class='line'><span class="c"># ssh-add     </span>
+</span><span class='line'><span class="c"># ssh-add       </span>
 </span><span class='line'><span class="c"># 默认ssh-add添加~/.ssh/id_rsa私钥，按提示输入密码即可，可添加多个密钥</span>
 </span><span class='line'><span class="c"># 如果要加入其它密钥直接 ssh-add 私钥文件 即可</span>
 </span><span class='line'>Enter passphrase <span class="k">for</span> /root/.ssh/id_rsa:
 </span><span class='line'>Identity added: /root/.ssh/id_rsa <span class="o">(</span>/root/.ssh/id_rsa<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh-add -l  # 显示添加密钥添加列表</span>
+</span><span class='line'><span class="c"># ssh-add -l                    # 显示添加密钥添加列表</span>
 </span><span class='line'>2048 4f:a8:76:04:42:90:b4:18:c1:6b:13:06:31:c8:59:bf /root/.ssh/id_rsa <span class="o">(</span>RSA<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh root@192.168.80.130     # 不需要密码登录了</span>
+</span><span class='line'><span class="c"># ssh root@192.168.80.130       # 不需要密码登录了</span>
 </span><span class='line'>Last login: Sat Sep  7 12:58:09 2013 from 192.168.80.128
 </span></code></pre></td></tr></table></div></figure>
 
@@ -73,7 +73,7 @@
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
 </span><span class='line'>Last login: Sat Sep  7 14:05:34 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131 # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</span>
+</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</span>
 </span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:
 </span></code></pre></td></tr></table></div></figure>
 
@@ -95,7 +95,7 @@
 <span class='line-number'>4</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
 </span><span class='line'>Last login: Sat Sep  7 14:06:01 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131 # 没有再次提示输入密码，直接登录</span>
+</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 没有再次提示输入密码，直接登录</span>
 </span><span class='line'>Last login: Sat Sep  7 14:05:20 2013 from 192.168.80.130
 </span></code></pre></td></tr></table></div></figure>
 

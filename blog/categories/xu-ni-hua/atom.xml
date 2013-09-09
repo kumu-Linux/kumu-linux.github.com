@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-09T16:36:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[CentOS6.4 X86_64 kvm+PXE备忘]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/22/kvm/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/22/kvm/"/>
     <updated>2013-08-22T13:10:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/22/kvm</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/22/kvm</id>
     <content type="html"><![CDATA[<h3>Install 安装</h3>
 
 <p>``` bash</p>
@@ -458,14 +458,14 @@ tcp        0      0 0.0.0.0:5901                0.0.0.0:</em>                   
 ```</p>
 
 <p>连接对应端口<br/>
-<img src="http://kumu-Linux.github.com/images/vnc1.png" width="500"></p>
+<img src="http://kumu-Linux.github.io/images/vnc1.png" width="500"></p>
 
 <p></p>
 
 
 <p>连接之后,就可以正常安装了</p>
 
-<p><img src="http://kumu-Linux.github.com/images/vnc2.png" width="500"></p>
+<p><img src="http://kumu-Linux.github.io/images/vnc2.png" width="500"></p>
 
 <h3>virsh 操作命令</h3>
 
@@ -609,9 +609,9 @@ Allocating 'centos6_2.img'           1% [-              ] 9.0 MB/s | 112 MB     
   
   <entry>
     <title type="html"><![CDATA[OpenNebula在CentOS6.4安装备忘]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/"/>
     <updated>2013-08-22T11:10:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install</id>
     <content type="html"><![CDATA[<h3>简介</h3>
 
 <p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，OpenNebula可以构建私有云、混合云、公开云。</p>
@@ -700,7 +700,7 @@ ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 (LISTEN)<
 
 <p>http://192.168.80.130:9869</p>
 
-<p><img src="http://kumu-Linux.github.com/images/OpenNebula_web.png" width="500" /></p>
+<p><img src="http://kumu-Linux.github.io/images/OpenNebula_web.png" width="500" /></p>
 
 <p>用户名和密码在安装的时候已经随机生成，oneadmin 是用户名，后面的一串是密码</p>
 

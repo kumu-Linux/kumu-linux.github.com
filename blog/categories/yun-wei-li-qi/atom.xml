@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-09T16:36:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Linux下终端利器tmux]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/06/tmux/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/06/tmux/"/>
     <updated>2013-08-06T11:05:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/06/tmux</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/06/tmux</id>
     <content type="html"><![CDATA[<blockquote><p>"君子生非异也，善假于物也" 。--语出《荀子·劝学》</p></blockquote>
 
 <p>如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说，好工具的选择和使用往往可以省去很多不必要的麻烦，好的开源工具很多，看你如何去使用。对于终端复用工具这里推荐使用tmux，当然此类工具比较好的还有screen，不过相对<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a> 这里我更倾向于推荐tmux[强悍的分屏等]。</p>
@@ -323,7 +323,7 @@ set -g pane-border-fg '#555555'
 
 <p>如果已经修改prefix键位<code>Ctrl+a</code>，则<code>Ctrl+a</code>[默认Ctrl+b]后输入<code>:set synchronize-panes</code> ，输入:set sync [TAB]键可自动补齐</p>
 
-<p><img src="http://kumu-Linux.github.com/images/tmux.jpg"></p>
+<p><img src="http://kumu-Linux.github.io/images/tmux.jpg"></p>
 
 <p></p>
 
@@ -358,7 +358,7 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 
 <p>效果如下：</p>
 
-<p><img src="http://kumu-Linux.github.com/images/tmux1.jpg"></p>
+<p><img src="http://kumu-Linux.github.io/images/tmux1.jpg"></p>
 
 <p></p>
 
@@ -380,9 +380,9 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
   
   <entry>
     <title type="html"><![CDATA[top实践小技巧]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/07/top-hacks/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/07/top-hacks/"/>
     <updated>2013-06-07T17:32:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/07/top-hacks</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/07/top-hacks</id>
     <content type="html"><![CDATA[<p>之前介绍了<a href="http://kumu-linux.github.io/blog/2013/06/02/top/">top基本介绍</a>,本章主要介绍一些top的实用技巧。</p>
 
 <!--more-->
@@ -401,7 +401,7 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 
 <p>如下效果图:</p>
 
-<center><img src="http://kumu-Linux.github.com/images/top1.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top1.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -409,7 +409,7 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 </ul>
 
 
-<center><img src="http://kumu-Linux.github.com/images/top2.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top2.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -417,7 +417,7 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 </ul>
 
 
-<center><img src="http://kumu-Linux.github.com/images/top3.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top3.png" alt="geek" title="geek" width="600" /></center>
 
 
 
@@ -435,7 +435,7 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 
 <p>top默认按cpu占用排序，这也是可以修改的，按F(大写)即可选择相应排序，之后任意键退出即可</p>
 
-<center><img src="http://kumu-Linux.github.com/images/top4.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top4.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -457,9 +457,9 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
   
   <entry>
     <title type="html"><![CDATA[iproute]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/04/iproute/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/04/iproute/"/>
     <updated>2013-06-04T11:16:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/04/iproute</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/04/iproute</id>
     <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
 
 <p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
@@ -700,9 +700,9 @@ default via 212.64.94.1 dev ppp0
   
   <entry>
     <title type="html"><![CDATA[top基本介绍]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/02/top/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/02/top/"/>
     <updated>2013-06-02T09:49:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/02/top</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/02/top</id>
     <content type="html"><![CDATA[<p><code>top</code>命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面跟着笔者一起<code>top</code>一下吧：</p>
 
 <!--more-->
@@ -856,9 +856,9 @@ Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached</p>
   
   <entry>
     <title type="html"><![CDATA[dmidecode]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/27/dmidecode/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/04/27/dmidecode/"/>
     <updated>2013-04-27T07:39:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/27/dmidecode</id>
+    <id>http://kumu-Linux.github.io/blog/2013/04/27/dmidecode</id>
     <content type="html"><![CDATA[<p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
 
 <!--more-->

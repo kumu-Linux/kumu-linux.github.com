@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-09T16:36:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ssh认证代理]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/"/>
     <updated>2013-09-09T10:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent</id>
+    <id>http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent</id>
     <content type="html"><![CDATA[<h3>简介</h3>
 
 <p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
@@ -111,9 +111,9 @@ Host *</p>
   
   <entry>
     <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote/"/>
     <updated>2013-08-28T10:51:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote</id>
     <content type="html"><![CDATA[<h3>基本介绍</h3>
 
 <p>Rsyslog是一个syslogd的多线程增强版，<a href="www.rsyslog.com/doc/rsyslog_ng_comparison.html">rsyslog vs. syslog-ng</a> 链接是rsyslog官方和syslog特性和性能上的一些对比，目前大部分Linux发行版本默认也是使用rsyslog记录日志。这里介绍rsyslog远程传输的几种方式，对远程日志传输可以有一个了解。</p>
@@ -279,9 +279,9 @@ $ActionQueueSaveOnShutdown on   # save in-memory data if rsyslog shuts down
   
   <entry>
     <title type="html"><![CDATA[pssh使用方法]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/12/pssh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/12/pssh/"/>
     <updated>2013-08-12T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/12/pssh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/12/pssh</id>
     <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
 
 <!--more -->
@@ -403,9 +403,9 @@ Stderr: Connection to 10.0.0.8 closed.
   
   <entry>
     <title type="html"><![CDATA[nslookup、host和dig]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host/"/>
     <updated>2013-06-19T16:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host</id>
     <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
 
 <!--more-->
@@ -605,9 +605,9 @@ $ dig -x 74.125.135.105
   
   <entry>
     <title type="html"><![CDATA[pdsh使用方法]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/19/pdsh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/19/pdsh/"/>
     <updated>2013-06-19T15:26:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/19/pdsh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/19/pdsh</id>
     <content type="html"><![CDATA[<p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
 
 <!--more-->

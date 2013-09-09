@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 备份恢复 | Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/blog/categories/bei-fen-hui-fu/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/blog/categories/bei-fen-hui-fu/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-09T16:36:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[rsync备份之ssh篇]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/06/rsync-ssh/"/>
     <updated>2013-05-06T20:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/06/rsync-ssh</id>
     <content type="html"><![CDATA[<p><code>rsync</code>是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下：</p>
 
 <!--more-->

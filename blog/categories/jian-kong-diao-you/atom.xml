@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: 监控调优 | Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/blog/categories/jian-kong-diao-you/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/blog/categories/jian-kong-diao-you/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-09T16:36:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[LogAnalyzer网页日志分析之安装篇]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/04/23/loganalyzer/"/>
     <updated>2013-04-23T14:50:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/23/loganalyzer</id>
+    <id>http://kumu-Linux.github.io/blog/2013/04/23/loganalyzer</id>
     <content type="html"><![CDATA[<h2>LogAnalyzer简介</h2>
 
 <p>LogAnalyzer 是一个syslog和其他网络事件数据的Web前端工具，提供简单易用的日志浏览、搜索和基本分析以及图表显示，PHP语言开发。<a href="http://loganalyzer.adiscon.com/">官方地址</a></p>
@@ -160,12 +160,12 @@ bash /var/www/html/rsyslog/configure.sh
 
 <p>Next1，点击here执行安装</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer1.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer1.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next2</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer2.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer2.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next3</p>
@@ -184,24 +184,24 @@ Query OK, 0 rows affected (0.00 sec)</p>
 <p>mysql>
 ```</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer4.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer4.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next4</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer5.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer5.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next5</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer6.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer6.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next6</p>
 
 <p>添加登陆用户</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer7.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer7.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next7</p>
@@ -217,22 +217,22 @@ mysql&gt; grant insert,select on Syslog.* to 'sysloguser'@'localhost' identified
 mysql&gt; flush privileges;
 </code></p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer8.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer8.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>Next8安装成功</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer9.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer9.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>登陆，输入之前的用户名和密码即可：</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer10.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer10.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>登陆之后页面如下：</p>
 
-<center><img src="http://kumu-Linux.github.com/images/loganlyzer11.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/loganlyzer11.png" alt="loganlyzer" title="loganlyzer" width="500" /></center>
 
 
 <p>--EOF--</p>
@@ -241,9 +241,9 @@ mysql&gt; flush privileges;
   
   <entry>
     <title type="html"><![CDATA[RHEL6修改snmpd日志输出]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/04/16/snmpd/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/04/16/snmpd/"/>
     <updated>2013-04-16T10:52:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/04/16/snmpd</id>
+    <id>http://kumu-Linux.github.io/blog/2013/04/16/snmpd</id>
     <content type="html"><![CDATA[<h3>需求和现象</h3>
 
 <p>默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。</p>

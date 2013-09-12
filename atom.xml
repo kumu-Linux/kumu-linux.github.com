@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-12T16:20:03+08:00</updated>
+  <updated>2013-09-12T21:55:43+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -1796,9 +1796,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
     <link href="http://kumu-Linux.github.io/blog/2013/07/16/ssd/"/>
     <updated>2013-07-16T12:43:00+08:00</updated>
     <id>http://kumu-Linux.github.io/blog/2013/07/16/ssd</id>
-    <content type="html"><![CDATA[<pre><code>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，  
-而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  --&gt; 摘自百度百科 &lt;--
-</code></pre>
+    <content type="html"><![CDATA[<blockquote><p>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  &#8211;> 摘自百度百科 &lt;&#8211;</p></blockquote>
 
 <!--more-->
 

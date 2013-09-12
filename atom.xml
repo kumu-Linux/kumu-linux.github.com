@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
-  <link href="http://kumu-Linux.github.com/atom.xml" rel="self"/>
-  <link href="http://kumu-Linux.github.com/"/>
-  <updated>2013-09-09T16:35:25+08:00</updated>
-  <id>http://kumu-Linux.github.com/</id>
+  <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-12T15:21:35+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
     <email><![CDATA[1988.wulei@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[ssh认证代理]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/"/>
     <updated>2013-09-09T10:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/09/09/ssh-agent</id>
+    <id>http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent</id>
     <content type="html"><![CDATA[<h3>简介</h3>
 
 <p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
@@ -115,9 +115,9 @@
   
   <entry>
     <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote/"/>
     <updated>2013-08-28T10:51:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/28/rsyslog-remote</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote</id>
     <content type="html"><![CDATA[<h3>基本介绍</h3>
 
 <p>Rsyslog是一个syslogd的多线程增强版，<a href="www.rsyslog.com/doc/rsyslog_ng_comparison.html">rsyslog vs. syslog-ng</a> 链接是rsyslog官方和syslog特性和性能上的一些对比，目前大部分Linux发行版本默认也是使用rsyslog记录日志。这里介绍rsyslog远程传输的几种方式，对远程日志传输可以有一个了解。</p>
@@ -308,9 +308,9 @@
   
   <entry>
     <title type="html"><![CDATA[CentOS6.4 X86_64 kvm+PXE备忘]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/22/kvm/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/22/kvm/"/>
     <updated>2013-08-22T13:10:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/22/kvm</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/22/kvm</id>
     <content type="html"><![CDATA[<h3>Install 安装</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -831,14 +831,14 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 
 <p>连接对应端口<br/>
-<img src="http://kumu-Linux.github.com/images/vnc1.png" width="500"></p>
+<img src="http://kumu-Linux.github.io/images/vnc1.png" width="500"></p>
 
 <p></p>
 
 
 <p>连接之后,就可以正常安装了</p>
 
-<p><img src="http://kumu-Linux.github.com/images/vnc2.png" width="500"></p>
+<p><img src="http://kumu-Linux.github.io/images/vnc2.png" width="500"></p>
 
 <h3>virsh 操作命令</h3>
 
@@ -1044,9 +1044,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[OpenNebula在CentOS6.4安装备忘]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/"/>
     <updated>2013-08-22T11:10:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/22/opennebula-install</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install</id>
     <content type="html"><![CDATA[<h3>简介</h3>
 
 <p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，OpenNebula可以构建私有云、混合云、公开云。</p>
@@ -1136,7 +1136,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <p>http://192.168.80.130:9869</p>
 
-<p><img src="http://kumu-Linux.github.com/images/OpenNebula_web.png" width="500" /></p>
+<p><img src="http://kumu-Linux.github.io/images/OpenNebula_web.png" width="500" /></p>
 
 <p>用户名和密码在安装的时候已经随机生成，oneadmin 是用户名，后面的一串是密码</p>
 
@@ -1155,9 +1155,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[pssh使用方法]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/12/pssh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/12/pssh/"/>
     <updated>2013-08-12T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/12/pssh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/12/pssh</id>
     <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
 
 <!--more -->
@@ -1308,9 +1308,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[Linux下终端利器tmux]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/06/tmux/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/06/tmux/"/>
     <updated>2013-08-06T11:05:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/06/tmux</id>
+    <id>http://kumu-Linux.github.io/blog/2013/08/06/tmux</id>
     <content type="html"><![CDATA[<blockquote><p>&#8220;君子生非异也，善假于物也&#8221; 。&#8211;语出《荀子·劝学》</p></blockquote>
 
 <p>如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说，好工具的选择和使用往往可以省去很多不必要的麻烦，好的开源工具很多，看你如何去使用。对于终端复用工具这里推荐使用tmux，当然此类工具比较好的还有screen，不过相对<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a> 这里我更倾向于推荐tmux[强悍的分屏等]。</p>
@@ -1662,7 +1662,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <p>如果已经修改prefix键位<code>Ctrl+a</code>，则<code>Ctrl+a</code>[默认Ctrl+b]后输入<code>:set synchronize-panes</code> ，输入:set sync [TAB]键可自动补齐</p>
 
-<p><img src="http://kumu-Linux.github.com/images/tmux.jpg"></p>
+<p><img src="http://kumu-Linux.github.io/images/tmux.jpg"></p>
 
 <p></p>
 
@@ -1704,7 +1704,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <p>效果如下：</p>
 
-<p><img src="http://kumu-Linux.github.com/images/tmux1.jpg"></p>
+<p><img src="http://kumu-Linux.github.io/images/tmux1.jpg"></p>
 
 <p></p>
 
@@ -1726,10 +1726,10 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[旅途]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/08/02/journey/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/02/journey/"/>
     <updated>2013-08-02T17:50:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/08/02/journey</id>
-    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.com/images/journey.png" alt="journey" title="journey" width="500" /></center>
+    <id>http://kumu-Linux.github.io/blog/2013/08/02/journey</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/journey.png" alt="journey" title="journey" width="500" /></center>
 
 
 
@@ -1784,7 +1784,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 总是走在漫长的路上
 </code></pre>
 
-<center><img src="http://kumu-Linux.github.com/images/beijing.jpg" alt="北京中轴线" title="北京中轴线" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/beijing.jpg" alt="北京中轴线" title="北京中轴线" width="500" /></center>
 
 
 <p>&#8211;EOF&#8211;</p>
@@ -1793,9 +1793,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[也谈伸手党]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/07/16/ssd/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/07/16/ssd/"/>
     <updated>2013-07-16T12:43:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/07/16/ssd</id>
+    <id>http://kumu-Linux.github.io/blog/2013/07/16/ssd</id>
     <content type="html"><![CDATA[<pre><code>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，  
 而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  --&gt; 摘自百度百科 &lt;--
 </code></pre>
@@ -1838,9 +1838,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[2013-06-29 两本书]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/29/life-06-29/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/29/life-06-29/"/>
     <updated>2013-06-29T19:16:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/29/life-06-29</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/29/life-06-29</id>
     <content type="html"><![CDATA[<p>最近一段时间看完了<code>《平凡的世界》</code>和<code>《艾伦·图灵传--如迷的解谜者》</code>，自从买<code>kindle paper white</code>以来，看书的效率比以前要高很多了。虽然自己还是更倾向纸质书的感觉，但是试想每天带着本书挤地铁那是相当的不便，而且纸质书搬家也是个大问题。而kindle让你随时随地都能享受阅读的乐趣，至少让笔者每天挤地铁不会感到很无趣。</p>
 
 <!--more-->
@@ -1862,9 +1862,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[nslookup、host和dig]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host/"/>
     <updated>2013-06-19T16:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/19/nslookup-dig-host</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host</id>
     <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
 
 <!--more-->
@@ -2146,9 +2146,9 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
   
   <entry>
     <title type="html"><![CDATA[pdsh使用方法]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/19/pdsh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/19/pdsh/"/>
     <updated>2013-06-19T15:26:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/19/pdsh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/19/pdsh</id>
     <content type="html"><![CDATA[<p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
 
 <!--more-->
@@ -2323,9 +2323,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[top实践小技巧]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/07/top-hacks/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/07/top-hacks/"/>
     <updated>2013-06-07T17:32:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/07/top-hacks</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/07/top-hacks</id>
     <content type="html"><![CDATA[<p>之前介绍了<a href="http://kumu-linux.github.io/blog/2013/06/02/top/">top基本介绍</a>,本章主要介绍一些top的实用技巧。</p>
 
 <!--more-->
@@ -2344,7 +2344,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 <p>如下效果图:</p>
 
-<center><img src="http://kumu-Linux.github.com/images/top1.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top1.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -2352,7 +2352,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 </ul>
 
 
-<center><img src="http://kumu-Linux.github.com/images/top2.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top2.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -2360,7 +2360,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 </ul>
 
 
-<center><img src="http://kumu-Linux.github.com/images/top3.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top3.png" alt="geek" title="geek" width="600" /></center>
 
 
 
@@ -2378,7 +2378,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 <p>top默认按cpu占用排序，这也是可以修改的，按F(大写)即可选择相应排序，之后任意键退出即可</p>
 
-<center><img src="http://kumu-Linux.github.com/images/top4.png" alt="geek" title="geek" width="600" /></center>
+<center><img src="http://kumu-Linux.github.io/images/top4.png" alt="geek" title="geek" width="600" /></center>
 
 
 <ul>
@@ -2400,9 +2400,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[iproute]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/04/iproute/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/04/iproute/"/>
     <updated>2013-06-04T11:16:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/04/iproute</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/04/iproute</id>
     <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
 
 <p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
@@ -2687,9 +2687,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[top基本介绍]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/06/02/top/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/06/02/top/"/>
     <updated>2013-06-02T09:49:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/06/02/top</id>
+    <id>http://kumu-Linux.github.io/blog/2013/06/02/top</id>
     <content type="html"><![CDATA[<p><code>top</code>命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面跟着笔者一起<code>top</code>一下吧：</p>
 
 <!--more-->
@@ -2852,9 +2852,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/23/openvpn/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/23/openvpn/"/>
     <updated>2013-05-23T10:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/23/openvpn</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/23/openvpn</id>
     <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
 
 <!--more-->
@@ -2862,7 +2862,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 
-<center><img src="http://kumu-Linux.github.com/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
+<center><img src="http://kumu-Linux.github.io/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
 
 
 <h2>准备软件：</h2>
@@ -3504,9 +3504,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/21/named-chroot/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/21/named-chroot/"/>
     <updated>2013-05-21T10:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/21/named-chroot</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/21/named-chroot</id>
     <content type="html"><![CDATA[<h2>问题描述</h2>
 
 <p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
@@ -3605,9 +3605,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[NTP备忘]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/20/ntp/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/20/ntp/"/>
     <updated>2013-05-20T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/20/ntp</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/20/ntp</id>
     <content type="html"><![CDATA[<h2>简介</h2>
 
 <p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
@@ -3617,7 +3617,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 <p>NTP提供准确时间，首先需要一个准确的UTC时间来源，NTP获得UTC的时间来源可以从原子钟、天文台、卫星，也可从Internet上获取。时间服务器按照NTP服务器的等级传播，根据离外部UTC源的远近将所有服务器归入不用的层(Stratum)中。Stratum-1在顶层由外部UTC接入，stratum-1的时间服务器为整个系统的基础，Stratum的总数限制在15以内。下图为NTP层次图：</p>
 
-<center><img src="http://kumu-Linux.github.com/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
+<center><img src="http://kumu-Linux.github.io/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
 
 
 <h2>NTP Server安装配置</h2>
@@ -3746,9 +3746,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/14/ping-dns/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/14/ping-dns/"/>
     <updated>2013-05-14T17:54:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/14/ping-dns</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/14/ping-dns</id>
     <content type="html"><![CDATA[<p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
 
 <!--more-->
@@ -3815,9 +3815,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[rsync备份之ssh篇]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/06/rsync-ssh/"/>
     <updated>2013-05-06T20:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/06/rsync-ssh</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/06/rsync-ssh</id>
     <content type="html"><![CDATA[<p><code>rsync</code>是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下：</p>
 
 <!--more-->
@@ -3985,9 +3985,9 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
   <entry>
     <title type="html"><![CDATA[2-2、Global Flag (g flag)[译]]]></title>
-    <link href="http://kumu-Linux.github.com/blog/2013/05/05/sed-7/"/>
+    <link href="http://kumu-Linux.github.io/blog/2013/05/05/sed-7/"/>
     <updated>2013-05-05T09:15:00+08:00</updated>
-    <id>http://kumu-Linux.github.com/blog/2013/05/05/sed-7</id>
+    <id>http://kumu-Linux.github.io/blog/2013/05/05/sed-7</id>
     <content type="html"><![CDATA[<p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
 
 <!--more-->

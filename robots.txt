@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://kumu-Linux.github.com/sitemap.xml 
+Sitemap: http://kumu-Linux.github.io/sitemap.xml 

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-12T15:57:19+08:00</updated>
+  <updated>2013-09-12T16:17:03+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -1057,7 +1057,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 <h3>OpenNebula 4.2 相关</h3>
 
 <ul>
-<li>(OpenNebula 4.2 Guides)[http://opennebula.org/documentation:rel4.2]</li>
+<li><a href="http://opennebula.org/documentation:rel4.2">OpenNebula 4.2 Guides</a></li>
 <li>ruby >= 1.8.7 #　CentOS6.4默认支持版本</li>
 <li>OpenNebula<a href="http://downloads.opennebula.org/">下载地址</a>
 
@@ -1198,7 +1198,7 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 <li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
 <li>-O 设置ssh一些选项</li>
 <li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
-<li>-X 通-x,但是只能设置一个参数</li>
+<li>-X 同-x,但是只能设置一个参数</li>
 <li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
 </ul>
 </li>

@@ -5,12 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Linux SA Notes By 枯木</title>
+  <title>OpenNebula Windows Server镜像制作 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content=" ">
-  
+  <meta name="description" content="Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。 创建虚拟机镜像文件 1
+# qemu-img create -f qcow2 win_2008.qcow2 &hellip;">
+  <meta name="keywords" content="OpenNebula, Windows">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/page/2/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -86,16 +87,13 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/08/02/journey/">旅途</a></h1>
+      
+        <h1 class="entry-title">OpenNebula Windows Server镜像制作</h1>
       
     
     
@@ -112,16 +110,56 @@
   
 
 
-<time datetime="2013-08-02T17:50:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
+<time datetime="2013-09-22T11:01:00+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2013</time>
         
-         | <a href="/blog/2013/08/02/journey/#disqus_thread">Comments</a>
+         | <a href="#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><center><img src="/images/journey.png" alt="journey" title="journey" width="500" /></center>
+<div class="entry-content"><p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
+
+<h3>创建虚拟机镜像文件</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<h3>安装虚拟机</h3>
+
+<p>网卡推荐使用e1000，磁盘类型使用virtio。使用virtio需要安装virtio设备驱动，否则默认是不能识别virtio设备的。</p>
+
+<h4>下载fedora项目组最新的virtio驱动iso</h4>
+
+<ul>
+<li><a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/">virtio官网地址</a> 目前的提供virtio最新驱动iso为 <a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-65.iso">virtio-win-0.1-65.iso</a> ，下载之后使用如下方式安装</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># kvm -m 2048 -cdrom cn_windows_server_2008_r2.iso \</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/virtio-win-0.1-65.iso,media<span class="o">=</span>cdrom <span class="se">\</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>win_2008.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
+</span><span class='line'>-net nic,model<span class="o">=</span>e1000 -net tap,ifname<span class="o">=</span>tap0,script<span class="o">=</span>no <span class="se">\</span>
+</span><span class='line'>-boot d -nographic -vnc :0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端通过VNC连接，启动之后virtio的硬盘是不能被识别的，如下图</p>
+
+<center><img src="/images/OpenNebula/OpenNebula_win1.jpg" width="500" /></center>
 
 
 
@@ -129,301 +167,84 @@
 <p></p>
 
 
+<p>此时，需要安装virtio驱动，点击加载驱动程序，Windows Server 2008对应win7版本</p>
 
+<center><img src="/images/OpenNebula/OpenNebula_win2.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>选择之后，按提示操作安装，安装完之后就会识别之前建立的磁盘</p>
+
+<center><img src="/images/OpenNebula/OpenNebula_win3.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-22T11:01:00+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/xu-ni-hua/'>虚拟化</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/09/09/ssh-agent/" title="Previous Post: ssh认证代理">&laquo; ssh认证代理</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/02/journey/">阅读全文 &rarr;</a>
-    </footer>
-  
 
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/07/16/ssd/">也谈伸手党</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-16T12:43:00+08:00" pubdate data-updated="true">Jul 16<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/07/16/ssd/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  &#8211;> 摘自百度百科 &lt;&#8211;</p></blockquote>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/07/16/ssd/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/06/29/life-06-29/">2013-06-29 两本书</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-29T19:16:00+08:00" pubdate data-updated="true">Jun 29<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/29/life-06-29/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>最近一段时间看完了<code>《平凡的世界》</code>和<code>《艾伦·图灵传--如迷的解谜者》</code>，自从买<code>kindle paper white</code>以来，看书的效率比以前要高很多了。虽然自己还是更倾向纸质书的感觉，但是试想每天带着本书挤地铁那是相当的不便，而且纸质书搬家也是个大问题。而kindle让你随时随地都能享受阅读的乐趣，至少让笔者每天挤地铁不会感到很无趣。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/29/life-06-29/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/06/19/nslookup-dig-host/">Nslookup、host和dig</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-19T16:55:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/19/nslookup-dig-host/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/19/nslookup-dig-host/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/06/19/pdsh/">Pdsh使用方法</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-19T15:26:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/19/pdsh/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/19/pdsh/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/06/07/top-hacks/">Top实践小技巧</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-07T17:32:00+08:00" pubdate data-updated="true">Jun 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/07/top-hacks/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>之前介绍了<a href="http://kumu-linux.github.io/blog/2013/06/02/top/">top基本介绍</a>,本章主要介绍一些top的实用技巧。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/07/top-hacks/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/06/04/iproute/">Iproute</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-04T11:16:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/06/04/iproute/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>iproute基本介绍</h3>
-
-<p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/06/04/iproute/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  <div class="pagination">
-    
-      <a class="prev" href="/blog/page/3/">&larr; Older</a>
-    
-    <a href="/blog/archives">Blog Archives</a>
-    
-    <a class="next" href="/">Newer &rarr;</a>
-    
-  </div>
-</div>
 <aside class="sidebar">
   
     <section>
@@ -509,6 +330,7 @@
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -523,7 +345,10 @@
       var disqus_shortname = 'kumusanotes';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

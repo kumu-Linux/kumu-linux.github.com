@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-12T21:55:43+08:00</updated>
+  <updated>2013-09-22T11:33:14+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula Windows Server镜像制作]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/"/>
+    <updated>2013-09-22T11:01:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win</id>
+    <content type="html"><![CDATA[<p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
+
+<h3>创建虚拟机镜像文件</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<h3>安装虚拟机</h3>
+
+<p>网卡推荐使用e1000，磁盘类型使用virtio。使用virtio需要安装virtio设备驱动，否则默认是不能识别virtio设备的。</p>
+
+<h4>下载fedora项目组最新的virtio驱动iso</h4>
+
+<ul>
+<li><a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/">virtio官网地址</a> 目前的提供virtio最新驱动iso为 <a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-65.iso">virtio-win-0.1-65.iso</a> ，下载之后使用如下方式安装</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># kvm -m 2048 -cdrom cn_windows_server_2008_r2.iso \</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/virtio-win-0.1-65.iso,media<span class="o">=</span>cdrom <span class="se">\</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>win_2008.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
+</span><span class='line'>-net nic,model<span class="o">=</span>e1000 -net tap,ifname<span class="o">=</span>tap0,script<span class="o">=</span>no <span class="se">\</span>
+</span><span class='line'>-boot d -nographic -vnc :0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端通过VNC连接，启动之后virtio的硬盘是不能被识别的，如下图</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win1.jpg" width="500" /></center>
+
+
+
+
+<p></p>
+
+
+<p>此时，需要安装virtio驱动，点击加载驱动程序，Windows Server 2008对应win7版本</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win2.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>选择之后，按提示操作安装，安装完之后就会识别之前建立的磁盘</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win3.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ssh认证代理]]></title>
@@ -1083,6 +1156,20 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <h4>解压下载的OpenNebula4.2软件包</h4>
 
+<ul>
+<li>opennebula-server: main OpenNebula daemon, scheduler, etc</li>
+<li>opennebula-sunstone: OpenNebula Sunstone, EC2, OCCI</li>
+<li>opennebula-ozones: OpenNebula OZones</li>
+<li>opennebula-ruby: Ruby Bindings</li>
+<li>opennebula-java: Java Bindings</li>
+<li>opennebula-gate: Gate server that enables communication between VMs and OpenNebula</li>
+<li>opennebula-flow: Manages services and elasticity</li>
+<li>opennebula-node-kvm: meta-package that installs the oneadmin user, libvirt and kvm</li>
+</ul>
+
+
+<p>可以直接配置OpenNebula yum源直接安装，也可以下载tar包安装</p>
+
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -1149,7 +1236,8 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <h3>参考文档</h3>
 
-<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></p>
+<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a>
+<a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></p>
 ]]></content>
   </entry>
   
@@ -3976,56 +4064,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p><strong>使用增量备份后就会删除同步另一端的文件保持两者相同，即镜像同步，而增量备份则不会出现这种现象。推荐在使用过程中使用<code>-n</code>选项先测试一遍再真实操作，以防误操作</strong></p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[2-2、Global Flag (g flag)[译]]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/05/sed-7/"/>
-    <updated>2013-05-05T09:15:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/05/sed-7</id>
-    <content type="html"><![CDATA[<p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
-
-<!--more-->
-
-
-<p><strong>替换每行的第一个<code>a</code>变为<code>A</code></strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,JAson Smith,IT Manager
-</span><span class='line'>103,RAj Reddy,Sysadmin
-</span><span class='line'>104,AnAnd Ram,Developer
-</span><span class='line'>105,JAne Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>替换每行所有的<code>a</code>变为<code>A</code></strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/g&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,JAson Smith,IT MAnAger
-</span><span class='line'>103,RAj Reddy,SysAdmin
-</span><span class='line'>104,AnAnd RAm,Developer
-</span><span class='line'>105,JAne Miller,SAles MAnAger
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>:因为没有指定地址范围，所以以上例子都是针对文件所有行的</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

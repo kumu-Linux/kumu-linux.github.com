@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-12T21:55:43+08:00</updated>
+  <updated>2013-09-22T11:33:14+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,75 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula Windows Server镜像制作]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/"/>
+    <updated>2013-09-22T11:01:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win</id>
+    <content type="html"><![CDATA[<p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
+
+<h3>创建虚拟机镜像文件</h3>
+
+<p>``` bash</p>
+
+<h1>qemu-img create -f qcow2 win_2008.qcow2 50G</h1>
+
+<p>```</p>
+
+<!--more-->
+
+
+<h3>安装虚拟机</h3>
+
+<p>网卡推荐使用e1000，磁盘类型使用virtio。使用virtio需要安装virtio设备驱动，否则默认是不能识别virtio设备的。</p>
+
+<h4>下载fedora项目组最新的virtio驱动iso</h4>
+
+<ul>
+<li><a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/">virtio官网地址</a> 目前的提供virtio最新驱动iso为 <a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-65.iso">virtio-win-0.1-65.iso</a> ，下载之后使用如下方式安装</li>
+</ul>
+
+
+<p>``` bash</p>
+
+<h1>kvm -m 2048 -cdrom cn_windows_server_2008_r2.iso \</h1>
+
+<p>-drive file=/data/virtio-win-0.1-65.iso,media=cdrom \
+-drive file=win_2008.qcow2,if=virtio \
+-net nic,model=e1000 -net tap,ifname=tap0,script=no \
+-boot d -nographic -vnc :0
+```</p>
+
+<p>客户端通过VNC连接，启动之后virtio的硬盘是不能被识别的，如下图</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win1.jpg" width="500" /></center>
+
+
+
+
+<p></p>
+
+
+<p>此时，需要安装virtio驱动，点击加载驱动程序，Windows Server 2008对应win7版本</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win2.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>选择之后，按提示操作安装，安装完之后就会识别之前建立的磁盘</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win3.jpg" width="500" /></center>
+
+
+<p></p>
+
+
+<p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CentOS6.4 X86_64 kvm+PXE备忘]]></title>
@@ -649,6 +718,20 @@ Allocating 'centos6_2.img'           1% [-              ] 9.0 MB/s | 112 MB     
 
 <h4>解压下载的OpenNebula4.2软件包</h4>
 
+<ul>
+<li>opennebula-server: main OpenNebula daemon, scheduler, etc</li>
+<li>opennebula-sunstone: OpenNebula Sunstone, EC2, OCCI</li>
+<li>opennebula-ozones: OpenNebula OZones</li>
+<li>opennebula-ruby: Ruby Bindings</li>
+<li>opennebula-java: Java Bindings</li>
+<li>opennebula-gate: Gate server that enables communication between VMs and OpenNebula</li>
+<li>opennebula-flow: Manages services and elasticity</li>
+<li>opennebula-node-kvm: meta-package that installs the oneadmin user, libvirt and kvm</li>
+</ul>
+
+
+<p>可以直接配置OpenNebula yum源直接安装，也可以下载tar包安装</p>
+
 <p>``` bash</p>
 
 <h1>tar xf CentOS-6-opennebula-4.2.0-1.tar.gz</h1>
@@ -713,7 +796,8 @@ ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 (LISTEN)<
 
 <h3>参考文档</h3>
 
-<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></p>
+<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a>
+<a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></p>
 ]]></content>
   </entry>
   

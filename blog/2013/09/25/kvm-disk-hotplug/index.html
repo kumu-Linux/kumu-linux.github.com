@@ -5,13 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>1-4、Delete Lines[译] - Linux SA Notes By 枯木</title>
+  <title>OpenNebula KVM磁盘热插拔 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="使用sed d命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，d命令也不能修改原始文件的内容。 默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。 1
-sed &#39;d &hellip;">
-  <meta name="keywords" content="Linux, sed">
+  <meta name="description" content="KVM支持以下两种磁盘类型的热插拔： sd: SCSI (default).
+vd: virtio. KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项： FEATURES = [ acpi=&#8221;yes&#8221; ] &hellip;">
+  <meta name="keywords" content="OpenNebula, hotplug">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -19,7 +19,7 @@ sed &#39;d &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/04/29/sed-4/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -93,7 +93,7 @@ sed &#39;d &hellip;">
   <header>
     
       
-        <h1 class="entry-title">1-4、Delete Lines[译]</h1>
+        <h1 class="entry-title">OpenNebula KVM磁盘热插拔</h1>
       
     
     
@@ -110,7 +110,7 @@ sed &#39;d &hellip;">
   
 
 
-<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
+<time datetime="2013-09-25T15:22:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -119,154 +119,149 @@ sed &#39;d &hellip;">
   </header>
 
 
-<div class="entry-content"><p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
+<div class="entry-content"><p>KVM支持以下两种磁盘类型的热插拔：</p>
+
+<ul>
+<li>sd: SCSI (default).</li>
+<li>vd: virtio.</li>
+</ul>
+
+
+<p>KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项：</p>
+
+<ul>
+<li>FEATURES = [ acpi=&#8221;yes&#8221; ]</li>
+</ul>
+
 
 <!--more-->
 
 
-<p>默认如果你使用sed命令没有指定地址范围，它匹配所有的行。因此，接下来例子将不会打印任何输出，它匹配employee.txt文件中所有的行并且删除它们。</p>
+<h3>virtio磁盘热插拔</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指定删除的地址范围是非常有用的。接下来有很多类似的例子：</p>
-
-<p><strong>仅删除第二行:</strong></p>
+<p>虚拟机加载acpiphp驱动</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>... ...
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># modprobe acpiphp   # 加载驱动</span>
+</span><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vda: 32.2 GB, 32212254720 bytes
+</span><span class='line'>255 heads, 63 sectors/track, 3916 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 16065 * <span class="nv">512</span> <span class="o">=</span> 8225280 bytes
+</span><span class='line'>
+</span><span class='line'>   Device Boot      Start         End      Blocks   Id  System
+</span><span class='line'>/dev/vda1   *           1          13      104391   83  Linux
+</span><span class='line'>/dev/vda2              14        3916    31350847+  8e  Linux LVM
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除1到4行:</strong></p>
+<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach 挂载使用</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1,4 d&#39;</span> employee.txt
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
+<center><img src="/images/OpenNebula/OpenNebula_disk1.jpg" width="500"></center>
 
 
-<p><strong>删除行2到最后一行:</strong></p>
+<p>Device Prefix选择sd表示scsi磁盘，如果是vd则是vitio类型磁盘。选择Attach之后，刷新页面就会看到新建的磁盘。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;2,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span></code></pre></td></tr></table></div></figure>
+<center><img src="/images/OpenNebula/OpenNebula_disk2.jpg" width="500"></center>
 
 
-<p><strong>仅删除奇数行:</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;1~2 d&#39;</span> employee.txt
-</span><span class='line'>102,Jason Smith,IT Manager
-</span><span class='line'>104,Anand Ram,Developer
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除匹配词“Manager”的行：</strong></p>
+<p>此时查看vda磁盘是否生效</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Manager/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>103,Raj Reddy,Sysadmin
-</span><span class='line'>104,Anand Ram,Developer
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fdisk -l           # 查看磁盘识别</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vdb: 1048 MB, 1048576000 bytes
+</span><span class='line'>16 heads, 63 sectors/track, 2031 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 1008 * <span class="nv">512</span> <span class="o">=</span> 516096 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vdb doesn<span class="err">&#39;</span>t contain a valid partition table
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除匹配有”Jason”的行到第四行：</strong></p>
+<h3>scsi磁盘热插拔</h3>
+
+<p>虚拟机加载acpiphp驱动</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># modprobe acpiphp   # 加载驱动</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach挂载使用</p>
+
+<center><img src="/images/OpenNebula/OpenNebula_disk3.jpg" width="500"></center>
+
+
+<p>如下即可看到新添加的磁盘</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,4 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sda: 1048 MB, 1048576000 bytes
+</span><span class='line'>33 heads, 61 sectors/track, 1017 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 2013 * <span class="nv">512</span> <span class="o">=</span> 1030656 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sda doesn<span class="err">&#39;</span>t contain a valid partition table
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>注</strong>：如果这儿没有匹配“Jason“的行在1到4行中，这条命令只删除第四行后匹配”Jason“的行</p>
-
-<p><strong>删除匹配“Raj“的行到最后一行:</strong></p>
+<p>如果未识别scsi磁盘，执行如下命令，使得KVM虚拟机识别</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,$ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># echo &#39;- - -&#39; &gt; /sys/class/scsi_host/host0/scan</span>
+</span><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>...
+</span><span class='line'>Disk /dev/sdb: 1048 MB, 1048576000 bytes
+</span><span class='line'>33 heads, 61 sectors/track, 1017 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 2013 * <span class="nv">512</span> <span class="o">=</span> 1030656 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sdb doesn<span class="err">&#39;</span>t contain a valid partition table
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>删除匹配”Raj”的行到匹配“Jane“的行：</strong></p>
+<h3>参考文档</h3>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Raj/,/Jane/ d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,Jason Smith,IT Manager
-</span></code></pre></td></tr></table></div></figure>
+<ul>
+<li><a href="http://opennebula.org/documentation:rel4.2:kvmg">KVM Driver 4.2</a></li>
+<li><a href="http://serverfault.com/questions/453456/adding-virtio-block-devices-at-runtime-in-libvirt-kvm">Adding Virtio block devices at runtime in Libvirt KVM</a></li>
+</ul>
 
-
-<p><strong>删除匹配”Jason”的行和其之后的两行：</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;/Jason/,+2 d&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>105,Jane Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>有用的删除实例</h2>
-
-<p>下面的实例在日常操作中是非常有用的</p>
-
-<p><strong>删除所有的空行</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^$/ d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grep实现过滤空行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^$&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>删除所有注释的行(假设注释行以#号开头)</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;/^#/ d&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>grep实现过滤注释行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>grep -v <span class="s1">&#39;^#&#39;</span> employee.txt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：当你使用多个sed命令时，此时sed遇到&#8217;d&#8217;命令，整个匹配的匹配行将被删除，并且之后的命令对于删除的行将不会执行。</p>
 
 <p>&#8211;EOF&#8211;</p>
 </div>
@@ -291,12 +286,12 @@ sed &#39;d &hellip;">
   
 
 
-<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
+<time datetime="2013-09-25T15:22:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sed-slash-awk/'>SED/AWK</a>
+    <a class='category' href='/blog/categories/xu-ni-hua/'>虚拟化</a>
   
 </span>
 
@@ -315,14 +310,18 @@ sed &#39;d &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/04/28/sed-3/" title="Previous Post: 1-3、Print Pattern Space[译]">&laquo; 1-3、Print Pattern Space[译]</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/09/25/shell-alias/" title="Previous Post: 30 Handy Bash Shell Aliases[译]">&laquo; 30 Handy Bash Shell Aliases[译]</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/05/02/sed-5/" title="Next Post: 1-5. Write Pattern Space to File[译]">1-5. Write Pattern Space to File[译] &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -426,7 +425,10 @@ sed &#39;d &hellip;">
       var disqus_shortname = 'kumusanotes';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

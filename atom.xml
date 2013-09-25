@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-25T14:31:02+08:00</updated>
+  <updated>2013-09-25T17:23:09+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,159 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula KVM磁盘热插拔]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug/"/>
+    <updated>2013-09-25T15:22:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug</id>
+    <content type="html"><![CDATA[<p>KVM支持以下两种磁盘类型的热插拔：</p>
+
+<ul>
+<li>sd: SCSI (default).</li>
+<li>vd: virtio.</li>
+</ul>
+
+
+<p>KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项：</p>
+
+<ul>
+<li>FEATURES = [ acpi=&#8221;yes&#8221; ]</li>
+</ul>
+
+
+<!--more-->
+
+
+<h3>virtio磁盘热插拔</h3>
+
+<p>虚拟机加载acpiphp驱动</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># modprobe acpiphp   # 加载驱动</span>
+</span><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vda: 32.2 GB, 32212254720 bytes
+</span><span class='line'>255 heads, 63 sectors/track, 3916 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 16065 * <span class="nv">512</span> <span class="o">=</span> 8225280 bytes
+</span><span class='line'>
+</span><span class='line'>   Device Boot      Start         End      Blocks   Id  System
+</span><span class='line'>/dev/vda1   *           1          13      104391   83  Linux
+</span><span class='line'>/dev/vda2              14        3916    31350847+  8e  Linux LVM
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach 挂载使用</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk1.jpg" width="500"></center>
+
+
+<p>Device Prefix选择sd表示scsi磁盘，如果是vd则是vitio类型磁盘。选择Attach之后，刷新页面就会看到新建的磁盘。</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk2.jpg" width="500"></center>
+
+
+<p>此时查看vda磁盘是否生效</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fdisk -l           # 查看磁盘识别</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vdb: 1048 MB, 1048576000 bytes
+</span><span class='line'>16 heads, 63 sectors/track, 2031 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 1008 * <span class="nv">512</span> <span class="o">=</span> 516096 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/vdb doesn<span class="err">&#39;</span>t contain a valid partition table
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>scsi磁盘热插拔</h3>
+
+<p>虚拟机加载acpiphp驱动</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># modprobe acpiphp   # 加载驱动</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach挂载使用</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk3.jpg" width="500"></center>
+
+
+<p>如下即可看到新添加的磁盘</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sda: 1048 MB, 1048576000 bytes
+</span><span class='line'>33 heads, 61 sectors/track, 1017 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 2013 * <span class="nv">512</span> <span class="o">=</span> 1030656 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sda doesn<span class="err">&#39;</span>t contain a valid partition table
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果未识别scsi磁盘，执行如下命令，使得KVM虚拟机识别</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># echo &#39;- - -&#39; &gt; /sys/class/scsi_host/host0/scan</span>
+</span><span class='line'><span class="c"># fdisk -l</span>
+</span><span class='line'>...
+</span><span class='line'>Disk /dev/sdb: 1048 MB, 1048576000 bytes
+</span><span class='line'>33 heads, 61 sectors/track, 1017 cylinders
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> cylinders of 2013 * <span class="nv">512</span> <span class="o">=</span> 1030656 bytes
+</span><span class='line'>
+</span><span class='line'>Disk /dev/sdb doesn<span class="err">&#39;</span>t contain a valid partition table
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考文档</h3>
+
+<ul>
+<li><a href="http://opennebula.org/documentation:rel4.2:kvmg">KVM Driver 4.2</a></li>
+<li><a href="http://serverfault.com/questions/453456/adding-virtio-block-devices-at-runtime-in-libvirt-kvm">Adding Virtio block devices at runtime in Libvirt KVM</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[30 Handy Bash Shell Aliases[译]]]></title>
@@ -4541,75 +4694,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
 <a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
 鸟哥Linux私房菜</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ping和dns的一个小插曲]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/14/ping-dns/"/>
-    <updated>2013-05-14T17:54:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/14/ping-dns</id>
-    <content type="html"><![CDATA[<p>今天遇到一个很奇葩的问题,长话短说，描述下基本问题：修改RHEL6 <code>/etc/resolv.conf</code> 配置文件加入公司内网DNS nameserver，用以解析内网，把之前不能解析外网的DNS nameserver放在第二位作为备，问题就出现了</p>
-
-<!--more-->
-
-
-<h3>问题重现</h3>
-
-<p>解析正常</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># nslookup mail.server1.test.com</span>
-</span><span class='line'>Server:       192.168.0.8
-</span><span class='line'>Address:  192.168.0.8#53
-</span><span class='line'>
-</span><span class='line'>Name: mail.server1.test.com
-</span><span class='line'>Address: 192.168.0.8
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>但是域名ping不通 【strace尝试追踪问题，使用的是公司内网DNS，但是获取不到地址】</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ping mail.server1.test.com</span>
-</span><span class='line'>ping: unknown host mail.server1.test.com
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>问题解决</h3>
-
-<p>1、查看/etc/nsswitch.conf内容，解析顺序如下，文件没有问题</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep ^hosts:  /etc/nsswitch.conf </span>
-</span><span class='line'>hosts:      files dns
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>2、重启nscd【Dns Server Cache】，尝试清空缓存，问题依然存在</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/nscd restart</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8230; &#8230;</p>
-
-<p>期间N种方式的尝试，无解。后来同事发现把之前的<strong>外网DNS注释</strong>，<strong>重启<code>nscd</code></strong>，问题解决。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/nscd restart</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,1007 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>30 Handy Bash Shell Aliases[译] - Linux SA Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="本文为 原文地址 翻译而来，有些地方稍作改动。 一个别名就是一个命令的快捷方式，alias命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过alias命令可以显示所有已定义的别名列表。你可以在~ /.bashrc文件中自定义用户的别名。通过这些别名可以减少打字时间， &hellip;">
+  <meta name="keywords" content="aliases, shell">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/09/25/shell-alias/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Linux SA Notes By 枯木" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <div id="logo">
+  	<div id="logoLeft">{</div>
+  	<div id="logoText">Anonymous</div>
+  	<div id="logoRight">}</div>
+  	<div class="clear"></div>
+  </div>
+  <h1><a href="/">Linux SA Notes By 枯木</a></h1>
+  
+    <h2>Linux、Python、MySQL -- 像黑客一样写作</h2>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com.hk/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:kumu-Linux.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog首页</a></li>
+  <li><a href="/blog/archives">文章归档</a></li>
+  <li><a href="/blog/git_svn">版本控制</a></li>
+  <li><a href="/blog/ops">运维利器</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+<!--  <li><a href="/blog/blogs">博客-墙</a></li> -->
+  <li><a href="/blog/about">关于我</a></li>
+</ul>
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">30 Handy Bash Shell Aliases[译]</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-25T10:42:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>本文为 <a href="http://www.cyberciti.biz/tips/bash-aliases-mac-centos-linux-unix.html">原文地址</a> 翻译而来，有些地方稍作改动。</p>
+
+<p>一个别名就是一个命令的快捷方式，<code>alias</code>命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过<code>alias</code>命令可以显示所有已定义的别名列表。你可以在<code>~ /.bashrc</code>文件中自定义用户的别名。通过这些别名可以减少打字时间，更灵活的操作，提升工作效率。</p>
+
+<!--more-->
+
+
+<h3>Task：列出系统别名列表</h3>
+
+<p>输入以下命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出实例:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">cp</span><span class="o">=</span><span class="s1">&#39;cp -i&#39;</span>
+</span><span class='line'><span class="nb">alias </span>l.<span class="o">=</span><span class="s1">&#39;ls -d .* --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -l --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ls</span><span class="o">=</span><span class="s1">&#39;ls --color=auto&#39;</span>
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认<code>alias</code>命令不添加任何选项输出当前用户定义的别名。</p>
+
+<h3>Task：定义/创建一个别名(bash语法)</h3>
+
+<p>创建别名使用如下语法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">name</span><span class="o">=</span>value
+</span><span class='line'><span class="nb">alias </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;command&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;command arg1 arg2&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;/path/to/script&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;/path/to/script.pl arg1&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在以下的实例中，创建一个<code>clear</code>清屏命令的别名c，输入如下命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">c</span><span class="o">=</span>clear
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输入以上命令之后，如果需要清屏，只需直接输入简单的<code>c</code>来代替<code>clear</code>命令即可实现</p>
+
+<h3>Task：暂时禁用别名</h3>
+
+<p>显示别名<code>cp</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">alias </span>cp
+</span><span class='line'><span class="nb">alias </span><span class="nv">cp</span><span class="o">=</span><span class="s1">&#39;cp -i&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>cp</code>命令是<code>cp -i</code>的别名，<code>-i</code>选项一定程度上能起到保护作用，但是当我们只想使用原始的cp命令的时候，我们肯定不能简单的输入<code>cp</code>命令，这里有两种方式实现</p>
+
+<ul>
+<li>使用全名</li>
+<li>或者使用\+命令</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls a b
+</span><span class='line'>a  b
+</span><span class='line'><span class="nv">$ </span>cp b a      <span class="c">#使用别名之后的cp在覆盖文件时会提示</span>
+</span><span class='line'>cp: overwrite <span class="sb">`</span>a<span class="err">&#39;</span>? y
+</span><span class='line'><span class="nv">$ </span>/bin/cp b a <span class="c">#使用全称不会有提示</span>
+</span><span class='line'><span class="nv">$ </span><span class="se">\c</span>p b a     <span class="c">#使用\cp不会有提示</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>移除alias (bash语法)</h3>
+
+<p>你需要使用<code>unalias</code>命令移除别名，语法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">unalias </span>aliasname
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如，移除之前<code>clear</code>的别名<code>c</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">unalias </span>c
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你在<code>~/bashrc</code>文件中定义了别名，也需要从该文件中移除对应所在行。</p>
+
+<h3>Task：定义永久别名</h3>
+
+<p>alias c只能在当前会话中生效。当你重启或者退出当前会话的时候，就失效了。为了避免这种问题，田间别名到你的<code>~/.bashrc</code>配置文件中，输入:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>vi ~/.bashrc
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过添加如下内容，对于当前用户别名c永久生效：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">c</span><span class="o">=</span><span class="s1">&#39;clear&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>保存并退出这个文件，全局别名可以存放在<code>/etc/bashrc</code>文件中，请注意这个别名命令建立在各种shell中，包括ksh、csh、bash等等</p>
+
+<h3>一个关于权限访问的小贴士</h3>
+
+<p>你可以添加如下代码到<code>~/.bashrc</code>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># if user is not root, pass all commands via sudo #</span>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="nv">$UID</span> -ne 0 <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span><span class="nb">alias </span><span class="nv">reboot</span><span class="o">=</span><span class="s1">&#39;sudo reboot&#39;</span>
+</span><span class='line'>    <span class="nb">alias </span><span class="nv">update</span><span class="o">=</span><span class="s1">&#39;sudo yum update&#39;</span>
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>按照操作系统添加别名的小贴士</h3>
+
+<p>你可以添加如下代码到<code>~/.bashrc</code> <a href="http://bash.cyberciti.biz/guide/The_case_statement">case语句</a>：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">### Get os name via uname ###</span>
+</span><span class='line'><span class="nv">_myos</span><span class="o">=</span><span class="s2">&quot;$(uname)&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">### add alias as per os using $_myos ###</span>
+</span><span class='line'><span class="k">case</span> <span class="nv">$_myos</span> in
+</span><span class='line'>   Linux<span class="o">)</span> <span class="nb">alias </span><span class="nv">foo</span><span class="o">=</span><span class="s1">&#39;/path/to/linux/bin/foo&#39;</span>;;
+</span><span class='line'>   FreeBSD|OpenBSD<span class="o">)</span> <span class="nb">alias </span><span class="nv">foo</span><span class="o">=</span><span class="s1">&#39;/path/to/bsd/bin/foo&#39;</span> ;;
+</span><span class='line'>   SunOS<span class="o">)</span> <span class="nb">alias </span><span class="nv">foo</span><span class="o">=</span><span class="s1">&#39;/path/to/sunos/bin/foo&#39;</span> ;;
+</span><span class='line'>   *<span class="o">)</span> ;;
+</span><span class='line'><span class="k">esac</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>30个有用的别名</h3>
+
+<p>你可以定义不同类型的别名来节约时间和提升效率。</p>
+
+<h4>#1: 控制<code>ls</code>命令输出</h4>
+
+<p>给<code>ls</code>命令的输出来电颜色看看</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Colorize the ls output ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ls</span><span class="o">=</span><span class="s1">&#39;ls --color=auto&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Use a long listing format ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -la&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Show hidden files ##</span>
+</span><span class='line'><span class="nb">alias </span>l.<span class="o">=</span><span class="s1">&#39;ls -d .* --color=auto&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#2: 调整<code>cd</code>命令习惯</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## get rid of command not found ##</span>
+</span><span class='line'><span class="nb">alias </span>cd..<span class="o">=</span><span class="s1">&#39;cd ..&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## a quick way to get out of current directory ##</span>
+</span><span class='line'><span class="nb">alias</span> ..<span class="o">=</span><span class="s1">&#39;cd ..&#39;</span>
+</span><span class='line'><span class="nb">alias</span> ...<span class="o">=</span><span class="s1">&#39;cd ../../../&#39;</span>
+</span><span class='line'><span class="nb">alias</span> ....<span class="o">=</span><span class="s1">&#39;cd ../../../../&#39;</span>
+</span><span class='line'><span class="nb">alias</span> .....<span class="o">=</span><span class="s1">&#39;cd ../../../../&#39;</span>
+</span><span class='line'><span class="nb">alias</span> .4<span class="o">=</span><span class="s1">&#39;cd ../../../../&#39;</span>
+</span><span class='line'><span class="nb">alias</span> .5<span class="o">=</span><span class="s1">&#39;cd ../../../../..&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#3：控制<code>grep</code>命令输出</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## Colorize the grep command output for ease of use (good for log files)##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">grep</span><span class="o">=</span><span class="s1">&#39;grep --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">egrep</span><span class="o">=</span><span class="s1">&#39;egrep --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">fgrep</span><span class="o">=</span><span class="s1">&#39;fgrep --color=auto&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#4：开启计算器小数点计算</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">bc</span><span class="o">=</span><span class="s1">&#39;bc -l&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#5：生成sha1摘要</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">sha1</span><span class="o">=</span><span class="s1">&#39;openssl sha1&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#6、根据需要创建父目录</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">mkdir</span><span class="o">=</span><span class="s1">&#39;mkdir -pv&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#7：有颜色的diff输出</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># install  colordiff package :) 前提需要安装colordiff包</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">diff</span><span class="o">=</span><span class="s1">&#39;colordiff&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#8：使mount命令输出格式更漂亮以及可读性更高</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">mount</span><span class="o">=</span><span class="s1">&#39;mount |column -t&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#9：短命令节省时间</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># handy short cuts #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">h</span><span class="o">=</span><span class="s1">&#39;history&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">j</span><span class="o">=</span><span class="s1">&#39;jobs -l&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#10：创建一些新的命令</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">path</span><span class="o">=</span><span class="s1">&#39;echo -e ${PATH//:/\\n}&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">now</span><span class="o">=</span><span class="s1">&#39;date +&quot;%T&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">nowtime</span><span class="o">=</span>now
+</span><span class='line'><span class="nb">alias </span><span class="nv">nowdate</span><span class="o">=</span><span class="s1">&#39;date +&quot;%d-%m-%Y&quot;&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#11：设置默认的vim</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">vi</span><span class="o">=</span>vim
+</span><span class='line'><span class="nb">alias </span><span class="nv">svi</span><span class="o">=</span><span class="s1">&#39;sudo vi&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">vis</span><span class="o">=</span><span class="s1">&#39;vim &quot;+set si&quot;&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">edit</span><span class="o">=</span><span class="s1">&#39;vim&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#12：ping的相关设置</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Stop after sending count ECHO_REQUEST packets #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ping</span><span class="o">=</span><span class="s1">&#39;ping -c 5&#39;</span>
+</span><span class='line'><span class="c"># Do not wait interval 1 second, go fast #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">fastping</span><span class="o">=</span><span class="s1">&#39;ping -c 100 -s.2&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#13：显示打开的端口</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">alias </span><span class="nv">ports</span><span class="o">=</span><span class="s1">&#39;netstat -tulanp&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#14：唤醒沉睡的服务</h4>
+
+<p><a href="http://www.cyberciti.biz/tips/linux-send-wake-on-lan-wol-magic-packets.html">Wake-on-LAN(WOL)</a>是一个以太网网络标准,允许通过一个网络信息打开服务。您可以使用以下的别名快速唤醒NAS设备和服务器<a href="http://bash.cyberciti.biz/misc-shell/simple-shell-script-to-wake-up-nas-devices-computers/">Devices Using Linux or Unix Computer</a>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## replace mac with your actual server mac address #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">wakeupnas01</span><span class="o">=</span><span class="s1">&#39;/usr/bin/wakeonlan 00:11:32:11:15:FC&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">wakeupnas02</span><span class="o">=</span><span class="s1">&#39;/usr/bin/wakeonlan 00:11:32:11:15:FD&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">wakeupnas03</span><span class="o">=</span><span class="s1">&#39;/usr/bin/wakeonlan 00:11:32:11:15:FE&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#15：控制防火墙(iptables)输出</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## shortcut  for iptables and pass it via sudo#</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ipt</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/iptables&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># display all rules #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iptlist</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/iptables -L -n -v --line-numbers&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iptlistin</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/iptables -L INPUT -n -v --line-numbers&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iptlistout</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/iptables -L OUTPUT -n -v --line-numbers&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iptlistfw</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/iptables -L FORWARD -n -v --line-numbers&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">firewall</span><span class="o">=</span>iptlist
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#16：通过curl调试web服务或者CDN问题</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># get web server headers #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">header</span><span class="o">=</span><span class="s1">&#39;curl -I&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># find out if remote server supports gzip / mod_deflate or not #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">headerc</span><span class="o">=</span><span class="s1">&#39;curl -I --compress&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#17：一些安全的设置</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># do not delete / or prompt if deleting more than 3 files at a time #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rm</span><span class="o">=</span><span class="s1">&#39;rm -I --preserve-root&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># confirmation #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">mv</span><span class="o">=</span><span class="s1">&#39;mv -i&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">cp</span><span class="o">=</span><span class="s1">&#39;cp -i&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ln</span><span class="o">=</span><span class="s1">&#39;ln -i&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Parenting changing perms on / #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">chown</span><span class="o">=</span><span class="s1">&#39;chown --preserve-root&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">chmod</span><span class="o">=</span><span class="s1">&#39;chmod --preserve-root&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">chgrp</span><span class="o">=</span><span class="s1">&#39;chgrp --preserve-root&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#18：升级RHEL/CentOS/Fedora Linux 服务</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## distrp specifc RHEL/CentOS ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">update</span><span class="o">=</span><span class="s1">&#39;yum update&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">updatey</span><span class="o">=</span><span class="s1">&#39;yum -y update&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#19：调节sudo和su</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># become root #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;sudo -i&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">su</span><span class="o">=</span><span class="s1">&#39;sudo -i&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#20：通过sudo关机或重启</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># reboot / halt / poweroff</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">reboot</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/reboot&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">poweroff</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/poweroff&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">halt</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/halt&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">shutdown</span><span class="o">=</span><span class="s1">&#39;sudo /sbin/shutdown&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#21：控制web服务</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># also pass it via sudo so whoever is admin can reload it without calling you #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">nginxreload</span><span class="o">=</span><span class="s1">&#39;sudo /usr/local/nginx/sbin/nginx -s reload&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">nginxtest</span><span class="o">=</span><span class="s1">&#39;sudo /usr/local/nginx/sbin/nginx -t&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">lightyload</span><span class="o">=</span><span class="s1">&#39;sudo /etc/init.d/lighttpd reload&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">lightytest</span><span class="o">=</span><span class="s1">&#39;sudo /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -t&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">httpdreload</span><span class="o">=</span><span class="s1">&#39;sudo /usr/sbin/apachectl -k graceful&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">httpdtest</span><span class="o">=</span><span class="s1">&#39;sudo /usr/sbin/apachectl -t &amp;&amp; /usr/sbin/apachectl -t -D DUMP_VHOSTS&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#22：给备份做别名</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># if cron fails or if you want backup on demand just run these commands # </span>
+</span><span class='line'><span class="c"># again pass it via sudo so whoever is in admin group can start the job #</span>
+</span><span class='line'><span class="c"># Backup scripts #</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">backup</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type local --taget /raid1/backups&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">nasbackup</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">s3backup</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01 --auth /home/scripts/admin/.authdata/amazon.keys&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rsnapshothourly</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys --config /home/scripts/admin/scripts/backup/config/adsl.conf&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rsnapshotdaily</span><span class="o">=</span><span class="s1">&#39;sudo  /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rsnapshotweekly</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rsnapshotmonthly</span><span class="o">=</span><span class="s1">&#39;sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">amazonbackup</span><span class="o">=</span>s3backup
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#23：系统管理员设置端口相关的命令</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## All of our servers eth1 is connected to the Internets via vlan / router etc  ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">dnstop</span><span class="o">=</span><span class="s1">&#39;dnstop -l 5  eth1&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">vnstat</span><span class="o">=</span><span class="s1">&#39;vnstat -i eth1&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iftop</span><span class="o">=</span><span class="s1">&#39;iftop -i eth1&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">tcpdump</span><span class="o">=</span><span class="s1">&#39;tcpdump -i eth1&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ethtool</span><span class="o">=</span><span class="s1">&#39;ethtool eth1&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># work on wlan0 by default #</span>
+</span><span class='line'><span class="c"># Only useful for laptop as all servers are without wireless interface</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">iwconfig</span><span class="o">=</span><span class="s1">&#39;iwconfig wlan0&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#24：快速获取系统内存、cpu使用以及gpu内存信息</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## pass options to free ## </span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">meminfo</span><span class="o">=</span><span class="s1">&#39;free -m -l -t&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## get top process eating memory</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">psmem</span><span class="o">=</span><span class="s1">&#39;ps auxf | sort -nr -k 4&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">psmem10</span><span class="o">=</span><span class="s1">&#39;ps auxf | sort -nr -k 4 | head -10&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## get top process eating cpu ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">pscpu</span><span class="o">=</span><span class="s1">&#39;ps auxf | sort -nr -k 3&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">pscpu10</span><span class="o">=</span><span class="s1">&#39;ps auxf | sort -nr -k 3 | head -10&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Get server cpu info ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">cpuinfo</span><span class="o">=</span><span class="s1">&#39;lscpu&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## older system use /proc/cpuinfo ##</span>
+</span><span class='line'><span class="c">##alias cpuinfo=&#39;less /proc/cpuinfo&#39; ##</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## get GPU ram on desktop / laptop## </span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">gpumeminfo</span><span class="o">=</span><span class="s1">&#39;grep -i --color memory /var/log/Xorg.0.log&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#25：控制家庭路由器</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Reboot my home Linksys WAG160N / WAG54 / WAG320 / WAG120N Router / Gateway from *nix.</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">rebootlinksys</span><span class="o">=</span><span class="s2">&quot;curl -u &#39;admin:my-super-password&#39; &#39;http://192.168.1.2/setup.cgi?todo=reboot&#39;&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Reboot tomato based Asus NT16 wireless bridge </span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">reboottomato</span><span class="o">=</span><span class="s2">&quot;ssh admin@192.168.1.1 /sbin/reboot&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#26：wget续传</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## this one saved by butt so many times ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">wget</span><span class="o">=</span><span class="s1">&#39;wget -c&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#27：使用不同的浏览器测试网页</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## this one saved by butt so many times ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ff4</span><span class="o">=</span><span class="s1">&#39;/opt/firefox4/firefox&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ff13</span><span class="o">=</span><span class="s1">&#39;/opt/firefox13/firefox&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">chrome</span><span class="o">=</span><span class="s1">&#39;/opt/google/chrome/chrome&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">opera</span><span class="o">=</span><span class="s1">&#39;/opt/opera/opera&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#default ff </span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ff</span><span class="o">=</span>ff13
+</span><span class='line'>
+</span><span class='line'><span class="c">#my default browser </span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">browser</span><span class="o">=</span>chrome
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#28：ssh小贴士</h4>
+
+<p>不创建别名，通过使用OpenSSH配置文件<code>~/.ssh/config</code>配置，它提供了很多选项，如：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host server10
+</span><span class='line'>  Hostname 1.2.3.4
+</span><span class='line'>  IdentityFile ~/backups/.ssh/id_dsa
+</span><span class='line'>  user foobar
+</span><span class='line'>  Port 30000
+</span><span class='line'>  ForwardX11Trusted yes
+</span><span class='line'>  TCPKeepAlive yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在可以通过如下命令连接</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ssh server10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#29：现在轮到你分享了</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">## set some other defaults ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">df</span><span class="o">=</span><span class="s1">&#39;df -H&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">du</span><span class="o">=</span><span class="s1">&#39;du -ch&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># top is atop, just like vi is vim</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">top</span><span class="o">=</span><span class="s1">&#39;atop&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## nfsrestart  - must be root  ##</span>
+</span><span class='line'><span class="c">## refresh nfs mount / cache etc for Apache ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">nfsrestart</span><span class="o">=</span><span class="s1">&#39;sync &amp;&amp; sleep 2 &amp;&amp; /etc/init.d/httpd stop &amp;&amp; umount netapp2:/exports/http &amp;&amp; sleep 2 &amp;&amp; mount -o rw,sync,rsize=32768,wsize=32768,intr,hard,proto=tcp,fsc natapp2:/exports /http/var/www/html &amp;&amp;  /etc/init.d/httpd start&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Memcached server status  ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">mcdstats</span><span class="o">=</span><span class="s1">&#39;/usr/bin/memcached-tool 10.10.27.11:11211 stats&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">mcdshow</span><span class="o">=</span><span class="s1">&#39;/usr/bin/memcached-tool 10.10.27.11:11211 display&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## quickly flush out memcached server ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">flushmcd</span><span class="o">=</span><span class="s1">&#39;echo &quot;flush_all&quot; | nc 10.10.27.11 11211&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## Remove assets quickly from Akamai / Amazon cdn ##</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">cdndel</span><span class="o">=</span><span class="s1">&#39;/home/scripts/admin/cdn/purge_cdn_cache --profile akamai&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">amzcdndel</span><span class="o">=</span><span class="s1">&#39;/home/scripts/admin/cdn/purge_cdn_cache --profile amazon&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">## supply list of urls via file or stdin</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">cdnmdel</span><span class="o">=</span><span class="s1">&#39;/home/scripts/admin/cdn/purge_cdn_cache --profile akamai --stdin&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">amzcdnmdel</span><span class="o">=</span><span class="s1">&#39;/home/scripts/admin/cdn/purge_cdn_cache --profile amazon --stdin&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>#30：&#8221;The End Is the Beginning</h4>
+
+<p>&#8230; &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-25T10:42:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2013/09/22/opennebula-win/" title="Previous Post: OpenNebula Windows Server镜像制作">&laquo; OpenNebula Windows Server镜像制作</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Sina Weibo</h1>
+  <iframe id="sina_widget_1912914742" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=1912914742&height=500&skin=wd_02&showpic=1">
+  </iframe>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/25/shell-alias/">30 Handy Bash Shell Aliases[译]</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/22/opennebula-win/">OpenNebula Windows Server镜像制作</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/09/ssh-agent/">Ssh认证代理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/28/rsyslog-remote/">Rsyslog远程传输的几种方式</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/22/kvm/">CentOS6.4 X86_64 kvm+PXE备忘</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Categories</h1>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (13)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (3)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+</section><section>
+  <h1>Cool Links</h1>
+  <ul>
+    <li>
+      <a href="http://coolshell.cn/" target="new_window">【 酷壳 CoolShell 】</a> 
+	</li>
+	<li>
+      <a href="http://dbanotes.net/" target="new_window">【  Fenng 闲思录  】</a>
+	</li>
+	<li>
+      <a href="http://www.ruanyifeng.com/blog/" target="new_window">【阮一峰网络日志】</a>
+    </li>
+	<li>
+	  <a href="http://blog.linuxhonker.com/" target="new_window">【服务器架构研究】</a>
+    </li>
+	<li>
+	  <a href="http://blog.csdn.net/kumu_Linux" target="new_window">【 枯木CSDN Blog 】</a>
+	</li>
+	<li>
+	  <a href="http://lin-credible.github.io/" target="new_window">【Lin-credible Blog】</a>
+	</li>
+	<li>
+      <a href="http://www.wutianqi.com/" target="new_window">【 Tanky Woo Blog 】</a>
+	</li>
+	<li>
+      <a href="http://xiaomao.us/" target="new_window">【小毛的宇宙天地】</a>
+	</li>
+	<li>
+      <a href="http://blog.clanzx.net/" target="new_window">【 blog.clanzx.net 】</a>
+	</li>
+	<li>
+      <a href="http://blog.csdn.net/signmem" target="new_window">【 Terry Tsang Blog 】</a>
+	</li>
+  </ul>
+</section><section id="comment_sidebar">
+<h1>Recent Conmments</h1>
+  <script type="text/javascript" src="http://kumusanotes.disqus.com/recent_comments_widget.js?num_items=5&hide_avatars=0&avatar_size=32&excerpt_length=20"></script><a href="http://disqus.com/">Powered by Disqus</a>
+</section><section>
+<h1>Just Douban</h1>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/39084560/?show=collection&amp;n=8&amp;columns=2" ></script> 
+</div>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/09/25/shell-alias/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/09/25/shell-alias/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-25T17:23:09+08:00</updated>
+  <updated>2013-09-26T15:59:21+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,132 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ssh的一些安全设定]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/"/>
+    <updated>2013-09-26T10:42:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/nmap_ssh.jpg" width="500"></center>
+
+
+
+
+<!--more-->
+
+
+<p>ssh是我们日常工作中必不可少的工具，所以它的安全性也是异常重要了，这里笔者简单介绍了一些ssh配置中需要注意的几个点。</p>
+
+<!--more-->
+
+
+<p>首先,作为root用户登录并备份原始文件，输入下面的命令：</p>
+
+<p><code>bash
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+</code></p>
+
+<h3>1、调整认证时限(默认单位为s)，即当用户登录ssh之后，要求输入密码的时间限制，规定时间没有输入则自动断线：</h3>
+
+<p><code>bash
+LoginGraceTime 60
+</code></p>
+
+<h3>2、最好限制root用户远程登录，修改如下：</h3>
+
+<p><code>bash
+PermitRootLogin no
+</code></p>
+
+<h3>3、关闭X11转发，防止额外的信息泄露</h3>
+
+<p><code>bash
+X11Forwarding no
+</code></p>
+
+<h3>4、取消以下两行的注释，使得登录后显示一些信息</h3>
+
+<p><code>bash
+PrintMotd yes
+PrintLastLog yes
+</code></p>
+
+<h3>5、编辑<code>/etc/motd</code>文件，添加一些警告信息，如下</h3>
+
+<p><code>bash
+This computer system is for authorized users only. All activity
+is logged and regularly checked. Individuals using this system
+without authority or in excess of their authority are subject to
+having all their services revoked...
+</code></p>
+
+<h3>6、关闭ssh闲置会话</h3>
+
+<p><code>bash
+ClientAliveInterval 60        
+ClientAliveCountMax 5
+</code></p>
+
+<ul>
+<li>ClientAliveInterval设置表示如果超过这么长时间没有收到客户端的任何数据，将通过安全通道向客户端发送一个"alive"消息，并等候应答，单位默认为s。</li>
+<li>ClientAliveCountMax表示在未收到任何客户端回应前最多允许发送多少个"alive"消息，这是设置5次</li>
+</ul>
+
+
+<p>以上也就是客户端如果60*5=300s，即5分钟如果没有任何操作，则空闲连接会被强制断开，关闭时提示如下</p>
+
+<pre><code>Connection to x.x.x.x closed by remote host.
+Connection to x.x.x.x closed.
+</code></pre>
+
+<h3>7、开启TCPKeepAlive</h3>
+
+<p><code>bash
+TCPKeepAlive yes
+</code></p>
+
+<p>TCPKeepAlive指定系统是否向客户端发送TCP keepalive消息，这种消息可以检测到死连接、连接不当关闭、客户端崩溃等异常，避免僵尸进程产生，推荐开启。</p>
+
+<h3>8、修改ssh默认端口22</h3>
+
+<p><code>bash
+Port xxxx   #自定义端口
+</code></p>
+
+<h3>9、设置允许登录的ssh用户</h3>
+
+<p><code>bash
+AllowUsers test1 test2 test3
+</code></p>
+
+<p>也可以设置允许的组</p>
+
+<p><code>bash
+AllowGroups admin
+</code></p>
+
+<h3>10、关闭不必要的认证</h3>
+
+<p>如果可以，只允许公钥认证，关闭其它认证方式</p>
+
+<p><code>bash
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+</code></p>
+
+<p>基本的一个设置就是以上的部分了内容了，还可以结合<code>fail2ban</code>更好的保护ssh的安全。关于<code>fail2ban</code>下次介绍，其实很多网友已经写了很多相关的博文了。</p>
+
+<h3>参考文章</h3>
+
+<ul>
+<li><a href="http://blog.licess.org/sshd_config/">sshd_config配置</a></li>
+<li><a href="http://lamp.linux.gov.cn/OpenSSH/sshd_config.html">sshd_config中文手册</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/aix/library/au-sshsecurity/">SSH 安全性和配置入门</a></li>
+<li><a href="http://www.amazon.com/CentOS-6-Linux-Server-Cookbook/dp/1849519021">CentOS 6 Linux Server Cookbook </a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[30 Handy Bash Shell Aliases[译]]]></title>
@@ -962,208 +1088,6 @@ Stderr: Connection to 10.0.0.8 closed.
 <li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
 </ul>
 
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[nslookup、host和dig]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host/"/>
-    <updated>2013-06-19T16:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host</id>
-    <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
-
-<!--more-->
-
-
-<h2>nslookup</h2>
-
-<blockquote><p>nslookup is a tried and true program that has weathered the ages. nslookup has been deprecated and may be removed from future releases. There is not even a man page for this program.</p></blockquote>
-
-<p>因此，这里不过多介绍这个古老的工具了</p>
-
-<h2>host</h2>
-
-<p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例
-``` bash</p>
-
-<pre><code>  # host www.google.com
-  www.google.com has address 74.125.135.106
-</code></pre>
-
-<p>```</p>
-
-<p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定
-``` bash</p>
-
-<h1>host www.google.com 8.8.8.8</h1>
-
-<p>Using domain server:
-Name: 8.8.8.8
-Address: 8.8.8.8#53
-Aliases:</p>
-
-<p>www.google.com has address 173.194.72.147
-```</p>
-
-<p><code>host</code>当然也支持反解析
-``` bash</p>
-
-<h1>host 173.194.72.147</h1>
-
-<p>147.72.194.173.in-addr.arpa domain name pointer tf-in-f147.1e100.net.
-```</p>
-
-<p>指定查询类型可以使用<code>-t</code>选项</p>
-
-<p>``` bash</p>
-
-<h1>host -t SOA google.com  #查询SOA记录信息</h1>
-
-<p>google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-```</p>
-
-<p>查询<code>MX</code>记录
-<code>
-$ host -t MX google.com
-google.com mail is handled by 10 aspmx.l.google.com.
-google.com mail is handled by 40 alt3.aspmx.l.google.com.
-google.com mail is handled by 20 alt1.aspmx.l.google.com.
-google.com mail is handled by 50 alt4.aspmx.l.google.com.
-google.com mail is handled by 30 alt2.aspmx.l.google.com.
-</code></p>
-
-<p><code>-C</code>对比认证DNS SOA信息
-```</p>
-
-<h1>host -C google.com</h1>
-
-<p>Nameserver 216.239.34.10:</p>
-
-<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</code></pre>
-
-<p>Nameserver 216.239.36.10:</p>
-
-<pre><code>    google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</code></pre>
-
-<p>Nameserver 216.239.32.10:
-... ...
-```</p>
-
-<p>查询DNS Server软件版本信息,10.10.10.2为DNS Server
-``` bash</p>
-
-<h1>host -c CH -t txt version.bind 10.10.10.2</h1>
-
-<p>Using domain server:
-Name: 10.10.10.2
-Address: 10.10.10.2#53
-Aliases:</p>
-
-<p>version.bind descriptive text "9.8.1-P2"
-```</p>
-
-<p><strong>host帮助</strong>
-``` bash</p>
-
-<h1>host</h1>
-
-<p>Usage: host [-aCdlriTwv] [-c class] [-N ndots] [-t type] [-W time]</p>
-
-<pre><code>        [-R number] [-m flag] hostname [server]
-   -a is equivalent to -v -t ANY
-   -c specifies query class for non-IN data  搜索非网络数据时要指定要查找的类
-   -C compares SOA records on authoritative nameservers
-   -d is equivalent to -v
-   -l lists all hosts in a domain, using AXFR
-   -i IP6.INT reverse lookups
-   -N changes the number of dots allowed before root lookup is done
-   -r disables recursive processing
-   -R specifies number of retries for UDP packets
-   -s a SERVFAIL response should stop query
-   -t specifies the query type 指定要查询的记录类型
-   -T enables TCP/IP mode
-   -v enables verbose output  输出更详细的信息
-   -w specifies to wait forever for a reply
-   -W specifies how long to wait for a reply
-   -4 use IPv4 query transport only
-   -6 use IPv6 query transport only
-   -m set memory debugging flag (trace|record|usage)
-</code></pre>
-
-<p>```</p>
-
-<h2>dig</h2>
-
-<p>dig也是一个很强大的命令，相对host来说输出较为繁杂，如下：</p>
-
-<p>``` bash
-$ dig www.google.com
-... ...</p>
-
-<p>;; ANSWER SECTION:
-www.google.com.         297     IN      A       74.125.135.106
-www.google.com.         297     IN      A       74.125.135.104
-... ...</p>
-
-<p>;; AUTHORITY SECTION:
-google.com.             172796  IN      NS      ns3.google.com.
-google.com.             172796  IN      NS      ns1.google.com.
-google.com.             172796  IN      NS      ns4.google.com.
-google.com.             172796  IN      NS      ns2.google.com.</p>
-
-<p>... ...
-```</p>
-
-<p>查询<code>MX</code>记录
-<code>bash
-$ dig google.com MX | grep '^;; ANSWER SECTION:' -A 5
-;; ANSWER SECTION:
-google.com.             368     IN      MX      50 alt4.aspmx.l.google.com.
-google.com.             368     IN      MX      40 alt3.aspmx.l.google.com.
-google.com.             368     IN      MX      10 aspmx.l.google.com.
-google.com.             368     IN      MX      30 alt2.aspmx.l.google.com.
-google.com.             368     IN      MX      20 alt1.aspmx.l.google.com.
-</code></p>
-
-<p>查询<code>SOA</code>记录
-<code>bash
-$ dig google.com SOA | grep '^;; ANSWER SECTION:' -A 1
-;; ANSWER SECTION:
-google.com.             85539   IN      SOA     ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</code></p>
-
-<p>指定DNS Server查询
-<code>bash
-$ dig www.baidu.com @8.8.8.8
-... ...
-;; ANSWER SECTION:
-www.baidu.com.          1024    IN      CNAME   www.a.shifen.com.
-www.a.shifen.com.       166     IN      A       119.75.217.56
-www.a.shifen.com.       166     IN      A       119.75.218.77
-... ...
-</code></p>
-
-<p><code>dig</code>查询版本号
-<code>bash
-$ dig chaos txt version.bind  10.10.10.2 | grep '^;; ANSWER SECTION:' -A 1
-;; ANSWER SECTION:
-version.bind.           0       CH      TXT     "9.8.1-P2"
-</code></p>
-
-<p><code>dig</code>反解析<code>-x</code>
-``` bash
-$ dig -x 74.125.135.105
-;; QUESTION SECTION:
-;105.135.125.74.in-addr.arpa.   IN      PTR</p>
-
-<p>;; ANSWER SECTION:
-105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.</p>
-
-<p>```</p>
 
 <p>--EOF--</p>
 ]]></content>

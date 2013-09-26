@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-25T17:23:09+08:00</updated>
+  <updated>2013-09-26T15:59:00+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,150 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ssh的一些安全设定]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/"/>
+    <updated>2013-09-26T10:42:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/nmap_ssh.jpg" width="500"></center>
+
+
+
+
+<!--more-->
+
+
+<p>ssh是我们日常工作中必不可少的工具，所以它的安全性也是异常重要了，这里笔者简单介绍了一些ssh配置中需要注意的几个点。</p>
+
+<!--more-->
+
+
+<p>首先,作为root用户登录并备份原始文件，输入下面的命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1、调整认证时限(默认单位为s)，即当用户登录ssh之后，要求输入密码的时间限制，规定时间没有输入则自动断线：</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>LoginGraceTime 60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2、最好限制root用户远程登录，修改如下：</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PermitRootLogin no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3、关闭X11转发，防止额外的信息泄露</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>X11Forwarding no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4、取消以下两行的注释，使得登录后显示一些信息</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PrintMotd yes
+</span><span class='line'>PrintLastLog yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5、编辑<code>/etc/motd</code>文件，添加一些警告信息，如下</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>This computer system is <span class="k">for </span>authorized users only. All activity
+</span><span class='line'>is logged and regularly checked. Individuals using this system
+</span><span class='line'>without authority or in excess of their authority are subject to
+</span><span class='line'>having all their services revoked...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>6、关闭ssh闲置会话</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ClientAliveInterval 60
+</span><span class='line'>ClientAliveCountMax 5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ClientAliveInterval设置表示如果超过这么长时间没有收到客户端的任何数据，将通过安全通道向客户端发送一个&#8221;alive&#8221;消息，并等候应答，单位默认为s。</li>
+<li>ClientAliveCountMax表示在未收到任何客户端回应前最多允许发送多少个&#8221;alive&#8221;消息，这是设置5次</li>
+</ul>
+
+
+<p>以上也就是客户端如果60*5=300s，即5分钟如果没有任何操作，则空闲连接会被强制断开，关闭时提示如下</p>
+
+<pre><code>Connection to x.x.x.x closed by remote host.
+Connection to x.x.x.x closed.
+</code></pre>
+
+<h3>7、开启TCPKeepAlive</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>TCPKeepAlive yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TCPKeepAlive指定系统是否向客户端发送TCP keepalive消息，这种消息可以检测到死连接、连接不当关闭、客户端崩溃等异常，避免僵尸进程产生，推荐开启。</p>
+
+<h3>8、修改ssh默认端口22</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Port xxxx    <span class="c">#自定义端口</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9、设置允许登录的ssh用户</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>AllowUsers test1 test2 test3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以设置允许的组</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>AllowGroups admin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>10、关闭不必要的认证</h3>
+
+<p>如果可以，只允许公钥认证，关闭其它认证方式</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PasswordAuthentication no
+</span><span class='line'>ChallengeResponseAuthentication no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>基本的一个设置就是以上的部分了内容了，还可以结合<code>fail2ban</code>更好的保护ssh的安全。关于<code>fail2ban</code>下次介绍，其实很多网友已经写了很多相关的博文了。</p>
+
+<h3>参考文章</h3>
+
+<ul>
+<li><a href="http://blog.licess.org/sshd_config/">sshd_config配置</a></li>
+<li><a href="http://lamp.linux.gov.cn/OpenSSH/sshd_config.html">sshd_config中文手册</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/aix/library/au-sshsecurity/">SSH 安全性和配置入门</a></li>
+<li><a href="http://www.amazon.com/CentOS-6-Linux-Server-Cookbook/dp/1849519021">CentOS 6 Linux Server Cookbook </a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula KVM磁盘热插拔]]></title>
@@ -4553,147 +4697,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
 
 <p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[NTP备忘]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/20/ntp/"/>
-    <updated>2013-05-20T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/20/ntp</id>
-    <content type="html"><![CDATA[<h2>简介</h2>
-
-<p>Network Time Protocol（NTP）是用来使计算机时间同步化的一种协议，它可以使计算机对其服务器或时钟源（如石英钟，GPS等等)做同步化，它可以提供高精准度的时间校正（LAN上与标准间差小于1毫秒，WAN上几十毫秒），且可使用加密确认的方式来防止恶毒的协议攻击。默认使用<code>UDP 123端口</code></p>
-
-<!--more-->
-
-
-<p>NTP提供准确时间，首先需要一个准确的UTC时间来源，NTP获得UTC的时间来源可以从原子钟、天文台、卫星，也可从Internet上获取。时间服务器按照NTP服务器的等级传播，根据离外部UTC源的远近将所有服务器归入不用的层(Stratum)中。Stratum-1在顶层由外部UTC接入，stratum-1的时间服务器为整个系统的基础，Stratum的总数限制在15以内。下图为NTP层次图：</p>
-
-<center><img src="http://kumu-Linux.github.io/images/Network_Time_Protocol_servers_and_clients.png" alt="ntp" title="ntp" width="400" /></center>
-
-
-<h2>NTP Server安装配置</h2>
-
-<p>关于NTP服务器的安装，根据不同版本安装方法也不同。REDHAT系统则可以使用yum安装，Ubuntu系列可以使用apt-get安装，这里不做具体的介绍，主要详细介绍配置文件的信息。</p>
-
-<p>对于Centos过滤注释和空行后，ntp配置文件内容如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^#|^$&#39; /etc/ntp.conf </span>
-</span><span class='line'>driftfile /var/lib/ntp/drift
-</span><span class='line'>restrict default kod nomodify notrap nopeer noquery
-</span><span class='line'>restrict -6 default kod nomodify notrap nopeer noquery
-</span><span class='line'>restrict 127.0.0.1
-</span><span class='line'>restrict -6 ::1
-</span><span class='line'>server 0.centos.pool.ntp.org
-</span><span class='line'>server 1.centos.pool.ntp.org
-</span><span class='line'>server 2.centos.pool.ntp.org
-</span><span class='line'>includefile /etc/ntp/crypto/pw
-</span><span class='line'>keys /etc/ntp/keys
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>配置选项说明</h3>
-
-<ul>
-<li><code>driftfile</code>选项， 则指定了用来保存系统时钟频率偏差的文件。 ntpd程序使用它来自动地补偿时钟的自然漂移， 从而使时钟即使在切断了外来时源的情况下， 仍能保持相当的准确度。另外，driftfile 选项也保存上一次响应所使用的 NTP 服务器的信息。 这个文件包含了 NTP 的内部信息， 它不应被任何其他进程修改。<code>无需更改</code></li>
-<li><code>restrict default kod nomodify notrap nopeer noquery</code>  默认拒绝所有NTP客户端的操作【restrict <IP 地址> &lt;子网掩码>|&lt;网段> [ignore|nomodiy|notrap|notrust|nknod]】 指定可以通信的IP地址和网段。如果没有指定选项，表示客户端访问NTP服务器没有任何限制
-
-<ul>
-<li>ignore    关闭所有NTP服务</li>
-<li>nomodiy   表示客户端不能更改NTP服务器的时间参数，但可以通过NTP服务器进行时间同步</li>
-<li>notrust   拒绝没有通过认证的客户端</li>
-<li>knod      kod技术科阻止&#8221;Kiss of Death&#8221;包（一种DOS攻击）对服务器的破坏，使用knod开启功能</li>
-<li>nopeer    不与其它同一层的NTP服务器进行同步</li>
-</ul>
-</li>
-<li><code>server 【IP|FQDN|prefer】</code>指该服务器上层NTP Server，使用prefer的优先级最高，没有使用prefer则按照配置文件顺序由高到低，默认情况下至少15min和上层NTP服务器进行时间校对</li>
-<li><code>fudge</code>可以指定本地NTP Server层，如<code>fudge 127.0.0.1 stratum 9</code></li>
-<li><code>broadcast 网段 子网掩码</code>指定NTP进行时间广播的网段，如<code>broadcast 192.168.1.255</code></li>
-<li><code>logfile</code> 可以指定NTP Server日志文件</li>
-</ul>
-
-
-<p>几个与NTP相关的配置文件:<code>/usr/share/zoneinfo/</code>、<code>/etc/sysconfig/clock</code>、<code>/etc/localtime</code>
-* /usr/share/zoneinfo/ 存放时区文件目录
-* /etc/sysconfig/clock 指定当前系统时区信息
-* /etc/localtime 相应的时区文件</p>
-
-<p>如果需要修改当前时区，则可以从/usr/share/zoneinfo/目录拷贝相应时区文件覆盖/etc/localtime并修改/etc/sysconfig/clock 即可</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-</span><span class='line'>sed -i <span class="s1">&#39;s:ZONE=.*:ZONE=&quot;Asia/Shanghai&quot;:g&#39;</span> /etc/sysconfig/clock
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>相关命令</h2>
-
-<p><code>ntpstat</code>查看同步状态</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ntpstat </span>
-</span><span class='line'>synchronised to NTP server <span class="o">(</span>192.168.0.18<span class="o">)</span> at stratum 4
-</span><span class='line'>   <span class="nb">time </span>correct to within 88 ms   <span class="c">#表面时间校正88ms</span>
-</span><span class='line'>   polling server every 1024 s        <span class="c">#每隔1024s更新一次</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>ntpq</code>列出上层状态</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ntpq -np</span>
-</span><span class='line'>     remote           refid      st t when poll reach   delay   offset  <span class="nv">jitter</span>
-</span><span class='line'><span class="o">==============================================================================</span>
-</span><span class='line'>*192.168.0.18       202.112.31.197   3 u  101 1024  377   14.268    0.998   0.143
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>输出说明：</p>
-
-<ul>
-<li><code>remote</code>  NTP Server</li>
-<li><code>refid</code>   参考的上层ntp地址</li>
-<li><code>st</code>  层次</li>
-<li><code>when</code>    上次更新时间距离现在时常</li>
-<li><code>poll</code>    下次更新时间</li>
-<li><code>reach</code>   更新次数</li>
-<li><code>delay</code>   延迟</li>
-<li><code>offset</code>  时间补偿结果</li>
-<li><code>jitter</code>  与BIOS硬件时间差异</li>
-</ul>
-
-
-<p><code>ntpdate</code> 同步当前时间</p>
-
-<ul>
-<li><code>ntpdate NTP服务器地址</code></li>
-</ul>
-
-
-<h2>参考文档</h2>
-
-<p><a href="http://baike.baidu.com/view/60648.htm">NTP百度百科</a>
-<a href="http://en.wikipedia.org/wiki/Network_Time_Protocol">NTP维基百科</a>
-鸟哥Linux私房菜</p>
 ]]></content>
   </entry>
   

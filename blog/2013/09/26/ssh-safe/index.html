@@ -5,31 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>pdsh使用方法 - Linux SA Notes By 枯木</title>
+  <title>ssh的一些安全设定 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，点击下载 pdsh基本用法 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20 &hellip;">
-  <meta name="keywords" content="Linux,pdsh">
+  <meta name="description" content="ssh是我们日常工作中必不可少的工具，所以它的安全性也是异常重要了，这里笔者简单介绍了一些ssh配置中需要注意的几个点。 首先,作为root用户登录并备份原始文件，输入下面的命令： 1
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak 1、 &hellip;">
+  <meta name="keywords" content="ssh, safe">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -37,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/06/19/pdsh/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -111,7 +93,7 @@
   <header>
     
       
-        <h1 class="entry-title">Pdsh使用方法</h1>
+        <h1 class="entry-title">Ssh的一些安全设定</h1>
       
     
     
@@ -128,7 +110,7 @@
   
 
 
-<time datetime="2013-06-19T15:26:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
+<time datetime="2013-09-26T10:42:00+08:00" pubdate data-updated="true">Sep 26<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -137,175 +119,142 @@
   </header>
 
 
-<div class="entry-content"><p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
+<div class="entry-content"><center><img src="/images/nmap_ssh.jpg" width="500"></center>
+
+
+
 
 <!--more-->
 
 
-<h2>pdsh基本用法</h2>
+<p>ssh是我们日常工作中必不可少的工具，所以它的安全性也是异常重要了，这里笔者简单介绍了一些ssh配置中需要注意的几个点。</p>
+
+<!--more-->
+
+
+<p>首先,作为root用户登录并备份原始文件，输入下面的命令：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>1、调整认证时限(默认单位为s)，即当用户登录ssh之后，要求输入密码的时间限制，规定时间没有输入则自动断线：</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>LoginGraceTime 60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>2、最好限制root用户远程登录，修改如下：</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PermitRootLogin no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>3、关闭X11转发，防止额外的信息泄露</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>X11Forwarding no
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>4、取消以下两行的注释，使得登录后显示一些信息</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PrintMotd yes
+</span><span class='line'>PrintLastLog yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>5、编辑<code>/etc/motd</code>文件，添加一些警告信息，如下</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> pdsh -h
-</span><span class='line'>Usage: pdsh <span class="o">[</span>-options<span class="o">]</span> <span class="nb">command</span> ...
-</span><span class='line'>-S                <span class="k">return </span>largest of remote <span class="nb">command </span><span class="k">return </span>values
-</span><span class='line'>-h                output usage menu and quit                获取帮助
-</span><span class='line'>-V                output version information and quit       查看版本
-</span><span class='line'>-q                list the option settings and quit         列出pdsh执行的一些信息
-</span><span class='line'>-b                disable ^C status feature <span class="o">(</span>batch mode<span class="o">)</span>
-</span><span class='line'>-d                <span class="nb">enable </span>extra debug information from ^C status
-</span><span class='line'>-l user           execute remote commands as user           指定远程使用的用户
-</span><span class='line'>-t seconds        <span class="nb">set </span>connect timeout <span class="o">(</span>default is 10 sec<span class="o">)</span>   指定超时时间
-</span><span class='line'>-u seconds        <span class="nb">set command </span>timeout <span class="o">(</span>no default<span class="o">)</span>          类似-t
-</span><span class='line'>-f n              use fanout of n nodes                     设置同时连接的目标主机的个数
-</span><span class='line'>-w host,host,...  <span class="nb">set </span>target node list on <span class="nb">command </span>line      指定主机，host可以是主机名也可以是ip
-</span><span class='line'>-x host,host,...  <span class="nb">set </span>node exclusion list on <span class="nb">command </span>line   排除某些或者某个主机
-</span><span class='line'>-R name           <span class="nb">set </span>rcmd module to name                   指定rcmd的模块名，默认使用ssh
-</span><span class='line'>-N                disable hostname: labels on output lines  输出不显示主机名或者ip
-</span><span class='line'>-L                list info on all loaded modules and <span class="nb">exit</span>  列出pdsh加载的模块信息
-</span><span class='line'>-a                target all nodes                          指定所有的节点
-</span><span class='line'>-g groupname      target hosts in dsh group <span class="s2">&quot;groupname&quot;</span>     指定dsh组名
-</span><span class='line'>-X groupname      exclude hosts in dsh group <span class="s2">&quot;groupname&quot;</span>    排除组，一般和-a连用
-</span><span class='line'>available rcmd modules: <span class="nb">exec</span>,xcpu,ssh <span class="o">(</span>default: ssh<span class="o">)</span>        可用的执行命令模块，默认为ssh
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>This computer system is <span class="k">for </span>authorized users only. All activity
+</span><span class='line'>is logged and regularly checked. Individuals using this system
+</span><span class='line'>without authority or in excess of their authority are subject to
+</span><span class='line'>having all their services revoked...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>使用实例</h2>
-
-<p><strong>单个主机测试</strong></p>
+<h3>6、关闭ssh闲置会话</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231 -l root uptime
-</span><span class='line'>192.168.0.231:  16:16:11 up 32 days, 22:14, ? users,  load average: 0.10, 0.14, 0.16
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ClientAliveInterval 60
+</span><span class='line'>ClientAliveCountMax 5
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>多个主机测试</strong></p>
+<ul>
+<li>ClientAliveInterval设置表示如果超过这么长时间没有收到客户端的任何数据，将通过安全通道向客户端发送一个&#8221;alive&#8221;消息，并等候应答，单位默认为s。</li>
+<li>ClientAliveCountMax表示在未收到任何客户端回应前最多允许发送多少个&#8221;alive&#8221;消息，这是设置5次</li>
+</ul>
+
+
+<p>以上也就是客户端如果60*5=300s，即5分钟如果没有任何操作，则空闲连接会被强制断开，关闭时提示如下</p>
+
+<pre><code>Connection to x.x.x.x closed by remote host.
+Connection to x.x.x.x closed.
+</code></pre>
+
+<h3>7、开启TCPKeepAlive</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>TCPKeepAlive yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>TCPKeepAlive指定系统是否向客户端发送TCP keepalive消息，这种消息可以检测到死连接、连接不当关闭、客户端崩溃等异常，避免僵尸进程产生，推荐开启。</p>
+
+<h3>8、修改ssh默认端口22</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Port xxxx    <span class="c">#自定义端口</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>9、设置允许登录的ssh用户</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>AllowUsers test1 test2 test3
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>也可以设置允许的组</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>AllowGroups admin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>10、关闭不必要的认证</h3>
+
+<p>如果可以，只允许公钥认证，关闭其它认证方式</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -l root uptime
-</span><span class='line'>192.168.0.233:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.13, 0.12, 0.10
-</span><span class='line'>192.168.0.232:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.45, 0.34, 0.27
-</span><span class='line'>192.168.0.231:  16:17:06 up 32 days, 22:15, ? users,  load average: 0.09, 0.13, 0.15
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>PasswordAuthentication no
+</span><span class='line'>ChallengeResponseAuthentication no
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p><strong>逗号分隔主机</strong></p>
+<p>基本的一个设置就是以上的部分了内容了，还可以结合<code>fail2ban</code>更好的保护ssh的安全。关于<code>fail2ban</code>下次介绍，其实很多网友已经写了很多相关的博文了。</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231,192.168.0.234 -l root uptime
-</span><span class='line'>192.168.0.234:  16:19:44 up 32 days, 22:19, ? users,  load average: 0.17, 0.21, 0.20
-</span><span class='line'>192.168.0.231:  16:19:44 up 32 days, 22:17, ? users,  load average: 0.29, 0.18, 0.16
-</span></code></pre></td></tr></table></div></figure>
+<h3>参考文章</h3>
 
+<ul>
+<li><a href="http://blog.licess.org/sshd_config/">sshd_config配置</a></li>
+<li><a href="http://lamp.linux.gov.cn/OpenSSH/sshd_config.html">sshd_config中文手册</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/aix/library/au-sshsecurity/">SSH 安全性和配置入门</a></li>
+<li><a href="http://www.amazon.com/CentOS-6-Linux-Server-Cookbook/dp/1849519021">CentOS 6 Linux Server Cookbook </a></li>
+</ul>
 
-<p><strong>-x排除某个主机</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -x 192.168.0.232 -l root uptime
-</span><span class='line'>192.168.0.233:  16:18:24 up 32 days, 22:19, ? users,  load average: 0.11, 0.12, 0.09
-</span><span class='line'>192.168.0.231:  16:18:25 up 32 days, 22:16, ? users,  load average: 0.11, 0.13, 0.15
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>主机组</strong><br/>
-对于-g组，把对应的主机写入到<code>/etc/dsh/group/</code>或<code>~/.dsh/group/</code>目录下的文件中即可，文件名就是对应组名</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat ~/.dsh/group/dsh-test
-</span><span class='line'>192.168.0.231
-</span><span class='line'>192.168.0.232
-</span><span class='line'>192.168.0.233
-</span><span class='line'>192.168.0.234
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root uptime
-</span><span class='line'>192.168.0.232:  16:21:38 up 32 days, 22:22, ? users,  load average: 0.01, 0.15, 0.21
-</span><span class='line'>192.168.0.231:  16:21:38 up 32 days, 22:19, ? users,  load average: 0.17, 0.16, 0.16
-</span><span class='line'>192.168.0.234:  16:21:39 up 32 days, 22:21, ? users,  load average: 0.15, 0.19, 0.19
-</span><span class='line'>192.168.0.233:  16:21:40 up 32 days, 22:22, ? users,  load average: 0.15, 0.15, 0.10
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>dshbak格式化输出</strong><br/>
-pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出多时会比较混乱，可以采用<code>dshbak</code>做一些格式化，让输出更清晰。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span>       <span class="c">#查看哪些主机时间不一样，主机一多，可读性不强</span>
-</span><span class='line'>192.168.0.232: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.231: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.234: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.233: Wed Jun 19 16:24:40 CST 2013
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用dshbak之后可读性变得好了很多</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span> | dshbak -c
-</span><span class='line'>----------------
-</span><span class='line'>192.168.0.<span class="o">[</span>231-232,234<span class="o">]</span>
-</span><span class='line'>----------------
-</span><span class='line'>Wed Jun 19 16:24:18 CST 2013
-</span><span class='line'>----------------
-</span><span class='line'>192.168.0.233
-</span><span class='line'>----------------
-</span><span class='line'>Wed Jun 19 16:24:19 CST 2013
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;EOF&#8211;</p>
 </div>
 
 
@@ -328,7 +277,7 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
   
 
 
-<time datetime="2013-06-19T15:26:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
+<time datetime="2013-09-26T10:42:00+08:00" pubdate data-updated="true">Sep 26<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -352,10 +301,8 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/06/07/top-hacks/" title="Previous Post: top实践小技巧">&laquo; top实践小技巧</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/09/25/kvm-disk-hotplug/" title="Previous Post: OpenNebula KVM磁盘热插拔">&laquo; OpenNebula KVM磁盘热插拔</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/06/19/nslookup-dig-host/" title="Next Post: nslookup、host和dig">nslookup、host和dig &raquo;</a>
       
     </p>
   </footer>
@@ -470,8 +417,8 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/06/19/pdsh/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/06/19/pdsh/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/';
         var disqus_script = 'embed.js';
       
     (function () {

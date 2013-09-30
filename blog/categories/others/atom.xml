@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Others | Linux SA Notes By 枯木]]></title>
+  <link href="http://kumu-Linux.github.io/blog/categories/others/atom.xml" rel="self"/>
+  <link href="http://kumu-Linux.github.io/"/>
+  <updated>2013-09-30T11:00:58+08:00</updated>
+  <id>http://kumu-Linux.github.io/</id>
+  <author>
+    <name><![CDATA[枯木]]></name>
+    <email><![CDATA[1988.wulei@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[豆瓣博客认领]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/30/douban/"/>
+    <updated>2013-09-30T10:56:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/30/douban</id>
+    <content type="html"><![CDATA[<p>doubanclaim0c049b69a6168670</p>
+
+<ul>
+<li>1.先到豆瓣九点的这个页面 <a href="http://9.douban.com/reader/">http://9.douban.com/reader/</a> 点击右侧“添加订阅”，输入你的博客地址，然后豆瓣就会开始抓取你的博客，稍微等会儿，就添加进去了。</li>
+<li>2.然后点下方的“管理订阅列表”，进入页面后，点你博客的名字，进入你的博客九点页面，再点击图片右侧的“认领这个博客”，豆瓣会给出一串字符要求你写进你的博客日志里，写好之后回到这个页面，点击“重抓”，过个10分钟左右等豆瓣验证好了，你就拥有这个博客了，然后那行写在日志里的字符也可以删了。</li>
+<li>3.等在九点拥有博客之后，在你的豆瓣个人页面的头像下面就会显示你的博客地址和名称，你的主页上会显示你最新的博客日志并且会自动更新，自动显示你的广播里，你的友邻也都会看见。</li>
+<li>4.只不过确实豆瓣有时更新不是很及时，碰上抽风的时候会隔一天才更新出来。你要是等不及可以自己去“重抓”，只不过真抽风的时候连“重抓”都没用</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>

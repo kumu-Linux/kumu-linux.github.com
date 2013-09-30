@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-09-26T15:59:00+08:00</updated>
+  <updated>2013-09-30T11:00:21+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[豆瓣博客认领]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/30/douban/"/>
+    <updated>2013-09-30T10:56:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/30/douban</id>
+    <content type="html"><![CDATA[<p>doubanclaim0c049b69a6168670</p>
+
+<ul>
+<li>1.先到豆瓣九点的这个页面http://9.douban.com/reader/ 点击右侧“添加订阅”，输入你的博客地址，然后豆瓣就会开始抓取你的博客，稍微等会儿，就添加进去了。</li>
+<li>2.然后点下方的“管理订阅列表”，进入页面后，点你博客的名字，进入你的博客九点页面，再点击图片右侧的“认领这个博客”，豆瓣会给出一串字符要求你写进你的博客日志里，写好之后回到这个页面，点击“重抓”，过个10分钟左右等豆瓣验证好了，你就拥有这个博客了，然后那行写在日志里的字符也可以删了。</li>
+<li>3.等在九点拥有博客之后，在你的豆瓣个人页面的头像下面就会显示你的博客地址和名称，你的主页上会显示你最新的博客日志并且会自动更新，自动显示你的广播里，你的友邻也都会看见。</li>
+<li>4.只不过确实豆瓣有时更新不是很及时，碰上抽风的时候会隔一天才更新出来。你要是等不及可以自己去“重抓”，只不过真抽风的时候连“重抓”都没用</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ssh的一些安全设定]]></title>
@@ -154,6 +171,8 @@ Connection to x.x.x.x closed.
 <li><a href="http://www.amazon.com/CentOS-6-Linux-Server-Cookbook/dp/1849519021">CentOS 6 Linux Server Cookbook </a></li>
 </ul>
 
+
+<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   
@@ -4594,107 +4613,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p>测试正常，无误！</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/21/named-chroot/"/>
-    <updated>2013-05-21T10:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/21/named-chroot</id>
-    <content type="html"><![CDATA[<h2>问题描述</h2>
-
-<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
-
-<!--more-->
-
-
-<p>环境： DNS查询日志存放独立分区/data/目录下</p>
-
-<h2>问题解决</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ps -ef | grep name[d]</span>
-</span><span class='line'>named     9960     1  0 May20 ?        00:02:09 /usr/sbin/named-sdb -u named -t /var/named/chroot
-</span><span class='line'><span class="c"># strace -fp 9960 </span>
-</span><span class='line'><span class="c">#使用strace跟踪named进程，在其它终端使用dig查询，截取到如下信息</span>
-</span><span class='line'>... ...
-</span><span class='line'><span class="o">[</span>pid  9966<span class="o">]</span> connect<span class="o">(</span>6, <span class="o">{</span><span class="nv">sa_family</span><span class="o">=</span>AF_FILE, <span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/dev/log&quot;</span><span class="o">}</span>, 110 &lt;unfinished ...&gt;
-</span><span class='line'><span class="o">[</span>pid  9963<span class="o">]</span> recvmsg<span class="o">(</span>537,  &lt;unfinished ...&gt;
-</span><span class='line'><span class="o">[</span>pid  9962<span class="o">]</span> futex<span class="o">(</span>0x7f520dc26028, FUTEX_WAKE_PRIVATE, 1<span class="o">)</span> <span class="o">=</span> 0
-</span><span class='line'><span class="o">[</span>pid  9963<span class="o">]</span> &lt;... recvmsg resumed&gt; 0x7f5205eaec00, 0<span class="o">)</span> <span class="o">=</span> -1 EAGAIN <span class="o">(</span>Resource temporarily unavailable<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>pid  9970<span class="o">]</span> &lt;... epoll_ctl resumed&gt; <span class="o">)</span>   <span class="o">=</span> 0
-</span><span class='line'><span class="o">[</span>pid  9966<span class="o">]</span> &lt;... connect resumed&gt; <span class="o">)</span>     <span class="o">=</span> -1 ENOENT <span class="o">(</span>No such file or directory<span class="o">)</span>
-</span><span class='line'><span class="c">#信息显示没有/dev/log该文件</span>
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Google搜索<code>named chroot /dev/log</code>相关获得[CentOS 6: Configure bind logging with bind-chroot] (http://floriancrouzat.net/2011/09/centos-6-configure-bind-logging-bind-chroot-rsyslog/)</p>
-
-<p>修改配置文件<code>/etc/rsyslog.conf</code>添加</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$AddUnixListenSocket</span> /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重启rsyslog,dig查询测试，DNS查询日志接收正常</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ll /var/named/chroot/dev/log </span>
-</span><span class='line'>srw-rw-rw- 1 root root 0 May 21 11:30 /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>lsof查看效果</h2>
-
-<p>未添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试，使用lsof查看rsyslog重启前后named程序占用/dev/log文件对比</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/log</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c10b1840      0t0 14544315 /dev/log
-</span><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/log</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>后测试rsyslog重启前后named程序占用情况</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/lo[g]</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c2bedac0      0t0 14605223 /dev/log
-</span><span class='line'>rsyslogd   5883    root    1u  unix 0xffff8801b39c0840      0t0 14605225 /var/named/chroot/dev/log
-</span><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/lo[g]</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c0913300      0t0 14630150 /dev/log
-</span><span class='line'>rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

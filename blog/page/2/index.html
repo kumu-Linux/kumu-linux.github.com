@@ -9,14 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Install 安装 1
-2
-3
-4
-5
-# yum install qemu-kvm qemu-img # 使用kvm至少要安装的包，一个提供用户级别kvm模拟器，一个提供磁盘镜像的管理
-# 安装虚拟化管理的相关工具
-# yum install virt-manager libvirt \ &hellip;">
+  <meta name="description" content="简介 OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -95,66 +88,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/08/22/kvm/">CentOS6.4 X86_64 kvm+PXE备忘</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-22T13:10:00+08:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/22/kvm/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>Install 安装</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install qemu-kvm qemu-img </span>
-</span><span class='line'><span class="c"># 使用kvm至少要安装的包，一个提供用户级别kvm模拟器，一个提供磁盘镜像的管理</span>
-</span><span class='line'><span class="c"># 安装虚拟化管理的相关工具</span>
-</span><span class='line'><span class="c"># yum install virt-manager libvirt \     </span>
-</span><span class='line'>libvirt-python python-virtinst libvirt-client
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>也可以yum groupinstall虚拟化组件，具体可参考<a href="https://access.redhat.com/site/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Virtualization_Host_Configuration_and_Guest_Installation_Guide/sect-Virtualization_Host_Configuration_and_Guest_Installation_Guide-Host_Installation-Installing_KVM_packages_on_an_existing_Red_Hat_Enterprise_Linux_system.html">Redhat官方文档</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/22/kvm/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
   
   
     <article>
@@ -438,6 +371,51 @@
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/06/19/nslookup-dig-host/">Nslookup、host和dig</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-19T16:55:00+08:00" pubdate data-updated="true">Jun 19<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/06/19/nslookup-dig-host/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/06/19/nslookup-dig-host/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -459,10 +437,6 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/09/30/douban/">豆瓣博客认领</a>
-      </li>
-    
-      <li class="post">
         <a href="/blog/2013/09/26/ssh-safe/">Ssh的一些安全设定</a>
       </li>
     
@@ -482,11 +456,15 @@
         <a href="/blog/2013/09/09/ssh-agent/">Ssh认证代理</a>
       </li>
     
+      <li class="post">
+        <a href="/blog/2013/08/28/rsyslog-remote/">Rsyslog远程传输的几种方式</a>
+      </li>
+    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/others/'>Others (1)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (14)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (4)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (14)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (4)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (6)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

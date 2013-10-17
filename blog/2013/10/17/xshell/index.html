@@ -5,16 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>sed远程替换的一个错误 - Linux SA Notes By 枯木</title>
+  <title>Xshell的一些设置备忘 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下: 问题出现 以下为本地执行sed替换，本地替换没有什么问题 1
-2
-3
-4
-5
-# grep &#39;OPTIONS=&#39; ~/snmpd OPTIONS=& &hellip;">
+  <meta name="description" content="类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。 选项 菜单栏&#8211;工具&#8211;选项 选中复制，中键粘贴 窗口透明【Alt+R快捷键启用和关闭】 关闭警告声 属性 菜单栏&#8211 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -23,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/04/09/sed/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -97,7 +92,7 @@
   <header>
     
       
-        <h1 class="entry-title">Sed远程替换的一个错误</h1>
+        <h1 class="entry-title">Xshell的一些设置备忘</h1>
       
     
     
@@ -114,7 +109,7 @@
   
 
 
-<time datetime="2013-04-09T15:17:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
+<time datetime="2013-10-17T15:41:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -123,57 +118,43 @@
   </header>
 
 
-<div class="entry-content"><p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
+<div class="entry-content"><center><img src="/images/xshell/xshell6.png" width="400"></center>
+
+
+<p>类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。</p>
 
 <!--more-->
 
 
-<h2>问题出现</h2>
+<h3>选项</h3>
 
-<p>以下为本地执行sed替换，本地替换没有什么问题</p>
+<p>菜单栏&#8211;工具&#8211;选项</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="c"># sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39; snmpd</span>
-</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>选中复制，中键粘贴</p>
 
+<p><img src="/images/xshell/xshell4.png" width="400"></p>
 
-<p>尝试远程替换，发现ssh直接后接命令替换失败</p>
+<p>窗口透明【Alt+R快捷键启用和关闭】</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="c"># ssh root@localhost sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39; ~/snmpd </span>
-</span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p><img src="/images/xshell/xshell2.png" width="400"></p>
 
+<p>关闭警告声</p>
 
-<h2>问题解决</h2>
+<p><img src="/images/xshell/xshell3.png" width="400"></p>
 
-<p>之后使用\转义命令中的&#8221;，再把远程命令加到&#8221;&#8220;中,远程替换成功</p>
+<h3>属性</h3>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
-</span><span class='line'><span class="c"># grep &quot;OPTIONS=&quot; ~/snmpd</span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
+<p>菜单栏&#8211;文件&#8211;属性【Alt+p快速打开】</p>
 
+<p>backspace 按键乱码，属性&#8211;终端&#8211;键盘</p>
 
-<p>&#8211;EOF&#8211;</p>
+<p><img src="/images/xshell/xshell1.png" width="400"></p>
+
+<p>Xshell启用Xagent，属性&#8211;ssh</p>
+
+<p><img src="/images/xshell/xshell5.png" width="400"></p>
+
+<p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
 </div>
 
 
@@ -196,14 +177,8 @@
   
 
 
-<time datetime="2013-04-09T15:17:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
+<time datetime="2013-10-17T15:41:00+08:00" pubdate data-updated="true">Oct 17<span>th</span>, 2013</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
-  
-</span>
 
 
     </p>
@@ -220,10 +195,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/04/08/lsof/" title="Previous Post: lsof在Linux中的10个例子<译>">&laquo; lsof在Linux中的10个例子<译></a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/09/26/ssh-safe/" title="Previous Post: ssh的一些安全设定">&laquo; ssh的一些安全设定</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/04/09/sed-link/" title="Next Post: sed -i修改链接文件注意问题">sed -i修改链接文件注意问题 &raquo;</a>
       
     </p>
   </footer>
@@ -338,8 +311,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/04/09/sed/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/04/09/sed/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/10/17/xshell/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/10/17/xshell/';
         var disqus_script = 'embed.js';
       
     (function () {

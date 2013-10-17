@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-10-10T10:02:24+08:00</updated>
+  <updated>2013-10-17T16:15:46+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Xshell的一些设置备忘]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/"/>
+    <updated>2013-10-17T15:41:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/10/17/xshell</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/xshell/xshell6.png" width="400"></center>
+
+
+<p>类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。</p>
+
+<!--more-->
+
+
+<h3>选项</h3>
+
+<p>菜单栏&#8211;工具&#8211;选项</p>
+
+<p>选中复制，中键粘贴</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell4.png" width="400"></p>
+
+<p>窗口透明【Alt+R快捷键启用和关闭】</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell2.png" width="400"></p>
+
+<p>关闭警告声</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell3.png" width="400"></p>
+
+<h3>属性</h3>
+
+<p>菜单栏&#8211;文件&#8211;属性【Alt+p快速打开】</p>
+
+<p>backspace 按键乱码，属性&#8211;终端&#8211;键盘</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell1.png" width="400"></p>
+
+<p>Xshell启用Xagent，属性&#8211;ssh</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
+
+<p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ssh的一些安全设定]]></title>
@@ -4596,107 +4641,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 
 <p>测试正常，无误！</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[DNS chroot rsyslog配置]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/21/named-chroot/"/>
-    <updated>2013-05-21T10:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/21/named-chroot</id>
-    <content type="html"><![CDATA[<h2>问题描述</h2>
-
-<p>使用rsyslog获取dns查询日志，但是发现每次重启rsyslog服务，dns查询日志就不会再写入，必须重启dns才可以重新获得dns查询日志</p>
-
-<!--more-->
-
-
-<p>环境： DNS查询日志存放独立分区/data/目录下</p>
-
-<h2>问题解决</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ps -ef | grep name[d]</span>
-</span><span class='line'>named     9960     1  0 May20 ?        00:02:09 /usr/sbin/named-sdb -u named -t /var/named/chroot
-</span><span class='line'><span class="c"># strace -fp 9960 </span>
-</span><span class='line'><span class="c">#使用strace跟踪named进程，在其它终端使用dig查询，截取到如下信息</span>
-</span><span class='line'>... ...
-</span><span class='line'><span class="o">[</span>pid  9966<span class="o">]</span> connect<span class="o">(</span>6, <span class="o">{</span><span class="nv">sa_family</span><span class="o">=</span>AF_FILE, <span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/dev/log&quot;</span><span class="o">}</span>, 110 &lt;unfinished ...&gt;
-</span><span class='line'><span class="o">[</span>pid  9963<span class="o">]</span> recvmsg<span class="o">(</span>537,  &lt;unfinished ...&gt;
-</span><span class='line'><span class="o">[</span>pid  9962<span class="o">]</span> futex<span class="o">(</span>0x7f520dc26028, FUTEX_WAKE_PRIVATE, 1<span class="o">)</span> <span class="o">=</span> 0
-</span><span class='line'><span class="o">[</span>pid  9963<span class="o">]</span> &lt;... recvmsg resumed&gt; 0x7f5205eaec00, 0<span class="o">)</span> <span class="o">=</span> -1 EAGAIN <span class="o">(</span>Resource temporarily unavailable<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>pid  9970<span class="o">]</span> &lt;... epoll_ctl resumed&gt; <span class="o">)</span>   <span class="o">=</span> 0
-</span><span class='line'><span class="o">[</span>pid  9966<span class="o">]</span> &lt;... connect resumed&gt; <span class="o">)</span>     <span class="o">=</span> -1 ENOENT <span class="o">(</span>No such file or directory<span class="o">)</span>
-</span><span class='line'><span class="c">#信息显示没有/dev/log该文件</span>
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Google搜索<code>named chroot /dev/log</code>相关获得[CentOS 6: Configure bind logging with bind-chroot] (http://floriancrouzat.net/2011/09/centos-6-configure-bind-logging-bind-chroot-rsyslog/)</p>
-
-<p>修改配置文件<code>/etc/rsyslog.conf</code>添加</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$AddUnixListenSocket</span> /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重启rsyslog,dig查询测试，DNS查询日志接收正常</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ll /var/named/chroot/dev/log </span>
-</span><span class='line'>srw-rw-rw- 1 root root 0 May 21 11:30 /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>lsof查看效果</h2>
-
-<p>未添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>测试，使用lsof查看rsyslog重启前后named程序占用/dev/log文件对比</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/log</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c10b1840      0t0 14544315 /dev/log
-</span><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/log</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c2bc1580      0t0 14602737 /dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>添加<code>$AddUnixListenSocket /var/named/chroot/dev/log</code>后测试rsyslog重启前后named程序占用情况</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/lo[g]</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c2bedac0      0t0 14605223 /dev/log
-</span><span class='line'>rsyslogd   5883    root    1u  unix 0xffff8801b39c0840      0t0 14605225 /var/named/chroot/dev/log
-</span><span class='line'><span class="c"># lsof  -U -p 5986 | grep /dev/lo[g]</span>
-</span><span class='line'>rsyslogd   5883    root    0u  unix 0xffff8801c0913300      0t0 14630150 /dev/log
-</span><span class='line'>rsyslogd   5883    root    1u  unix 0xffff8801c2ba7d00      0t0 14630152 /var/named/chroot/dev/log
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>至于深层次的原因，目前还不是很了解，希望了解的朋友帮解一下。</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="使用sed的p命令，你可以打印当前模式空间中的行。 你也许会好奇为什么需要p命令，默认的sed会在执行完命令后输出模式空间的缓存。 其实这是有原因的，等会你将看到，这个命令将允许你专门控制打印到标准输出。通常来说，你应该使用-n选项来抑制作为标准sed流一部分的默认输出。否则，当执行p命令的时候， &hellip;">
+  <meta name="description" content="使用sed d命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，d命令也不能修改原始文件的内容。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/29/sed-4/">1-4、Delete Lines[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-29T23:29:00+08:00" pubdate data-updated="true">Apr 29<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/29/sed-4/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用sed <code>d</code>命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，<code>d</code>命令也不能修改原始文件的内容。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/29/sed-4/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -371,53 +416,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/22/life/">2013-04-22 我所理解的生活</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-22T22:27:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/22/life/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>人，其实不需要太多东西，只要健康活着，真诚爱着，也不失为一种富有。</p></blockquote>
-
-<p>最近几天新闻、微博都是关于雅安地震的消息，看到新闻中的报道，触动着身体的每一处神经。突然想想，其实相对灾区的人们来说，我们已经很幸福了。可是人总是不知足的，得到想得到的，又向着更好的看去。然后等到失去后才懂得珍惜，可是有些逝去的也就永远逝去了，我们总是在这种圈子中不停的恶性循环，不断的犯错。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/22/life/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -439,6 +437,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/10/17/xshell/">Xshell的一些设置备忘</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/09/26/ssh-safe/">Ssh的一些安全设定</a>
       </li>
     
@@ -456,10 +458,6 @@
     
       <li class="post">
         <a href="/blog/2013/09/09/ssh-agent/">Ssh认证代理</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/28/rsyslog-remote/">Rsyslog远程传输的几种方式</a>
       </li>
     
   </ul>

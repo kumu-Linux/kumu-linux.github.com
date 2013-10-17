@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-10-17T16:16:19+08:00</updated>
+  <updated>2013-10-17T16:18:18+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Xshell基本设置备忘]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/"/>
+    <updated>2013-10-17T15:41:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/10/17/xshell</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/xshell/xshell6.png" width="400"></center>
+
+
+<p>类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。</p>
+
+<!--more-->
+
+
+<h3>选项</h3>
+
+<p>菜单栏--工具--选项</p>
+
+<p>选中复制，中键粘贴</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell4.png" width="400"></p>
+
+<p>窗口透明【Alt+R快捷键启用和关闭】</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell2.png" width="400"></p>
+
+<p>关闭警告声</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell3.png" width="400"></p>
+
+<h3>属性</h3>
+
+<p>菜单栏--文件--属性【Alt+p快速打开】</p>
+
+<p>backspace 按键乱码，属性--终端--键盘</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell1.png" width="400"></p>
+
+<p>Xshell启用Xagent，属性--ssh</p>
+
+<p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
+
+<p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux下终端利器tmux]]></title>
@@ -851,128 +896,6 @@ Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached</p>
 <p>--EOF--</p>
 
 <p>top实践--<a href="http://kumu-linux.github.io/blog/2013/06/07/top-hacks/">top实践小技巧</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[dmidecode]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/04/27/dmidecode/"/>
-    <updated>2013-04-27T07:39:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/04/27/dmidecode</id>
-    <content type="html"><![CDATA[<p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
-
-<!--more-->
-
-
-<p><code>dmidecode</code>的作用则是将DMI表中的信息用人可以读懂的方式显示出来。</p>
-
-<p>最简单的使用方法，它将显示dmidecode所能获取到的全部dmi信息：
-``` bash</p>
-
-<h1>dmidecode</h1>
-
-<p>```</p>
-
-<p>但是显示所有的信息不便于我们获取想要获取的信息，那么就需要结合其它选项获取信息</p>
-
-<p><strong>常用参数:</strong></p>
-
-<ul>
-<li>-q 或 --quiet
-
-<ul>
-<li>不显示太多信息，比如某条数据是从哪里读来的等等，为了得到简洁的信息，此条很有用</li>
-</ul>
-</li>
-<li>-t 或 --type TYPE
-
-<ul>
-<li>指定要显示类型的信息</li>
-</ul>
-</li>
-<li>-s 或 --string KEYWORD
-
-<ul>
-<li>显示特定的关键字</li>
-</ul>
-</li>
-</ul>
-
-
-<p><strong>-t或--type后的文本参数</strong></p>
-
-<pre><code>bios        bios的各项信息
-system      系统信息，在我的笔记本上可以看到版本、型号、序号等信息。
-baseboard   主板信息
-chassis     底板信息
-processor   CPU的详细信息
-memory      内存信息，包括目前插的内存条数及大小，支持的单条最大内存和总内存大小等
-cache       缓存信息
-connector   PCI设备信息
-slot        插槽信息 
-</code></pre>
-
-<p>``` bash</p>
-
-<h1>dmidecode -t</h1>
-
-<p>dmidecode: option requires an argument -- 't'
-Type number or keyword expected
-Valid type keywords are:
-  bios
-  system
-  baseboard
-  chassis
-  processor
-  memory
-  cache
-  connector
-  slot
-```</p>
-
-<p><strong>dmidecode -s</strong>:
-``` bash</p>
-
-<h1>dmidecode -s</h1>
-
-<p>dmidecode: option requires an argument -- 's'
-String keyword expected
-Valid string keywords are:
-  bios-vendor
-  bios-version
-  bios-release-date
-  system-manufacturer
-  system-product-name
-  system-version
-  system-serial-number
-  system-uuid
-  baseboard-manufacturer
-  baseboard-product-name
-  baseboard-version
-  baseboard-serial-number
-  baseboard-asset-tag
-  chassis-manufacturer
-  chassis-type
-  chassis-version
-  chassis-serial-number
-  chassis-asset-tag
-  processor-family
-  processor-manufacturer
-  processor-version
-  processor-frequency
-```</p>
-
-<p><strong>常用命令举例</strong></p>
-
-<ul>
-<li>1、查看服务器型号：dmidecode | grep 'Product Name'</li>
-<li>2、查看系统序列号：dmidecode -s system-serial-number</li>
-<li>3、查看内存信息：dmidecode -t memory</li>
-<li>4、查看OEM信息：dmidecode -t 11</li>
-</ul>
-
-
-<p>--EOF--</p>
 ]]></content>
   </entry>
   

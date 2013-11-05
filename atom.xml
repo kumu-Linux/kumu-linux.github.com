@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-10-17T16:15:46+08:00</updated>
+  <updated>2013-11-05T22:05:51+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -14,7 +14,129 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Xshell的一些设置备忘]]></title>
+    <title type="html"><![CDATA[paramiko解析AES加密算法]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/05/paramiko/"/>
+    <updated>2013-11-05T21:01:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/05/paramiko</id>
+    <content type="html"><![CDATA[<blockquote><p>对等加密（Reciprocal cipher）又称为对称密钥加密（Symmetric-key algorithm）、对称加密、私钥加密、共享密钥加密，是密码学中的一类加密算法。该类密码的加密算法是它自己本身的逆反函数，所以其解密算法等同于加密算法，也就是说，要还原对等加密的密文，套用加密同样的算法即可得到明文。换句话说，若参数（或密钥）合适的话，两次连续的对等加密运算后会回复原始文字。在数学上，这有时称之为对合。在实际应用中，体现为加密和解密使用同一个密钥，或者知道一方密钥能够轻易计算出另一方密钥。常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC4、RC5、RC6。</p></blockquote>
+
+<!--more-->
+
+
+<p>在说明问题之前，引用维基百科对对称加密的一个说明。今天使用paramiko解析DSA密钥时出现如下ERROR：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>... ...
+</span><span class='line'>paramiko.SSHException: Unknown private key cipher <span class="s2">&quot;AES-128-CBC&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>DSA密钥内容如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-----BEGIN DSA PRIVATE KEY-----
+</span><span class='line'>Proc-Type: 4,ENCRYPTED
+</span><span class='line'>DEK-Info: AES-128-CBC,381624AF862F1717C46EF898D9E1FA92
+</span><span class='line'>
+</span><span class='line'>... ...
+</span><span class='line'>OCGYNLsO68FToi8qJEP1DI9Jvk6tpU3y4ebBqSZnX7jr1M5+Hj5rfMqv7+kp3T4R
+</span><span class='line'>314ae9Ism9AXLIK2miTAcvbexZpbcesadqvo69DMsfhSmKKJYABK3eRYaDlUwkzN
+</span><span class='line'>... ...
+</span><span class='line'>-----END DSA PRIVATE KEY-----
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>ssh-keygen -t rsa</code>测试没有问题，后来得知之前的DSA密钥时使用Secure CRT生成的，查了相关AES算法加密，发现paramiko默认并不支持AES算法，所以出现之前的<code>Unknown Error</code>错误。后来借助Google找到了相关的答案，<a href="http://comments.gmane.org/gmane.comp.python.paramiko/479">Unknown private key cipher AES-128-CBC</a> ，顺便记录下。</p>
+
+<p>解决方法需要修改<code>paramiko</code>代码，打开<code>/usr/lib/pythonX.X/site-packages/paramiko/pkey.py</code>修改如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">DES3</span><span class="p">,</span> <span class="n">AES</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'>    <span class="n">_CIPHER_TABLE</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s">&#39;AES-128-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">},</span>
+</span><span class='line'>        <span class="s">&#39;DES-EDE3-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上修改，保存之后退出即可。</p>
+
+<p>顺便附带我的paramiko测试代码</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c"># -*- coding: utf-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">paramiko</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">paramiko_ssh</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">pkey_file</span> <span class="o">=</span> <span class="s">&#39;/root/.ssh/dsa&#39;</span>
+</span><span class='line'>    <span class="n">pkey_pass</span> <span class="o">=</span> <span class="s">&#39;123321&#39;</span>
+</span><span class='line'>    <span class="n">ssh_port</span> <span class="o">=</span> <span class="mi">22</span>
+</span><span class='line'>    <span class="n">ssh_user</span> <span class="o">=</span> <span class="s">&#39;root&#39;</span>
+</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">DSSKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span><span class="n">pkey_file</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pkey_pass</span><span class="p">)</span>
+</span><span class='line'>    <span class="c"># 如果是RSA KEY，上一行修改DSS为RSA</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">,</span> <span class="n">ssh_user</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">ssh_cmd</span><span class="o">=</span><span class="s">&#39;touch /tmp/test&#39;</span>
+</span><span class='line'>    <span class="n">paramiko_ssh</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">ssh_cmd</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Xshell基本设置备忘]]></title>
     <link href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/"/>
     <updated>2013-10-17T15:41:00+08:00</updated>
     <id>http://kumu-Linux.github.io/blog/2013/10/17/xshell</id>
@@ -55,6 +177,8 @@
 <p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
 
 <p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
+
+<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   
@@ -3991,658 +4115,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <p>&#8211;EOF&#8211;</p>
 
 <p>top实践&#8211;<a href="http://kumu-linux.github.io/blog/2013/06/07/top-hacks/">top实践小技巧</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[openvpn基本搭建实例]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/05/23/openvpn/"/>
-    <updated>2013-05-23T10:19:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/05/23/openvpn</id>
-    <content type="html"><![CDATA[<p>OpenVPN是一个用于创建虚拟专用网络加密通道的软件包，最早由James Yonan编写。OpenVPN允许创建的VPN使用公开密钥、电子证书、或者用户名／密码来进行身份验证。</p>
-
-<!--more-->
-
-
-
-
-<center><img src="http://kumu-Linux.github.io/images/openvpn.png" alt="openvpn" title="openvpn" width="500" /></center>
-
-
-<h2>准备软件：</h2>
-
-<p>本例以RHEL6.3为例</p>
-
-<ul>
-<li><a href="http://swupdate.openvpn.org/community/releases/openvpn-2.3.1.tar.gz">openvpn-2.3.1</a></li>
-<li><a href="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz">lzo-2.06</a></li>
-<li>[最新版本的openvpn-2.3.1官方不再集成<code>easy-rsa</code>] Note that easy-rsa is no longer bundled with OpenVPN source code archives. To get it, visit the easy-rsa page on GitHub, or download it from our Linux software repositories.</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/OpenVPN/easy-rsa
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>软件安装</h2>
-
-<p><code>openssl</code>、<code>openssl-devel</code>、<code>pam</code>、<code>pam-devel</code>安装</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install openssl openssl-devel pam pam-devel -y
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>lzo-2.06</code>安装</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>openvpn-2.3.1</code>安装</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./configure <span class="o">&amp;&amp;</span> make <span class="o">&amp;&amp;</span> make install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>相关配置</h2>
-
-<h3>添加环境变量</h3>
-
-<p>在<code>~/.barc_profile</code>文件中加入如下内容,命名根据实际需求修改：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">D</span><span class="o">=</span>/etc/openvpn
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_CONFIG</span><span class="o">=</span><span class="nv">$D</span>/openssl.cnf
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_DIR</span><span class="o">=</span><span class="nv">$D</span>/keys
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_SIZE</span><span class="o">=</span>1024
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_COUNTRY</span><span class="o">=</span>CN
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_PROVINCE</span><span class="o">=</span>BJ
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_CITY</span><span class="o">=</span>BJ
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_ORG</span><span class="o">=</span>kumu
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_OU</span><span class="o">=</span>kumu
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_NAME</span><span class="o">=</span>kumu
-</span><span class='line'><span class="nb">export </span><span class="nv">KEY_EMAIL</span><span class="o">=</span>root@kumu
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使新增环境变量生效并新建配置文件目录<code>/etc/openvpn</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># source ~/.barc_profile</span>
-</span><span class='line'><span class="c"># mkdir /etc/openvpn</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>:也可修改easy-rsa中的vars【/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars】，source生效</p>
-
-<h3>生成密钥</h3>
-
-<p>进入之前下载的<code>easy-rsa</code>目录</p>
-
-<p><strong>初始化PKI、生成证书</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0
-</span><span class='line'><span class="c"># ls</span>
-</span><span class='line'>build-ca     build-key         build-key-server  clean-all      openssl-0.9.6.cnf  pkitool      vars
-</span><span class='line'>build-dh     build-key-pass    build-req         inherit-inter  openssl-0.9.8.cnf  revoke-full  whichopensslcnf
-</span><span class='line'>build-inter  build-key-pkcs12  build-req-pass    list-crl       openssl-1.0.0.cnf  sign-req
-</span><span class='line'><span class="c"># cp openssl-1.0.0.cnf /etc/openvpn/openssl.cnf</span>
-</span><span class='line'><span class="c"># ./clean-all #初始化，清除原有不需要的文件</span>
-</span><span class='line'><span class="c"># ./build-ca  #一直回车即可</span>
-</span><span class='line'>Generating a 1024 bit RSA private key
-</span><span class='line'>.......++++++
-</span><span class='line'>............++++++
-</span><span class='line'>writing new private key to <span class="s1">&#39;ca.key&#39;</span>
-</span><span class='line'>-----
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="err">&#39;</span>s hostname<span class="o">)</span> <span class="o">[</span>kumu CA<span class="o">]</span>:
-</span><span class='line'>Name <span class="o">[]</span>:kumu
-</span><span class='line'>Email Address <span class="o">[</span>root@kumu<span class="o">]</span>:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>生成Server端证书Server Key</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-key-server kumu_server #一路回车，密码处填写密码</span>
-</span><span class='line'>Generating a 1024 bit RSA private key
-</span><span class='line'>....................................++++++
-</span><span class='line'>.........++++++
-</span><span class='line'>writing new private key to <span class="s1">&#39;kumu_server.key&#39;</span>
-</span><span class='line'>-----
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="s1">&#39;s hostname) [kumu_server]:</span>
-</span><span class='line'><span class="s1">Name [kumu]:</span>
-</span><span class='line'><span class="s1">Email Address [root@kumu]:</span>
-</span><span class='line'>
-</span><span class='line'><span class="s1">Please enter the following &#39;</span>extra<span class="s1">&#39; attributes</span>
-</span><span class='line'><span class="s1">to be sent with your certificate request</span>
-</span><span class='line'><span class="s1">A challenge password []:123321  #输入密码</span>
-</span><span class='line'><span class="s1">An optional company name []:kumu</span>
-</span><span class='line'><span class="s1">Using configuration from /etc/openvpn/openssl.cnf</span>
-</span><span class='line'><span class="s1">Check that the request matches the signature</span>
-</span><span class='line'><span class="s1">Signature ok</span>
-</span><span class='line'><span class="s1">The Subject&#39;</span>s Distinguished Name is as follows
-</span><span class='line'>countryName           :PRINTABLE:<span class="s1">&#39;CN&#39;</span>
-</span><span class='line'>stateOrProvinceName   :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
-</span><span class='line'>localityName          :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
-</span><span class='line'>organizationName      :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>organizationalUnitName:PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>commonName            :T61STRING:<span class="s1">&#39;kumu_server&#39;</span>
-</span><span class='line'>name                  :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>emailAddress          :IA5STRING:<span class="s1">&#39;root@kumu&#39;</span>
-</span><span class='line'>Certificate is to be certified <span class="k">until </span>May 11 22:54:08 2023 GMT <span class="o">(</span>3650 days<span class="o">)</span>
-</span><span class='line'>Sign the certificate? <span class="o">[</span>y/n<span class="o">]</span>:y
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>1 out of 1 certificate requests certified, commit? <span class="o">[</span>y/n<span class="o">]</span>y
-</span><span class='line'>Write out database with 1 new entries
-</span><span class='line'>Data Base Updated
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>生成Client端证书</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-key kumu_client1  #一路回车，密码处填写密码</span>
-</span><span class='line'>Generating a 1024 bit RSA private key
-</span><span class='line'>..++++++
-</span><span class='line'>.....................++++++
-</span><span class='line'>writing new private key to <span class="s1">&#39;kumu_client1.key&#39;</span>
-</span><span class='line'>-----
-</span><span class='line'>You are about to be asked to enter information that will be incorporated
-</span><span class='line'>into your certificate request.
-</span><span class='line'>What you are about to enter is what is called a Distinguished Name or a DN.
-</span><span class='line'>There are quite a few fields but you can leave some blank
-</span><span class='line'>For some fields there will be a default value,
-</span><span class='line'>If you enter <span class="s1">&#39;.&#39;</span>, the field will be left blank.
-</span><span class='line'>-----
-</span><span class='line'>Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>CN<span class="o">]</span>:
-</span><span class='line'>State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>BJ<span class="o">]</span>:
-</span><span class='line'>Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>kumu<span class="o">]</span>:
-</span><span class='line'>Common Name <span class="o">(</span>eg, your name or your server<span class="s1">&#39;s hostname) [kumu_client1]:</span>
-</span><span class='line'><span class="s1">Name [kumu]:</span>
-</span><span class='line'><span class="s1">Email Address [root@kumu]:</span>
-</span><span class='line'>
-</span><span class='line'><span class="s1">Please enter the following &#39;</span>extra<span class="s1">&#39; attributes</span>
-</span><span class='line'><span class="s1">to be sent with your certificate request</span>
-</span><span class='line'><span class="s1">A challenge password []:123321</span>
-</span><span class='line'><span class="s1">An optional company name []:kumu</span>
-</span><span class='line'><span class="s1">Using configuration from /etc/openvpn/openssl.cnf</span>
-</span><span class='line'><span class="s1">Check that the request matches the signature</span>
-</span><span class='line'><span class="s1">Signature ok</span>
-</span><span class='line'><span class="s1">The Subject&#39;</span>s Distinguished Name is as follows
-</span><span class='line'>countryName           :PRINTABLE:<span class="s1">&#39;CN&#39;</span>
-</span><span class='line'>stateOrProvinceName   :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
-</span><span class='line'>localityName          :PRINTABLE:<span class="s1">&#39;BJ&#39;</span>
-</span><span class='line'>organizationName      :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>organizationalUnitName:PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>commonName            :T61STRING:<span class="s1">&#39;kumu_client1&#39;</span>
-</span><span class='line'>name                  :PRINTABLE:<span class="s1">&#39;kumu&#39;</span>
-</span><span class='line'>emailAddress          :IA5STRING:<span class="s1">&#39;root@kumu&#39;</span>
-</span><span class='line'>Certificate is to be certified <span class="k">until </span>May 11 23:01:12 2023 GMT <span class="o">(</span>3650 days<span class="o">)</span>
-</span><span class='line'>Sign the certificate? <span class="o">[</span>y/n<span class="o">]</span>:y
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>1 out of 1 certificate requests certified, commit? <span class="o">[</span>y/n<span class="o">]</span>y
-</span><span class='line'>Write out database with 1 new entries
-</span><span class='line'>Data Base Updated
-</span><span class='line'><span class="c"># ls /etc/openvpn/keys/</span>
-</span><span class='line'>01.pem  ca.key      index.txt.attr      kumu_client1.crt  kumu_server.crt  openvpn-status.log
-</span><span class='line'>02.pem  dh1024.pem  index.txt.attr.old  kumu_client1.csr  kumu_server.csr  serial
-</span><span class='line'>ca.crt  index.txt   index.txt.old       kumu_client1.key  kumu_server.key  serial.old
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>：生成其他客户端证书以此类推，名字不相同即可</p>
-
-<p><strong>证书加密</strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-dh </span>
-</span><span class='line'>./build-dh: line 7: dhparam: <span class="nb">command </span>not found
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>出现如上问题，修改<code>./build-dh</code>命令中<code>$OPENSSL</code>为<code>openssl</code>即可，原因是默认<code>/usr/local/src/openvpn/easy-rsa/easy-rsa/2.0/vars</code>文件定义了<code>OPENSSL=openssl</code>,而笔者没有引用<code>vars</code>文件</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ./build-dh </span>
-</span><span class='line'>Generating DH parameters, 1024 bit long safe prime, generator 2
-</span><span class='line'>This is going to take a long <span class="nb">time</span>
-</span><span class='line'>... ...
-</span><span class='line'><span class="c"># openvpn --genkey --secret /etc/openvpn/keys/ta.key  #生成加密key</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Server端配置文件修改:</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files
-</span><span class='line'><span class="c"># ls </span>
-</span><span class='line'>client.conf  loopback-client  openvpn-shutdown.sh  server.conf         tls-home.conf         xinetd-server-config
-</span><span class='line'>firewall.sh  loopback-server  openvpn-startup.sh   static-home.conf    tls-office.conf
-</span><span class='line'>home.up      office.up        README               static-office.conf  xinetd-client-config
-</span><span class='line'><span class="c"># cp server.conf /etc/openvpn/  #拷贝Server模板配置文件到配置目录</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>Server端配置文件内容如下</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^;|^$|^#&#39; /etc/openvpn/server.conf </span>
-</span><span class='line'>port 1194
-</span><span class='line'>proto udp
-</span><span class='line'>dev tun
-</span><span class='line'>ca /etc/openvpn/keys/ca.crt
-</span><span class='line'>cert /etc/openvpn/keys/kumu_server.crt
-</span><span class='line'>key /etc/openvpn/keys/kumu_server.key  <span class="c"># This file should be kept secret</span>
-</span><span class='line'>dh /etc/openvpn/keys/dh1024.pem
-</span><span class='line'>server 10.8.0.0 255.255.255.0
-</span><span class='line'>push <span class="s2">&quot;route 192.168.10.0 255.255.255.0&quot;</span> <span class="c"># 推送路由</span>
-</span><span class='line'>client-to-client
-</span><span class='line'>keepalive 10 120
-</span><span class='line'>tls-auth /etc/openvpn/keys/ta.key 0 <span class="c"># This file is secret</span>
-</span><span class='line'>comp-lzo
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>status /etc/openvpn/keys/openvpn-status.log
-</span><span class='line'>verb 3
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>开启路由转发和启动Openvpn</h3>
-
-<p><strong>开启路由转发</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo </span>1 &gt; /proc/sys/net/ipv4/ip_forward <span class="c">#临时开启</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>或者修改/etc/sysctl.conf中<code>net.ipv4.ip_forward = 1</code>，执行<code>sysctl -p</code>永久生效</p>
-
-<p><strong>启动服务</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvpn --config /etc/openvpn/server.conf --daemon
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Windows客户端连接配置</h3>
-
-<ul>
-<li>64位安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-x86_64.exe">openvpn-2.3.1-X86_64.exe</a></li>
-<li>32位请安装<a href="http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.1-I001-i686.exe">openvpn-2.3.1-i686.exe</a></li>
-</ul>
-
-
-<p>拷贝Server端生成的如下客户端证书到Windows软件安装目录<code>OpenVPN\config</code>下</p>
-
-<ul>
-<li>kumu_client1.crt</li>
-<li>kumu_client1.key</li>
-<li>ca.key</li>
-<li>ta.key</li>
-</ul>
-
-
-<p>在<code>OpenVPN\config</code>目录中新建Client端配置文件<code>client.ovpn</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>client
-</span><span class='line'>dev tun
-</span><span class='line'>proto udp
-</span><span class='line'>remote 10.2.0.110 1194
-</span><span class='line'>resolv-retry infinite
-</span><span class='line'>nobind
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>ca ca.crt
-</span><span class='line'>cert kumu_client1.crt
-</span><span class='line'>key kumu_client1.key
-</span><span class='line'>ns-cert-type server
-</span><span class='line'>tls-auth ta.key 1
-</span><span class='line'>comp-lzo
-</span><span class='line'>verb 3
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Win7/Win8以管理员身份启动Openvpn Windows客户端即可，基本的Windows安装这里不作介绍，如果正常，Openvpn Gui客户端显示绿色，ping测试无误，如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>C:<span class="se">\U</span>sers<span class="se">\k</span>umu&gt;ping 10.8.0.1  <span class="c">#测试VPN</span>
-</span><span class='line'>
-</span><span class='line'>正在 Ping 10.8.0.1 具有 32 字节的数据:
-</span><span class='line'>来自 10.8.0.1 的回复: 字节<span class="o">=</span>32 时间&lt;1ms <span class="nv">TTL</span><span class="o">=</span>64
-</span><span class='line'>来自 10.8.0.1 的回复: 字节<span class="o">=</span>32 时间&lt;1ms <span class="nv">TTL</span><span class="o">=</span>64
-</span><span class='line'>... ...
-</span><span class='line'>C:<span class="se">\U</span>sers<span class="se">\k</span>umu&gt;ping 192.168.10.19 <span class="c">#测试内网</span>
-</span><span class='line'>
-</span><span class='line'>正在 Ping 192.168.10.19 具有 32 字节的数据:
-</span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>1ms <span class="nv">TTL</span><span class="o">=</span>64
-</span><span class='line'>来自 192.168.10.19 的回复: 字节<span class="o">=</span>32 时间<span class="o">=</span>2ms <span class="nv">TTL</span><span class="o">=</span>64
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Linux客户端配置</h3>
-
-<p><strong>安装</strong>参见Server端安装</p>
-
-<h4>相关配置</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mkdir /etc/openvpn</span>
-</span><span class='line'><span class="c"># cp /usr/local/src/openvpn/openvpn-2.3.1/sample/sample-config-files/client.conf /etc/openvpn/</span>
-</span><span class='line'><span class="c"># grep -vE &#39;^$|^#|^;&#39; /etc/openvpn/client.conf</span>
-</span><span class='line'>client
-</span><span class='line'>dev tun
-</span><span class='line'>proto udp
-</span><span class='line'>remote 10.2.0.110 1194
-</span><span class='line'>resolv-retry infinite
-</span><span class='line'>nobind
-</span><span class='line'>persist-key
-</span><span class='line'>persist-tun
-</span><span class='line'>ca ca.crt
-</span><span class='line'>cert kumu_client1.crt
-</span><span class='line'>key kumu_client1.key
-</span><span class='line'>ns-cert-type server
-</span><span class='line'>tls-auth ta.key 1
-</span><span class='line'>comp-lzo
-</span><span class='line'>verb 3
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>拷贝Server端生成的如下客户端证书到Linux客户端/etc/openvpn下(这里为了方便不再生成一套客户端证书了)</p>
-
-<ul>
-<li>kumu_client1.crt</li>
-<li>kumu_client1.key</li>
-<li>ca.key</li>
-<li>ta.key</li>
-</ul>
-
-
-<p><strong>启动Openvpn客户端服务</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>openvpn --config /etc/openvpn/client.conf --daemon
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>测试</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifconfig tun0</span>
-</span><span class='line'>tun0      Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
-</span><span class='line'>          inet addr:10.8.0.6  P-t-P:10.8.0.5  Mask:255.255.255.255
-</span><span class='line'>... ...
-</span><span class='line'><span class="c"># route -n</span>
-</span><span class='line'>Kernel IP routing table
-</span><span class='line'>Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
-</span><span class='line'>10.8.0.5        0.0.0.0         255.255.255.255 UH    0      0        0 tun0
-</span><span class='line'>10.8.0.0        10.8.0.5        255.255.255.0   UG    0      0        0 tun0
-</span><span class='line'>192.168.10.0    10.8.0.5        255.255.255.0   UG    0      0        0 tun0
-</span><span class='line'>... ...
-</span><span class='line'><span class="c"># ping 192.168.10.19</span>
-</span><span class='line'>PING 192.168.10.19 <span class="o">(</span>192.168.10.19<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
-</span><span class='line'>64 bytes from 192.168.10.19: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.690 ms
-</span><span class='line'>64 bytes from 192.168.10.19: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>1.21 ms
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>测试正常，无误！</p>
-
-<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

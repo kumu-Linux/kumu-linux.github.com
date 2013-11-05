@@ -5,18 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>2-2、Global Flag (g flag)[译] - Linux SA Notes By 枯木</title>
+  <title>Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。 替换每行的第一个a变为A: 1
-2
-3
-4
-5
-6
-$ &hellip;">
-  <meta name="keywords" content="枯木,sed,Linux,shell">
+  <meta name="description" content="始末 大概是2011-05开始创建自己的第一个博客 枯木新浪博客，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。 ">
+  
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -24,7 +18,7 @@ $ &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/05/05/sed-7/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/page/7/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,13 +86,16 @@ $ &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      
-        <h1 class="entry-title">2-2、Global Flag (G Flag)[译]</h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/05/hello/">用Markdown写日志</a></h1>
       
     
     
@@ -115,120 +112,38 @@ $ &hellip;">
   
 
 
-<time datetime="2013-05-05T09:15:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
         
-         | <a href="#disqus_thread">Comments</a>
+         | <a href="/blog/2013/04/05/hello/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
+  <div class="entry-content"><h3>始末</h3>
 
-<!--more-->
+<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
 
-
-<p><strong>替换每行的第一个<code>a</code>变为<code>A</code></strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,JAson Smith,IT Manager
-</span><span class='line'>103,RAj Reddy,Sysadmin
-</span><span class='line'>104,AnAnd Ram,Developer
-</span><span class='line'>105,JAne Miller,Sales Manager
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>替换每行所有的<code>a</code>变为<code>A</code></strong>:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sed <span class="s1">&#39;s/a/A/g&#39;</span> employee.txt
-</span><span class='line'>101,John Doe,CEO
-</span><span class='line'>102,JAson Smith,IT MAnAger
-</span><span class='line'>103,RAj Reddy,SysAdmin
-</span><span class='line'>104,AnAnd RAm,Developer
-</span><span class='line'>105,JAne Miller,SAles MAnAger
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>注</strong>:因为没有指定地址范围，所以以上例子都是针对文件所有行的</p>
-
-<p>&#8211;EOF&#8211;</p>
 </div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
-
-      
-
-
-
-
-
-
-
-
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/05/hello/">阅读全文 &rarr;</a>
+    </footer>
   
 
 
-<time datetime="2013-05-05T09:15:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
-      
-
-<span class="categories">
+    </article>
   
-    <a class='category' href='/blog/categories/sed-slash-awk/'>SED/AWK</a>
-  
-</span>
-
-
-    </p>
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  
-  
-  
-  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/blog/2013/05/04/sed-6/" title="Previous Post: 2-1、Sed Substitute Command[译]">&laquo; 2-1、Sed Substitute Command[译]</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/05/06/rsync-ssh/" title="Next Post: rsync备份之ssh篇">rsync备份之ssh篇 &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a class="next" href="/blog/page/6/">Newer &rarr;</a>
+    
+  </div>
 </div>
-  </section>
-
-</div>
-
 <aside class="sidebar">
   
     <section>
@@ -314,7 +229,6 @@ $ &hellip;">
   
 </aside>
 
-
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -329,10 +243,7 @@ $ &hellip;">
       var disqus_shortname = 'kumusanotes';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/05/05/sed-7/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/05/05/sed-7/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

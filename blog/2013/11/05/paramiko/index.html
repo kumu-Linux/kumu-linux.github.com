@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>ssh认证代理 - Linux SA Notes By 枯木</title>
+  <title>paramiko解析AES加密算法 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="简介 ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon）， &hellip;">
-  <meta name="keywords" content="ssh-agent">
+  <meta name="description" content="对等加密（Reciprocal cipher）又称为对称密钥加密（Symmetric-key algorithm）、对称加密、私钥加密、共享密钥加密，是密码学中的一类加密算法。该类密码的加密算法是它自己本身的逆反函数，所以其解密算法等同于加密算法，也就是说，要还原对等加密的密文， &hellip;">
+  
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/11/05/paramiko/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +92,7 @@
   <header>
     
       
-        <h1 class="entry-title">Ssh认证代理</h1>
+        <h1 class="entry-title">paramiko解析AES加密算法</h1>
       
     
     
@@ -109,7 +109,7 @@
   
 
 
-<time datetime="2013-09-09T10:55:00+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2013</time>
+<time datetime="2013-11-05T21:01:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -118,27 +118,71 @@
   </header>
 
 
-<div class="entry-content"><h3>简介</h3>
-
-<p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
+<div class="entry-content"><blockquote><p>对等加密（Reciprocal cipher）又称为对称密钥加密（Symmetric-key algorithm）、对称加密、私钥加密、共享密钥加密，是密码学中的一类加密算法。该类密码的加密算法是它自己本身的逆反函数，所以其解密算法等同于加密算法，也就是说，要还原对等加密的密文，套用加密同样的算法即可得到明文。换句话说，若参数（或密钥）合适的话，两次连续的对等加密运算后会回复原始文字。在数学上，这有时称之为对合。在实际应用中，体现为加密和解密使用同一个密钥，或者知道一方密钥能够轻易计算出另一方密钥。常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC4、RC5、RC6。</p></blockquote>
 
 <!--more-->
 
 
-<h3>实例</h3>
+<p>在说明问题之前，引用维基百科对对称加密的一个说明。今天使用paramiko解析DSA密钥时出现如下ERROR：</p>
 
-<h4>Before ssh-agent</h4>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>... ...
+</span><span class='line'>paramiko.SSHException: Unknown private key cipher <span class="s2">&quot;AES-128-CBC&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>DSA密钥内容如下：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:   <span class="c"># 正常输入密码</span>
-</span><span class='line'>Last login: Sat Sep  7 12:40:02 2013 from 192.168.80.131
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-----BEGIN DSA PRIVATE KEY-----
+</span><span class='line'>Proc-Type: 4,ENCRYPTED
+</span><span class='line'>DEK-Info: AES-128-CBC,381624AF862F1717C46EF898D9E1FA92
+</span><span class='line'>
+</span><span class='line'>... ...
+</span><span class='line'>OCGYNLsO68FToi8qJEP1DI9Jvk6tpU3y4ebBqSZnX7jr1M5+Hj5rfMqv7+kp3T4R
+</span><span class='line'>314ae9Ism9AXLIK2miTAcvbexZpbcesadqvo69DMsfhSmKKJYABK3eRYaDlUwkzN
+</span><span class='line'>... ...
+</span><span class='line'>-----END DSA PRIVATE KEY-----
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h4>After ssh-agent</h4>
+<p>使用<code>ssh-keygen -t rsa</code>测试没有问题，后来得知之前的DSA密钥时使用Secure CRT生成的，查了相关AES算法加密，发现paramiko默认并不支持AES算法，所以出现之前的<code>Unknown Error</code>错误。后来借助Google找到了相关的答案，<a href="http://comments.gmane.org/gmane.comp.python.paramiko/479">Unknown private key cipher AES-128-CBC</a> ，顺便记录下。</p>
+
+<p>解决方法需要修改<code>paramiko</code>代码，打开<code>/usr/lib/pythonX.X/site-packages/paramiko/pkey.py</code>修改如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">DES3</span><span class="p">,</span> <span class="n">AES</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'>    <span class="n">_CIPHER_TABLE</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>        <span class="s">&#39;AES-128-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">},</span>
+</span><span class='line'>        <span class="s">&#39;DES-EDE3-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上修改，保存之后退出即可。</p>
+
+<p>顺便附带我的paramiko测试代码</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -150,65 +194,41 @@
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
 <span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh-agent bash</span>
-</span><span class='line'><span class="c"># ssh-add       </span>
-</span><span class='line'><span class="c"># 默认ssh-add添加~/.ssh/id_rsa私钥，按提示输入密码即可，可添加多个密钥</span>
-</span><span class='line'><span class="c"># 如果要加入其它密钥直接 ssh-add 私钥文件 即可</span>
-</span><span class='line'>Enter passphrase <span class="k">for</span> /root/.ssh/id_rsa:
-</span><span class='line'>Identity added: /root/.ssh/id_rsa <span class="o">(</span>/root/.ssh/id_rsa<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh-add -l                    # 显示添加密钥添加列表</span>
-</span><span class='line'>2048 4f:a8:76:04:42:90:b4:18:c1:6b:13:06:31:c8:59:bf /root/.ssh/id_rsa <span class="o">(</span>RSA<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh root@192.168.80.130       # 不需要密码登录了</span>
-</span><span class='line'>Last login: Sat Sep  7 12:58:09 2013 from 192.168.80.128
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
+</span><span class='line'><span class="c"># -*- coding: utf-8 -*-</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">paramiko</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">paramiko_ssh</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">pkey_file</span> <span class="o">=</span> <span class="s">&#39;/root/.ssh/dsa&#39;</span>
+</span><span class='line'>    <span class="n">pkey_pass</span> <span class="o">=</span> <span class="s">&#39;123321&#39;</span>
+</span><span class='line'>    <span class="n">ssh_port</span> <span class="o">=</span> <span class="mi">22</span>
+</span><span class='line'>    <span class="n">ssh_user</span> <span class="o">=</span> <span class="s">&#39;root&#39;</span>
+</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">DSSKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span><span class="n">pkey_file</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pkey_pass</span><span class="p">)</span>
+</span><span class='line'>    <span class="c"># 如果是RSA KEY，上一行修改DSS为RSA</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">,</span> <span class="n">ssh_user</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">ssh_cmd</span><span class="o">=</span><span class="s">&#39;touch /tmp/test&#39;</span>
+</span><span class='line'>    <span class="n">paramiko_ssh</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">ssh_cmd</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
-
-
-<h4>ssh-agent + ForwardAgent</h4>
-
-<p>A->B->C&#8230;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Last login: Sat Sep  7 14:05:34 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</span>
-</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果想A->B->C&#8230;都不需要密码则可以设置<code>~/.ssh/config</code>如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host *
-</span><span class='line'>    ForwardAgent yes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>设置之后</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Last login: Sat Sep  7 14:06:01 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 没有再次提示输入密码，直接登录</span>
-</span><span class='line'>Last login: Sat Sep  7 14:05:20 2013 from 192.168.80.130
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>参考和拓展文档</h3>
-
-<ul>
-<li><a href="http://blog.hellosa.org/2010/03/07/ssh-agent-secure.html">ssh-agent 的安全隐患</a></li>
-<li><a href="http://blog.pkufranky.com/2012/08/ssh-agent-forwarding-guide/">SSH Agent Forwarding原理</a></li>
-<li><a href="http://livecipher.blogspot.tw/2013/02/ssh-agent-forwarding.html">SSH key agent forwarding</a></li>
-<li><a href="https://help.github.com/articles/using-ssh-agent-forwarding">Using ssh agent forwarding</a></li>
-<li><a href="upc.lbl.gov/docs/user/sshagent.shtml">A short ssh-agent tutorial</a></li>
-</ul>
 
 
 <p>&#8211;EOF&#8211;</p>
@@ -234,12 +254,12 @@
   
 
 
-<time datetime="2013-09-09T10:55:00+08:00" pubdate data-updated="true">Sep 9<span>th</span>, 2013</time>
+<time datetime="2013-11-05T21:01:00+08:00" pubdate data-updated="true">Nov 5<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
+    <a class='category' href='/blog/categories/shell-slash-python/'>Shell/Python</a>
   
 </span>
 
@@ -258,10 +278,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/08/28/rsyslog-remote/" title="Previous Post: rsyslog远程传输的几种方式">&laquo; rsyslog远程传输的几种方式</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/10/17/xshell/" title="Previous Post: Xshell基本设置备忘">&laquo; Xshell基本设置备忘</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/09/22/opennebula-win/" title="Next Post: OpenNebula Windows Server镜像制作">OpenNebula Windows Server镜像制作 &raquo;</a>
       
     </p>
   </footer>
@@ -376,8 +394,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/11/05/paramiko/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/11/05/paramiko/';
         var disqus_script = 'embed.js';
       
     (function () {

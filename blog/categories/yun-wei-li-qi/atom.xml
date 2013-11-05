@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-10-17T16:18:18+08:00</updated>
+  <updated>2013-11-05T22:05:59+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -55,6 +55,8 @@
 <p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
 
 <p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
+
+<p>--EOF--</p>
 ]]></content>
   </entry>
   

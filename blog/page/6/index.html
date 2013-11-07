@@ -9,7 +9,9 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="LogAnalyzer简介 LogAnalyzer 是一个syslog和其他网络事件数据的Web前端工具，提供简单易用的日志浏览、搜索和基本分析以及图表显示，PHP语言开发。官方地址 ">
+  <meta name="description" content="本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
+基本的语法： 1
+sed [options] {sed-commands} {input-file} ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +90,57 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/24/sed-1/">1-1、sed Command Syntax[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-24T23:33:00+08:00" pubdate data-updated="true">Apr 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/24/sed-1/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
+基本的语法：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="o">[</span>options<span class="o">]</span> <span class="o">{</span>sed-commands<span class="o">}</span> <span class="o">{</span>input-file<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/24/sed-1/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -386,58 +439,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/06/octopress-plus-github/">Octopress Windows环境搭建</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-06T17:09:00+08:00" pubdate data-updated="true">Apr 6<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/06/octopress-plus-github/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>关于Octopress+GitHub+Markdown环境的搭建其实已经有很多写的很好的教程了，这里算是作一个总结吧，把遇到的一些问题说明注解一下。</p>
-
-<p><strong>优点</strong>：</p>
-
-<pre><code>1. 用文件方式储存数据，无需数据库
-2. 以静态方式发布，直接托管github
-3. 用markdown格式写博客，可轻松配置和发布
-</code></pre>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/06/octopress-plus-github/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/7/">&larr; Older</a>
@@ -459,6 +460,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/11/07/rsync/">修改CentOS/RHEL Rsync监听地址</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/05/paramiko/">paramiko解析AES加密算法</a>
       </li>
     
@@ -478,15 +483,11 @@
         <a href="/blog/2013/09/25/shell-alias/">30 Handy Bash Shell Aliases[译]</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/09/22/opennebula-win/">OpenNebula Windows Server镜像制作</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (14)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (4)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (15)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (4)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

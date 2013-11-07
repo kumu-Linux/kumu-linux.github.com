@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-06T14:01:58+08:00</updated>
+  <updated>2013-11-07T10:54:54+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,51 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[修改CentOS/RHEL rsync监听地址]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/07/rsync/"/>
+    <updated>2013-11-07T10:35:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/07/rsync</id>
+    <content type="html"><![CDATA[<p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
+
+<!--more-->
+
+
+<p><code>bash
+...
+tcp        0      0 0.0.0.0:873                 0.0.0.0:*       ...
+...
+</code></p>
+
+<p>因为CentOS/RHEL是依赖xinetd的，所以我就想到了xinetd配置文件<code>/etc/xinetd.conf</code>，发现选项<code># bind       =</code>，于是修改如下</p>
+
+<p>``` bash
+...</p>
+
+<pre><code>bind        = 192.168.80.128    # 此处ip填写主机本地ip即可
+</code></pre>
+
+<p>...
+```</p>
+
+<p>修改完成保存，重启xinetd程序，修改生效</p>
+
+<p><code>bash
+...
+tcp        0      0 192.168.80.128:873               0.0.0.0:*                   LISTEN      25967/xinetd
+...
+</code></p>
+
+<p>当然你也可以直接不依赖xinetd修改监听地址，直接使用命令启动rsync，如下</p>
+
+<p><code>bash
+rsync --address=192.168.80.128 --config=/etc/rsyncd.conf --daemon
+</code></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ssh的一些安全设定]]></title>
@@ -964,130 +1009,6 @@ $ActionQueueSaveOnShutdown on   # save in-memory data if rsyslog shuts down
 <li><a href="http://gertverdemme.nl/sysadm/security/rsyslog_relp_remote_logging">Rsyslog remote logging using RELP</a></li>
 <li><a href="http://www.rsyslog.com/tag/udp/">UDP Rsyslog</a></li>
 <li><a href="http://www.rsyslog.com/tag/tcp/">TCP Rsyslog</a></li>
-</ul>
-
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[pssh使用方法]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/08/12/pssh/"/>
-    <updated>2013-08-12T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/08/12/pssh</id>
-    <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
-
-<!--more -->
-
-
-<h3>安装</h3>
-
-<p><code>bash
-wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
-tar zxvf pssh-2.3.1.tar.gz
-cd pssh-2.3.1/
-python setup.py install
-</code></p>
-
-<h3>pssh相关参数</h3>
-
-<ul>
-<li>pssh在多个主机上并行地运行命令
-
-<ul>
-<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
-
-<ul>
-<li> 如 test@172.16.10.10:229</li>
-</ul>
-</li>
-<li>-H 执行命令主机，主机格式 user@ip:port</li>
-<li>-l 远程机器的用户名</li>
-<li>-p 一次最大允许多少连接</li>
-<li>-P 执行时输出执行信息</li>
-<li>-o 输出内容重定向到一个文件</li>
-<li>-e 执行错误重定向到一个文件</li>
-<li>-t 设置命令执行超时时间</li>
-<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
-<li>-O 设置ssh一些选项</li>
-<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
-<li>-X 同-x,但是只能设置一个参数</li>
-<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>附加工具</h3>
-
-<ul>
-<li>pscp 传输文件到多个hosts，类似scp
-
-<ul>
-<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
-</ul>
-</li>
-<li>pslurp 从多台远程机器拷贝文件到本地</li>
-<li>pnuke 并行在远程主机杀进程
-
-<ul>
-<li>pnuke -h hosts.txt -l irb2 java</li>
-</ul>
-</li>
-<li>prsync 使用rsync协议从本地计算机同步到远程主机
-
-<ul>
-<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>示例</h3>
-
-<p><code>bash
-kumu-opsdev ~ # cat host.txt
-root@192.168.230.128
-wul@10.0.0.8
-</code></p>
-
-<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项
-<code>bash
-kumu-opsdev ~ # pssh -i -h host.txt 'date'
-[1] 16:32:38 [SUCCESS] root@192.168.230.128
-Mon Aug 12 16:32:38 CST 2013
-[2] 16:32:38 [SUCCESS] wul@10.0.0.8
-Mon Aug 12 16:32:38 CST 2013
-</code></p>
-
-<p><code>-x</code>选项
-<code>
-kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -h host.txt date
-[1] 17:20:01 [SUCCESS] root@192.168.230.128
-Mon Aug 12 17:20:01 CST 2013
-Stderr: Connection to 192.168.230.128 closed.
-[2] 17:20:01 [SUCCESS] wul@10.0.0.8
-Mon Aug 12 17:20:01 CST 2013
-Stderr: Connection to 10.0.0.8 closed.
-</code></p>
-
-<p><code>-H</code>选项
-<code>
-kumu-opsdev ~ # pssh -x '-t -t -o StrictHostKeyChecking=no' -i -H 192.168.230.128 -H wul@10.0.0.8 date
-[1] 17:22:58 [SUCCESS] 192.168.230.128
-Mon Aug 12 17:22:58 CST 2013
-Stderr: Connection to 192.168.230.128 closed.
-[2] 17:22:58 [SUCCESS] wul@10.0.0.8
-Mon Aug 12 17:22:58 CST 2013
-Stderr: Connection to 10.0.0.8 closed.
-</code></p>
-
-<h3>参考文档</h3>
-
-<ul>
-<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
-<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
 </ul>
 
 

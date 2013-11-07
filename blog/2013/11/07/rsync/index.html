@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>RHEL6修改snmpd日志输出 - Linux SA Notes By 枯木</title>
+  <title>修改CentOS/RHEL rsync监听地址 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="需求和现象 默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。 解决方法 &hellip;">
-  
+  <meta name="description" content="为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件rsyncd.conf中加入address = 192.168.80.128， &hellip;">
+  <meta name="keywords" content="rsync, listen">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/04/16/snmpd/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/11/07/rsync/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +92,7 @@
   <header>
     
       
-        <h1 class="entry-title">RHEL6修改snmpd日志输出</h1>
+        <h1 class="entry-title">修改CentOS/RHEL Rsync监听地址</h1>
       
     
     
@@ -109,7 +109,7 @@
   
 
 
-<time datetime="2013-04-16T10:52:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2013</time>
+<time datetime="2013-11-07T10:35:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -118,80 +118,50 @@
   </header>
 
 
-<div class="entry-content"><h3>需求和现象</h3>
-
-<p>默认安装启动的snmp，会把日志记录在系统日志/var/log/messages中。频繁记录日志到messages，导致messages的日志输出都被snmp的相关信息占满，不便于其它问题的排查。另外，频繁的写日志对性能也不是很好，因此需要修改相关的配置。</p>
+<div class="entry-content"><p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
 
 <!--more-->
 
 
-<h3>解决方法</h3>
 
-<p>第一反应就是想到snmp的配置文件，但是发现配置文件/etc/snmp/snmpd.conf中没有关于log的日志定义，ps -ef | grep snmp[d] 得到如下结果</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ps -ef | grep snmp[d]</span>
-</span><span class='line'>root     59108     1  0 22:12 ?        00:00:00 /usr/sbin/snmpd -LS0-6d -Lf /dev/null -p /var/run/snmpd.pid
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上启动命令中就有关于日志的选项，关于snmp日志的警告级别如下</p>
-
-<ul>
-<li>0 or ! for LOG_EMERG,</li>
-<li>1 or a for LOG_ALERT,</li>
-<li>2 or c for LOG_CRIT,</li>
-<li>3 or e for LOG_ERR,</li>
-<li>4 or w for LOG_WARNING,</li>
-<li>5 or n for LOG_NOTICE,</li>
-<li>6 or i for LOG_INFO,</li>
-<li>7 or d for LOG_DEBUG.</li>
-</ul>
-
-
-<p>默认的时0-6级别的日志都会被记录，查看/etc/init.d/snmpd启动文件，有以下定义</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; -A3 /etc/init.d/snmpd </span>
-</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -e /etc/sysconfig/snmpd <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'>  . /etc/sysconfig/snmpd
-</span><span class='line'><span class="k">fi</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>tcp        0      0 0.0.0.0:873                 0.0.0.0:*     ...
+</span><span class='line'>...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>snmpd启动文件定义了OPTIONS，启动文件中提到了/etc/sysconfig/snmpd，查看内容默认如下</p>
+<p>因为CentOS/RHEL是依赖xinetd的，所以我就想到了xinetd配置文件<code>/etc/xinetd.conf</code>，发现选项<code># bind       =</code>，于是修改如下</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
-</span><span class='line'><span class="c"># snmpd command line options</span>
-</span><span class='line'><span class="c"># OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>  <span class="nb">bind</span>        <span class="o">=</span> 192.168.80.128 <span class="c"># 此处ip填写主机本地ip即可</span>
+</span><span class='line'>...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>因为/etc/sysconfig/snmpd优先级高于OPTIONS，所以可以直接修改配置文件即可，取消OPTIONS注释，修改如下</p>
+<p>修改完成保存，重启xinetd程序，修改生效</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/snmpd </span>
-</span><span class='line'><span class="c"># snmpd command line options</span>
-</span><span class='line'> <span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-3d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span> <span class="c">#只记录0-3级别的日志即可</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>tcp        0      0 192.168.80.128:873               0.0.0.0:*                   LISTEN      25967/xinetd
+</span><span class='line'>...
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>当然也可以直接修改/etc/init.d/snmpd启动文件中的OPTIONS</p>
+<p>当然你也可以直接不依赖xinetd修改监听地址，直接使用命令启动rsync，如下</p>
 
-<p>最后重启snmpd，使修改生效，就会发现messages的snmp的信息就相对少很多了，完成实际的需求。</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --address<span class="o">=</span>192.168.80.128 --config<span class="o">=</span>/etc/rsyncd.conf --daemon
+</span></code></pre></td></tr></table></div></figure>
 
-<p>参考文档:<a href="http://dgz.dyndns.org/mediawiki/index.php/%28RHEL%29_HOWTO_stop_snmpd_spamming_/var/log/messages">dyndns.org</a></p>
 
 <p>&#8211;EOF&#8211;</p>
 </div>
@@ -216,12 +186,12 @@
   
 
 
-<time datetime="2013-04-16T10:52:00+08:00" pubdate data-updated="true">Apr 16<span>th</span>, 2013</time>
+<time datetime="2013-11-07T10:35:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/jian-kong-diao-you/'>监控调优</a>
+    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
   
 </span>
 
@@ -240,10 +210,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/04/09/sed-link/" title="Previous Post: sed -i修改链接文件注意问题">&laquo; sed -i修改链接文件注意问题</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/05/paramiko/" title="Previous Post: paramiko解析AES加密算法">&laquo; paramiko解析AES加密算法</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/04/22/life/" title="Next Post: 2013-04-22 我所理解的生活">2013-04-22 我所理解的生活 &raquo;</a>
       
     </p>
   </footer>
@@ -358,8 +326,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/04/16/snmpd/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/04/16/snmpd/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/11/07/rsync/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/11/07/rsync/';
         var disqus_script = 'embed.js';
       
     (function () {

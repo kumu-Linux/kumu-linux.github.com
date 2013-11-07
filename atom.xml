@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-06T14:01:58+08:00</updated>
+  <updated>2013-11-07T10:54:54+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,60 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[修改CentOS/RHEL rsync监听地址]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/07/rsync/"/>
+    <updated>2013-11-07T10:35:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/07/rsync</id>
+    <content type="html"><![CDATA[<p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>tcp        0      0 0.0.0.0:873                 0.0.0.0:*     ...
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>因为CentOS/RHEL是依赖xinetd的，所以我就想到了xinetd配置文件<code>/etc/xinetd.conf</code>，发现选项<code># bind       =</code>，于是修改如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>  <span class="nb">bind</span>        <span class="o">=</span> 192.168.80.128 <span class="c"># 此处ip填写主机本地ip即可</span>
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改完成保存，重启xinetd程序，修改生效</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'>tcp        0      0 192.168.80.128:873               0.0.0.0:*                   LISTEN      25967/xinetd
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然你也可以直接不依赖xinetd修改监听地址，直接使用命令启动rsync，如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --address<span class="o">=</span>192.168.80.128 --config<span class="o">=</span>/etc/rsyncd.conf --daemon
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[paramiko解析AES加密算法]]></title>
@@ -3950,171 +4004,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 
 <p>未完待续<br/>
 下一篇预报&#8211;Linux下高级路由</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[top基本介绍]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/02/top/"/>
-    <updated>2013-06-02T09:49:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/02/top</id>
-    <content type="html"><![CDATA[<p><code>top</code>命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面跟着笔者一起<code>top</code>一下吧：</p>
-
-<!--more-->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># top</span>
-</span><span class='line'>top - 10:52:40 up 3 days, 52 min,  1 user,  load average: 57.28, 112.40, 123.60
-</span><span class='line'>Tasks:  99 total,   1 running,  98 sleeping,   0 stopped,   0 zombie
-</span><span class='line'>Cpu<span class="o">(</span>s<span class="o">)</span>: 19.5%us, 11.4%sy,  0.0%ni,  0.0%id, 65.7%wa,  0.0%hi,  3.4%si,  0.0%st
-</span><span class='line'>Mem:  16435896k total, 16232468k used,   203428k free,    58004k buffers
-</span><span class='line'>Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached
-</span><span class='line'>
-</span><span class='line'>  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
-</span><span class='line'>  ... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>统计信息区前五行是系统整体的统计信息。第一行是任务队列信息，同uptime命令的执行结果。其内容如下：</p>
-
-<table class="table table-striped">
-    <tr>
-        <td>10:52:40</td>
-        <td>当前时间</td>
-    </tr>
-    <tr>
-        <td>up 3 days, 52 min</td>
-        <td>系统运行时间</td>
-    </tr>
-    <tr>
-        <td>1 users</td>
-        <td>当前登录用户数</td>
-    </tr>
-    <tr>
-        <td>load average: 57.28, 112.40, 123.60</td>
-        <td>系统负载，即任务队列平均长度。
-        <br>分别为1、5、15min前到现在平均值。</br></td>
-    </tr>
-</table>
-
-
-<p></p>
-
-
-<p>第二、三行为进程和CPU的信息。当有多个CPU时，这些内容可能会超过两行。内容如下：</p>
-
-<table>
-    <tr>
-        <td>Tasks:99 total</td>
-        <td>进程总数[键入H可查看线程数]</td>
-    </tr>
-    <tr>
-        <td>1 running,  98 sleeping,  0 stopped</td>
-        <td>正在运行的进程、睡眠进程、停止的进程</td>
-    </tr>
-    <tr>
-        <td>0 zombie</td>
-        <td>僵尸进程数</td>
-    </tr>
-    <tr>
-        <td>Cpu(s): 19.5%us, 11.4%sy,  
-        <br> 0.0%ni, 0.0%id,</br> 
-        65.7%wa, 0.0%hi, 3.4%si, 0.0%st</td>
-        <td>用户空间占用CPU百分比、内核空间占用CPU百分比
-        <br>用户进程空间内改变进程优先级占用CPU、空闲CPU百分比</br>
-        等待IO的CPU时间百分比，最后三个是中断请求相关</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<p>倒数第2、3行为内存相关信息：</p>
-
-<table>
-    <tr>
-        <td>Mem: 16435896k total, 16232468k used, 
-        <br>203428k free, 58004k buffers</br></td>
-        <td>分别是物理内存总量、使用物理内存总量
-        <br>空闲内存总量、用作内核缓存内存量</br></td>
-    </tr>
-    <tr>
-        <td>Swap: 1044476k total, 713552k used, 
-        <br>330924k free, 10052032k cached<br></td>
-        <td>分别是交换分区量、使用交换分区总量
-        <br>空闲交换区总量、缓存交换区总量</br></td>
-    </tr>
-</table>
-
-
-<p></p>
-
-
-<p><strong>buffer</strong>   <a href="http://wiki.answers.com/Q/Difference_between_buffer_and_cache">Difference between buffer and cache?</a></p>
-
-<blockquote><p>A data area, shared by hardware devices or program a process is called buffer. They are operated at different speeds or with different sets of priorities. The buffer allows each device or process to operate without holding up by the other. In order to a buffer to be effective, the size of the buffer needs to be considered by the buffer designer. Like a cache, a buffer is a &#8220;midpoint holding place&#8221; but does not exist so much to accelerate the speed of an activity as for supporting the coordination of separate activities.</p></blockquote>
-
-<p></p>
-
-
-<p></p>
-
-<blockquote><p>This term is used not only in programming but in hardware as well. In programming, buffering sometimes needs to screen data from its final intended place so that it can be edited or processed before moving to a regular file or database.</p></blockquote>
-
-<p><strong>cached</strong></p>
-
-<blockquote><p>Cache memory is type of random access memory (RAM). Cache Memory can be accessed more quickly by the computer microprocessor than it can be accessed by regular RAM. Like microprocessor processes data, it looks first in the cache memory and if there, it finds the data from a previous reading of data, it does not need to do the more time consuming reading of data from larger memory.</p></blockquote>
-
-<p></p>
-
-
-<blockquote><p>Sometimes Cache memory is described in levels of closeness and convenience to the microprocessor. An L1 cache is on the same chip like the microprocessors.</p></blockquote>
-
-<p></p>
-
-
-<p></p>
-
-<blockquote><p>In addition to cache memory, RAM itself is a cache memory for hard disk storage since all of RAM&#8217;s contents come up to the hard disk initially when you turn on your computer and load the operating system that you are loading it into RAM and later when you start new applications and access new data. RAM also contains a special area called a disk cache that consists of the data most recently read in from the hard disk.</p></blockquote>
-
-<p></p>
-
-
-<p>最后1行则是进程相关的资源占用信息:</p>
-
-<ul>
-<li>PID：进程的ID</li>
-<li>USER：进程所有者</li>
-<li>PR：进程的优先级别，越小越优先被执行</li>
-<li>NI：nice值。负值表示高优先级，正值表示低优先级</li>
-<li>VIRT：进程占用的虚拟内存</li>
-<li>RES：进程占用的物理内存</li>
-<li>SHR：进程使用的共享内存</li>
-<li>S：进程的状态。S表示休眠，R表示正在运行，Z表示僵死状态，N表示该进程优先值为负数</li>
-<li>%CPU：进程占用CPU的使用率</li>
-<li>%MEM：进程使用的物理内存和总内存的百分比</li>
-<li>TIME+：该进程启动后占用的总的CPU时间，即占用CPU使用时间的累加值。</li>
-<li>COMMAND：进程启动命令名称</li>
-</ul>
-
-
-<p>&#8211;EOF&#8211;</p>
-
-<p>top实践&#8211;<a href="http://kumu-linux.github.io/blog/2013/06/07/top-hacks/">top实践小技巧</a></p>
 ]]></content>
   </entry>
   

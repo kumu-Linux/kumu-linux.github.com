@@ -170,15 +170,19 @@
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/2013/11/05/paramiko/</loc>
-        <lastmod>2013-11-06T13:43:45+08:00</lastmod>
+        <lastmod>2013-11-07T10:35:22+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://kumu-Linux.github.io/blog/2013/11/07/rsync/</loc>
+        <lastmod>2013-11-07T10:54:47+08:00</lastmod>
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/about/</loc>
-        <lastmod>2013-11-06T13:43:45+08:00</lastmod>
+        <lastmod>2013-11-07T10:54:47+08:00</lastmod>
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/archives/</loc>
-        <lastmod>2013-11-06T13:43:45+08:00</lastmod>
+        <lastmod>2013-11-07T10:54:47+08:00</lastmod>
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/categories/</loc>
@@ -190,7 +194,7 @@
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/ops/</loc>
-        <lastmod>2013-11-06T13:43:45+08:00</lastmod>
+        <lastmod>2013-11-07T10:54:47+08:00</lastmod>
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/blog/tips/</loc>
@@ -198,7 +202,7 @@
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/</loc>
-        <lastmod>2013-11-06T13:43:45+08:00</lastmod>
+        <lastmod>2013-11-07T10:54:47+08:00</lastmod>
     </url>
     <url>
         <loc>http://kumu-Linux.github.io/robots.txt</loc>

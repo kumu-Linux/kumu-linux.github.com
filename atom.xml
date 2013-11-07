@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-07T10:54:54+08:00</updated>
+  <updated>2013-11-07T15:41:42+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,190 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula添加节点]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node/"/>
+    <updated>2013-11-07T15:14:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node</id>
+    <content type="html"><![CDATA[<h3>需求</h3>
+
+<p>The hosts must have a working installation of KVM, that usually requires:</p>
+
+<ul>
+<li>CPU with VT extensions</li>
+<li>libvirt >= 0.4.0</li>
+<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
+<li>the qemu user-land tools</li>
+</ul>
+
+
+<!--more-->
+
+
+<p>笔者测试所用为VMware Workstation，除本身物理机支持并开启虚拟化外，Workstation也要开启相关配置[ 设置&#8211;处理器，查看是否开启 ]</p>
+
+<h3>节点软件安装</h3>
+
+<p>可以参见<a href="http://kumu-linux.github.io/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install qemu-kvm qemu-img libvirt ruby \     </span>
+</span><span class='line'>libvirt-python python-virtinst libvirt-client
+</span><span class='line'><span class="c"># yum install opennebula-common-4.2.0-1.x86_64.rpm \</span>
+</span><span class='line'>opennebula-node-kvm-4.2.0-1.x86_64.rpm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>节点配置</h3>
+
+<h4>启动kvm</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd start</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>桥接网络</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install bridge-utils -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>桥接实例</strong>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-eth0 </span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span>eth0
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span>Ethernet
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">NAME</span><span class="o">=</span><span class="s2">&quot;System eth0&quot;</span>
+</span><span class='line'><span class="nv">BRIDGE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-br0</span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;Bridge&quot;</span>  <span class="c"># 注意大小写</span>
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.80.131
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.80.2
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>
+</span><span class='line'><span class="nv">DELAY</span><span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改完毕，重启网络</p>
+
+<h4>相关配置修改</h4>
+
+<p>修改/etc/libvirt/qemu.conf的相关配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^($|#)&#39; /etc/libvirt/qemu.conf</span>
+</span><span class='line'><span class="nv">user</span>  <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">group</span> <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">dynamic_ownership</span> <span class="o">=</span> 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改/etc/libvirt/libvirtd.conf相关配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">listen_tcp</span> <span class="o">=</span> 1
+</span><span class='line'><span class="nv">listen_tls</span> <span class="o">=</span> 0
+</span><span class='line'><span class="nv">mdns_adv</span> <span class="o">=</span> 0
+</span><span class='line'><span class="nv">unix_sock_group</span> <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">unix_sock_ro_perms</span> <span class="o">=</span> <span class="s2">&quot;0777&quot;</span>
+</span><span class='line'><span class="nv">unix_sock_rw_perms</span> <span class="o">=</span> <span class="s2">&quot;0777&quot;</span>
+</span><span class='line'><span class="nv">auth_unix_ro</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+</span><span class='line'><span class="nv">auth_unix_rw</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改/etc/sysconfig/libvirtd相关配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">LIBVIRTD_ARGS</span><span class="o">=</span><span class="s2">&quot;--listen&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动libvirtd服务[安全起见可以只监听内网IP]：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd restart</span>
+</span><span class='line'><span class="c"># netstat -tulnp | grep libvirtd</span>
+</span><span class='line'>tcp        0      0 0.0.0.0:16509     0.0.0.0:*       LISTEN      50818/libvirtd
+</span><span class='line'>tcp        0      0 :::16509          :::*            LISTEN      50818/libvirtd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改 /etc/sudoers 文件，最后一行加上：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>oneadmin <span class="nv">ALL</span><span class="o">=(</span>root<span class="o">)</span>NOPASSWD:ALL
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>CentOS系统的sudo选项requiretty是默认打开的，远程执行命令时，ssh默认不会分配tty。没有tty，sudo就无法在获取密码时关闭回显。使用-tt选项强制SSH分配tty（使用两次-tt）。另一方面，sudoers中的Defaults选项requiretty要求只有拥有tty的用户才能使用sudo。可以通过visudo编辑配置文件，禁用这个选项：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#Defaults    requiretty</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>添加<code>oneadmin</code>用户和OpenNebula Server主机ssh公钥认证，使得OpenNebula Server主机<code>oneadmin</code>用户可以使用公钥无密码登陆，关于ssh密钥配置这里不再进一步说明。</p>
+
+<h4>其它配置</h4>
+
+<p>另外OpenNebula的脚本要用到/sbin/brctl，而CentOS的路径是/usr/sbin/brctl，添加软链接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/sbin/brctl /sbin/brctl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还要用到/usr/bin/kvm，而CentOS没有链接，需要设置软链接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/libexec/qemu-kvm /usr/bin/kvm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后在Web上添加host主机节点即可，状态显示为<code>on</code>则表示添加成功。</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[修改CentOS/RHEL rsync监听地址]]></title>
@@ -2423,6 +2607,35 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p>默认使用sqlite，如果使用mysql，则修改配置文件<code>/etc/one/oned.conf</code>，找到并修改如下行</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
+</span><span class='line'><span class="c">#DB = [ backend = &quot;sqlite&quot; ]</span>
+</span><span class='line'><span class="nv">DB</span> <span class="o">=</span> <span class="o">[</span> <span class="nv">backend</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span> <span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#Sample configuration for MySQL</span>
+</span><span class='line'><span class="nv">DB</span> <span class="o">=</span> <span class="o">[</span> <span class="nv">backend</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span>,
+</span><span class='line'>       <span class="nv">server</span>  <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>,
+</span><span class='line'>       <span class="nv">port</span>    <span class="o">=</span> 3306,
+</span><span class='line'>       <span class="nv">user</span>    <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>,
+</span><span class='line'>       <span class="nv">passwd</span>  <span class="o">=</span> <span class="s2">&quot;123321&quot;</span>,
+</span><span class='line'>       <span class="nv">db_name</span> <span class="o">=</span> <span class="s2">&quot;opennebula&quot;</span> <span class="o">]</span>
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
 <h3>启动相关服务</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -2472,8 +2685,11 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <h3>参考文档</h3>
 
-<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a>
-<a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></p>
+<ul>
+<li><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></li>
+<li><a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></li>
+</ul>
+
 ]]></content>
   </entry>
   
@@ -3717,293 +3933,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 <p>参考: <a href="http://linux.vbird.org/">鸟哥Linux私房菜</a>  <a href="http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">top - Process Activity Command</a>  <a href="http://how-to.linuxcareer.com/learning-linux-commands-top">Learning Linux Commands: top</a></p>
 
 <p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iproute]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/04/iproute/"/>
-    <updated>2013-06-04T11:16:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/04/iproute</id>
-    <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
-
-<p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
-
-<!--more-->
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># rpm -ql  iproute | grep bin</span>
-</span><span class='line'>/sbin/cbq         <span class="c">#流量控制</span>
-</span><span class='line'>/sbin/ifcfg           <span class="c">#网络地址配置管理</span>
-</span><span class='line'>/sbin/ip          <span class="c">#网络配置命令</span>
-</span><span class='line'>/sbin/rtmon           <span class="c">#rtmon listens on netlink socket and monitors routing table changes.</span>
-</span><span class='line'>/sbin/tc          <span class="c">#进行流量控制的命令</span>
-</span><span class='line'>/usr/sbin/arpd        <span class="c">#收集arp信息保存到本地cache daemon</span>
-</span><span class='line'>/usr/sbin/lnstat  <span class="c">#网络统计信息</span>
-</span><span class='line'>/usr/sbin/nstat       <span class="c">#显示网络统计信息</span>
-</span><span class='line'>/usr/sbin/rtacct  <span class="c">#查看数据包流量状态</span>
-</span><span class='line'>【nstat and rtacct are simple tools to monitor kernel snmp counters and network interface statistics.】
-</span><span class='line'>/usr/sbin/ss      <span class="c">#类似netstat命令，显示活动连接</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>iproute的中心是<code>ip</code>这个命令，类似<code>arp</code>、<code>ifconfig</code>、<code>route</code>命令虽然这些工具能够工作，但是在Linux2.2和更高版本的内核上就有点out了。</p>
-
-<h3>ip基本使用方法</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip --help</span>
-</span><span class='line'>Usage: ip <span class="o">[</span> OPTIONS <span class="o">]</span> OBJECT <span class="o">{</span> COMMAND | <span class="nb">help</span> <span class="o">}</span>
-</span><span class='line'>       ip <span class="o">[</span> -force <span class="o">]</span> -batch filename
-</span><span class='line'>where  OBJECT :<span class="o">=</span> <span class="o">{</span> link | addr | addrlabel | route | rule | neigh | ntable |
-</span><span class='line'>                   tunnel | maddr | mroute | mrule | monitor | xfrm <span class="o">}</span>
-</span><span class='line'>       OPTIONS :<span class="o">=</span> <span class="o">{</span> -V<span class="o">[</span>ersion<span class="o">]</span> | -s<span class="o">[</span>tatistics<span class="o">]</span> | -d<span class="o">[</span>etails<span class="o">]</span> | -r<span class="o">[</span>esolve<span class="o">]</span> |
-</span><span class='line'>                    -f<span class="o">[</span>amily<span class="o">]</span> <span class="o">{</span> inet | inet6 | ipx | dnet | link <span class="o">}</span> |
-</span><span class='line'>                    -o<span class="o">[</span>neline<span class="o">]</span> | -t<span class="o">[</span>imestamp<span class="o">]</span> | -b<span class="o">[</span>atch<span class="o">]</span> <span class="o">[</span>filename<span class="o">]</span> |
-</span><span class='line'>                    -rc<span class="o">[</span>vbuf<span class="o">]</span> <span class="o">[</span>size<span class="o">]}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>OBJECT</strong></p>
-
-<ul>
-<li>link          指网络设备，通过此对象命令，我们可以查看及更改网络设备的属性。</li>
-<li>addr          地址管理</li>
-<li>neigh         arp表管理</li>
-<li>route         路由管理</li>
-<li>rule          路由策略</li>
-<li>maddr         多址广播地址</li>
-<li>mroute        多播路由缓存管理</li>
-<li>tunnel        通道管理</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip -V      #打印iproute信息</span>
-</span><span class='line'>ip utility, iproute2-ss091226
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>显示链路信息</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link</span>
-</span><span class='line'>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue state UNKNOWN
-</span><span class='line'>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
-</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
-</span><span class='line'><span class="c"># ip link show dev eth0</span>
-</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
-</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p><strong>显示IP地址</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip addr</span>
-</span><span class='line'>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue state UNKNOWN
-</span><span class='line'>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-</span><span class='line'>    inet 127.0.0.1/8 scope host lo
-</span><span class='line'>    inet6 ::1/128 scope host
-</span><span class='line'>       valid_lft forever preferred_lft forever
-</span><span class='line'>2: eth0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast state DOWN qlen 1000
-</span><span class='line'>    link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
-</span><span class='line'>    inet 192.168.0.10/24 brd 192.168.0.255 scope global eth0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>显示路由<code>ip route</code> [类似<code>route -n</code>]</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route | column -t</span>
-</span><span class='line'>192.168.0.0/24  dev  eth1          scope  link
-</span><span class='line'>10.2.0.0/16     dev  eth2          proto  kernel  scope  link  src  10.2.0.111
-</span><span class='line'>default         via  10.2.255.254  dev    eth2
-</span><span class='line'><span class="c"># ip route del 192.168.0.0/24 dev eth1</span>
-</span><span class='line'><span class="c"># ip route add 192.168.0.0/24 dev eth1</span>
-</span><span class='line'><span class="c"># ip route del via 10.2.255.254  //删除默认路由</span>
-</span><span class='line'><span class="c"># ip route add via 10.2.255.254  //增加默认路由</span>
-</span><span class='line'><span class="c"># ip route add 192.168.1.0/24 via 192.168.0.1  //增加静态路由，192.168.0.1为下一跳地址</span>
-</span><span class='line'><span class="c"># ip route del 192.168.1.0/24 via 192.168.0.1  //删除静态路由</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>显示arp信息<code>ip neigh</code> [可以取代<code>arp -n</code>],删除则是<code>ip neigh del IP地址 dev 设备名</code></p>
-
-<h3>路由策略数据库</h3>
-
-<p>如果你有一个大规模的路由器，需要同时满足不同用户对于路由的不通需求，路由策略数据库可以帮你通过多路由表技术来实现。当内核需要做出路由选择时，它会找出应该参考哪一张路由表。除了<code>ip</code>外,<code>route</code>也可以修改main和local表。</p>
-
-<p><strong>默认规则</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip rule</span>
-</span><span class='line'>0:    from all lookup <span class="nb">local </span>
-</span><span class='line'>32766:    from all lookup main
-</span><span class='line'>32767:    from all lookup default
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>上面列出了规则的优先顺序。<code>ip route</code>命令默认显示的就是main表。<code>ip route show table all</code>显示所有规则中的表</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route list table local</span>
-</span><span class='line'>broadcast 192.168.0.255 dev eth0  proto kernel  scope link  src 192.168.0.10
-</span><span class='line'>broadcast 10.2.0.0 dev eth1  proto kernel  scope link  src 10.2.0.217
-</span><span class='line'>broadcast 127.255.255.255 dev lo  proto kernel  scope link  src 127.0.0.1
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>default表为空</p>
-
-<h3>例 简单策略路由添加 [引用自<a href="https://www.google.com.hk/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;ved=0CDkQFjAB&amp;url=%68%74%74%70%3a%2f%2f%77%77%77%2e%6c%61%72%74%63%2e%6f%72%67%2f%4c%41%52%54%43%2d%7a%68%5f%43%4e%2e%47%42%32%33%31%32%2e%70%64%66&amp;ei=4XeuUc3RPIG1lQW1voGwAg&amp;usg=AFQjCNEI4pFvc81u0hYutCtbC4mEoh44qA&amp;sig2=Txgnxnm1LMqWL87RKUsWDQ">Linux高级路由中文HOWTO</a>]</h3>
-
-<p>让我们再来一个真实的例子。我有两个Cable Modem，连接到了一个 Linux的NAT (“伪装”) 路由器上。这里的室友们向我付费使用Internet。假如我其中的一个室友因为只想访问 hotmail 而希望少付一些钱。对我来说这没有问题,他们肯定只能使用那个比较次的Cable Modem。</p>
-
-<p>那个比较快的cable modem 的IP地址是 212.64.94.251，PPP 链路，对端IP是212.64.94.1。而那个比较慢的cable modem的IP地址是212.64.78.148，对端是195.96.98.253。</p>
-
-<p>local 表：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>ahu@home ahu<span class="o">]</span><span class="nv">$ </span>ip route list table <span class="nb">local</span>
-</span><span class='line'>broadcast 127.255.255.255 dev lo proto kernel scope link src 127.0.0.1
-</span><span class='line'><span class="nb">local </span>10.0.0.1 dev eth0 proto kernel scope host src 10.0.0.1
-</span><span class='line'>broadcast 10.0.0.0 dev eth0 proto kernel scope link src 10.0.0.1
-</span><span class='line'><span class="nb">local </span>212.64.94.251 dev ppp0 proto kernel scope host src 212.64.94.251
-</span><span class='line'>broadcast 10.255.255.255 dev eth0 proto kernel scope link src 10.0.0.1
-</span><span class='line'>broadcast 127.0.0.0 dev lo proto kernel scope link src 127.0.0.1
-</span><span class='line'><span class="nb">local </span>212.64.78.148 dev ppp2 proto kernel scope host src 212.64.78.148
-</span><span class='line'><span class="nb">local </span>127.0.0.1 dev lo proto kernel scope host src 127.0.0.1
-</span><span class='line'><span class="nb">local </span>127.0.0.0/8 dev lo proto kernel scope host src 127.0.0.1
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>让我们看看“main”路由表：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>ahu@home ahu<span class="o">]</span><span class="nv">$ </span>ip route list table main
-</span><span class='line'>195.96.98.253 dev ppp2 proto kernel scope link src 212.64.78.148
-</span><span class='line'>212.64.94.1 dev ppp0 proto kernel scope link src 212.64.94.251
-</span><span class='line'>10.0.0.0/8 dev eth0 proto kernel scope link src 10.0.0.1
-</span><span class='line'>127.0.0.0/8 dev lo scope link
-</span><span class='line'>default via 212.64.94.1 dev ppp0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>我们现在为我们的朋友创建了一个叫做“John”的规则。其实我们完全可以使用纯数字表示规则，但是不方便。我们可以向<code>/etc/iproute2/rt_tables</code>文件中添加数字与名字的关联：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># echo 200 John &gt;&gt; /etc/iproute2/rt_tables</span>
-</span><span class='line'><span class="c"># ip rule add from 10.0.0.10 table John</span>
-</span><span class='line'><span class="c"># ip rule</span>
-</span><span class='line'>0:    from all lookup <span class="nb">local </span>
-</span><span class='line'>32765:  from 10.0.0.10 lookup John
-</span><span class='line'>32766:    from all lookup main
-</span><span class='line'>32767:    from all lookup default
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>现在，剩下的事情就是为 John 的路由表创建路由项了。别忘了刷新路由缓存：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip route add default via 195.96.98.253 dev ppp2 table John</span>
-</span><span class='line'><span class="c"># ip route flush cache</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>总结主要是以下几步：</p>
-
-<ul>
-<li>echo 200 John >> /etc/iproute2/rt_tables #方便表示，把规则名字和数字对应加入到<code>/etc/iproute2/rt_tables</code>文件</li>
-<li>ip rule add from 10.0.0.10 table John    #新增规则</li>
-<li>ip route add default via 195.96.98.253 dev ppp2 table John #规则中添加路由表</li>
-<li>ip route flush cache  #刷新路由表</li>
-</ul>
-
-
-<p>&#8211;EOF&#8211;</p>
-
-<p>未完待续<br/>
-下一篇预报&#8211;Linux下高级路由</p>
 ]]></content>
   </entry>
   

@@ -9,7 +9,9 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件rsyncd.conf中加入address = 192.168.80.128， &hellip;">
+  <meta name="description" content="需求 The hosts must have a working installation of KVM, that usually requires: CPU with VT extensions
+libvirt >= 0.4.0
+kvm kernel modules (kvm.ko, kvm &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +90,61 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/07/opennubula-node/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>需求</h3>
+
+<p>The hosts must have a working installation of KVM, that usually requires:</p>
+
+<ul>
+<li>CPU with VT extensions</li>
+<li>libvirt >= 0.4.0</li>
+<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
+<li>the qemu user-land tools</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/07/opennubula-node/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -380,60 +437,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/09/22/opennebula-win/">OpenNebula Windows Server镜像制作</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-22T11:01:00+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/09/22/opennebula-win/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
-
-<h3>创建虚拟机镜像文件</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/09/22/opennebula-win/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -451,6 +454,10 @@
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/11/07/rsync/">修改CentOS/RHEL Rsync监听地址</a>
@@ -472,15 +479,11 @@
         <a href="/blog/2013/09/25/kvm-disk-hotplug/">OpenNebula KVM磁盘热插拔</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/09/25/shell-alias/">30 Handy Bash Shell Aliases[译]</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (15)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (4)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (15)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (5)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

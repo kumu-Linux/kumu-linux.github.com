@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-07T15:31:00+08:00</updated>
+  <updated>2013-11-07T15:41:42+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,159 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula添加节点]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node/"/>
+    <updated>2013-11-07T15:14:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node</id>
+    <content type="html"><![CDATA[<h3>需求</h3>
+
+<p>The hosts must have a working installation of KVM, that usually requires:</p>
+
+<ul>
+<li>CPU with VT extensions</li>
+<li>libvirt >= 0.4.0</li>
+<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
+<li>the qemu user-land tools</li>
+</ul>
+
+
+<!--more-->
+
+
+<p>笔者测试所用为VMware Workstation，除本身物理机支持并开启虚拟化外，Workstation也要开启相关配置[ 设置--处理器，查看是否开启 ]</p>
+
+<h3>节点软件安装</h3>
+
+<p>可以参见<a href="http://kumu-linux.github.io/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a></p>
+
+<p>``` bash</p>
+
+<h1>yum install qemu-kvm qemu-img libvirt ruby \</h1>
+
+<p>libvirt-python python-virtinst libvirt-client</p>
+
+<h1>yum install opennebula-common-4.2.0-1.x86_64.rpm \</h1>
+
+<p>opennebula-node-kvm-4.2.0-1.x86_64.rpm
+```</p>
+
+<h3>节点配置</h3>
+
+<h4>启动kvm</h4>
+
+<p>``` bash</p>
+
+<h1>/etc/init.d/libvirtd start</h1>
+
+<p>```</p>
+
+<h4>桥接网络</h4>
+
+<p>``` bash</p>
+
+<h1>yum install bridge-utils -y</h1>
+
+<p>```</p>
+
+<p><strong>桥接实例</strong>:</p>
+
+<p>``` bash</p>
+
+<h1>cat /etc/sysconfig/network-scripts/ifcfg-eth0</h1>
+
+<p>DEVICE=eth0
+TYPE=Ethernet
+ONBOOT=yes
+NAME="System eth0"
+BRIDGE="br0"</p>
+
+<h1>cat /etc/sysconfig/network-scripts/ifcfg-br0</h1>
+
+<p>DEVICE="br0"
+TYPE="Bridge"  # 注意大小写
+BOOTPROTO="static"
+IPADDR=192.168.80.131
+NETMASK=255.255.255.0
+GATEWAY=192.168.80.2
+ONBOOT="yes"
+DELAY=0
+```</p>
+
+<p>修改完毕，重启网络</p>
+
+<h4>相关配置修改</h4>
+
+<p>修改/etc/libvirt/qemu.conf的相关配置：
+``` bash</p>
+
+<h1>grep -vE '<sup>($|#)'</sup> /etc/libvirt/qemu.conf</h1>
+
+<p>user  = "oneadmin"
+group = "oneadmin"
+dynamic_ownership = 0
+```</p>
+
+<p>修改/etc/libvirt/libvirtd.conf相关配置：
+<code>bash
+listen_tcp = 1
+listen_tls = 0
+mdns_adv = 0
+unix_sock_group = "oneadmin"
+unix_sock_ro_perms = "0777"
+unix_sock_rw_perms = "0777"
+auth_unix_ro = "none"
+auth_unix_rw = "none"
+</code></p>
+
+<p>修改/etc/sysconfig/libvirtd相关配置：
+<code>bash
+LIBVIRTD_ARGS="--listen"
+</code></p>
+
+<p>启动libvirtd服务[安全起见可以只监听内网IP]：
+``` bash</p>
+
+<h1>/etc/init.d/libvirtd restart</h1>
+
+<h1>netstat -tulnp | grep libvirtd</h1>
+
+<p>tcp        0      0 0.0.0.0:16509       0.0.0.0:<em>       LISTEN      50818/libvirtd    <br/>
+tcp        0      0 :::16509            :::</em>            LISTEN      50818/libvirtd    <br/>
+```</p>
+
+<p>修改 /etc/sudoers 文件，最后一行加上：
+<code>bash
+oneadmin ALL=(root)NOPASSWD:ALL
+</code></p>
+
+<p>CentOS系统的sudo选项requiretty是默认打开的，远程执行命令时，ssh默认不会分配tty。没有tty，sudo就无法在获取密码时关闭回显。使用-tt选项强制SSH分配tty（使用两次-tt）。另一方面，sudoers中的Defaults选项requiretty要求只有拥有tty的用户才能使用sudo。可以通过visudo编辑配置文件，禁用这个选项：
+``` bash</p>
+
+<h1>Defaults    requiretty</h1>
+
+<p>```</p>
+
+<p>添加<code>oneadmin</code>用户和OpenNebula Server主机ssh公钥认证，使得OpenNebula Server主机<code>oneadmin</code>用户可以使用公钥无密码登陆，关于ssh密钥配置这里不再进一步说明。</p>
+
+<h4>其它配置</h4>
+
+<p>另外OpenNebula的脚本要用到/sbin/brctl，而CentOS的路径是/usr/sbin/brctl，添加软链接：
+<code>bash
+ln -s /usr/sbin/brctl /sbin/brctl
+</code></p>
+
+<p>还要用到/usr/bin/kvm，而CentOS没有链接，需要设置软链接：
+<code>bash
+ln -s /usr/libexec/qemu-kvm /usr/bin/kvm
+</code></p>
+
+<p>最后在Web上添加host主机节点即可，状态显示为<code>on</code>则表示添加成功。</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula KVM磁盘热插拔]]></title>

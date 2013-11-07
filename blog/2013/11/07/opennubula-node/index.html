@@ -5,12 +5,14 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>OpenNebula在CentOS6.4安装备忘 - Linux SA Notes By 枯木</title>
+  <title>OpenNebula添加节点 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="简介 OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 &hellip;">
-  <meta name="keywords" content="OpenNebula4.2, CentOS6.4, 安装">
+  <meta name="description" content="需求 The hosts must have a working installation of KVM, that usually requires: CPU with VT extensions
+libvirt >= 0.4.0
+kvm kernel modules (kvm.ko, kvm &hellip;">
+  <meta name="keywords" content="OpenNebula">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -92,7 +94,7 @@
   <header>
     
       
-        <h1 class="entry-title">OpenNebula在CentOS6.4安装备忘</h1>
+        <h1 class="entry-title">OpenNebula添加节点</h1>
       
     
     
@@ -109,7 +111,7 @@
   
 
 
-<time datetime="2013-08-22T11:10:00+08:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2013</time>
+<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -118,74 +120,55 @@
   </header>
 
 
-<div class="entry-content"><h3>简介</h3>
+<div class="entry-content"><h3>需求</h3>
 
-<p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，OpenNebula可以构建私有云、混合云、公开云。</p>
+<p>The hosts must have a working installation of KVM, that usually requires:</p>
+
+<ul>
+<li>CPU with VT extensions</li>
+<li>libvirt >= 0.4.0</li>
+<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
+<li>the qemu user-land tools</li>
+</ul>
+
 
 <!--more-->
 
 
-<h3>OpenNebula 4.2 相关</h3>
+<p>笔者测试所用为VMware Workstation，除本身物理机支持并开启虚拟化外，Workstation也要开启相关配置[ 设置&#8211;处理器，查看是否开启 ]</p>
 
-<ul>
-<li><a href="http://opennebula.org/documentation:rel4.2">OpenNebula 4.2 Guides</a></li>
-<li>ruby >= 1.8.7 #　CentOS6.4默认支持版本</li>
-<li>OpenNebula<a href="http://downloads.opennebula.org/">下载地址</a>
+<h3>节点软件安装</h3>
 
-<ul>
-<li>CentOS选择对应版本即可<strong>CentOS-6-opennebula-4.2.0-1.tar.gz</strong></li>
-</ul>
-</li>
-</ul>
-
-
-<h3>更新配置源和update软件</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span>
-</span><span class='line'><span class="c"># rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</span>
-</span><span class='line'><span class="c"># yum update</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>安装OpenNubula4.2</h3>
-
-<h4>解压下载的OpenNebula4.2软件包</h4>
-
-<ul>
-<li>opennebula-server: main OpenNebula daemon, scheduler, etc</li>
-<li>opennebula-sunstone: OpenNebula Sunstone, EC2, OCCI</li>
-<li>opennebula-ozones: OpenNebula OZones</li>
-<li>opennebula-ruby: Ruby Bindings</li>
-<li>opennebula-java: Java Bindings</li>
-<li>opennebula-gate: Gate server that enables communication between VMs and OpenNebula</li>
-<li>opennebula-flow: Manages services and elasticity</li>
-<li>opennebula-node-kvm: meta-package that installs the oneadmin user, libvirt and kvm</li>
-</ul>
-
-
-<p>可以直接配置OpenNebula yum源直接安装，也可以下载tar包安装</p>
+<p>可以参见<a href="http://kumu-linux.github.io/blog/2013/08/22/opennebula-install/">OpenNebula在CentOS6.4安装备忘</a></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tar xf CentOS-6-opennebula-4.2.0-1.tar.gz</span>
-</span><span class='line'><span class="c"># cd opennebula-4.2.0-1</span>
-</span><span class='line'><span class="c"># yum localinstall opennebula-4.2.0-1.x86_64.rpm \</span>
-</span><span class='line'>opennebula-common-4.2.0-1.x86_64.rpm opennebula-java-4.2.0-1.x86_64.rpm <span class="se">\</span>
-</span><span class='line'>opennebula-gate-4.2.0-1.x86_64.rpm opennebula-flow-4.2.0-1.x86_64.rpm <span class="se">\</span>
-</span><span class='line'>opennebula-server-4.2.0-1.x86_64.rpm opennebula-ozones-4.2.0-1.x86_64.rpm <span class="se">\</span>
-</span><span class='line'>opennebula-ruby-4.2.0-1.x86_64.rpm opennebula-sunstone-4.2.0-1.x86_64.rpm -y
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install qemu-kvm qemu-img libvirt ruby \     </span>
+</span><span class='line'>libvirt-python python-virtinst libvirt-client
+</span><span class='line'><span class="c"># yum install opennebula-common-4.2.0-1.x86_64.rpm \</span>
+</span><span class='line'>opennebula-node-kvm-4.2.0-1.x86_64.rpm
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>默认使用sqlite，如果使用mysql，则修改配置文件<code>/etc/one/oned.conf</code>，找到并修改如下行</p>
+<h3>节点配置</h3>
+
+<h4>启动kvm</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd start</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>桥接网络</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install bridge-utils -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>桥接实例</strong>:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -199,31 +182,45 @@
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>...
-</span><span class='line'><span class="c">#DB = [ backend = &quot;sqlite&quot; ]</span>
-</span><span class='line'><span class="nv">DB</span> <span class="o">=</span> <span class="o">[</span> <span class="nv">backend</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span> <span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">#Sample configuration for MySQL</span>
-</span><span class='line'><span class="nv">DB</span> <span class="o">=</span> <span class="o">[</span> <span class="nv">backend</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span>,
-</span><span class='line'>       <span class="nv">server</span>  <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>,
-</span><span class='line'>       <span class="nv">port</span>    <span class="o">=</span> 3306,
-</span><span class='line'>       <span class="nv">user</span>    <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>,
-</span><span class='line'>       <span class="nv">passwd</span>  <span class="o">=</span> <span class="s2">&quot;123321&quot;</span>,
-</span><span class='line'>       <span class="nv">db_name</span> <span class="o">=</span> <span class="s2">&quot;opennebula&quot;</span> <span class="o">]</span>
-</span><span class='line'>...
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-eth0 </span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span>eth0
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span>Ethernet
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">NAME</span><span class="o">=</span><span class="s2">&quot;System eth0&quot;</span>
+</span><span class='line'><span class="nv">BRIDGE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-br0</span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span><span class="s2">&quot;br0&quot;</span>
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;Bridge&quot;</span>  <span class="c"># 注意大小写</span>
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.80.131
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.80.2
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>
+</span><span class='line'><span class="nv">DELAY</span><span class="o">=</span>0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>启动相关服务</h3>
+<p>修改完毕，重启网络</p>
+
+<h4>相关配置修改</h4>
+
+<p>修改/etc/libvirt/qemu.conf的相关配置：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/opennebula start</span>
-</span><span class='line'><span class="c"># /etc/init.d/opennebula-sunstone start</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^($|#)&#39; /etc/libvirt/qemu.conf</span>
+</span><span class='line'><span class="nv">user</span>  <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">group</span> <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">dynamic_ownership</span> <span class="o">=</span> 0
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>修改sunstone默认监听网址</h3>
+<p>修改/etc/libvirt/libvirtd.conf相关配置：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -233,41 +230,72 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lsof -i:9869  # 默认监听本地9869端口，如果连接需要修改为和外网通信地址</span>
-</span><span class='line'>COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
-</span><span class='line'>ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 <span class="o">(</span>LISTEN<span class="o">)</span>
-</span><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf</span>
-</span><span class='line'>:host: 127.0.0.1
-</span><span class='line'><span class="c"># sed -i &#39;/:host/s/127.0.0.1/192.168.80.130/g&#39; /etc/one/sunstone-server.conf</span>
-</span><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf </span>
-</span><span class='line'>:host: 192.168.80.130
-</span><span class='line'><span class="c"># /etc/init.d/opennebula-sunstone restart</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">listen_tcp</span> <span class="o">=</span> 1
+</span><span class='line'><span class="nv">listen_tls</span> <span class="o">=</span> 0
+</span><span class='line'><span class="nv">mdns_adv</span> <span class="o">=</span> 0
+</span><span class='line'><span class="nv">unix_sock_group</span> <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">unix_sock_ro_perms</span> <span class="o">=</span> <span class="s2">&quot;0777&quot;</span>
+</span><span class='line'><span class="nv">unix_sock_rw_perms</span> <span class="o">=</span> <span class="s2">&quot;0777&quot;</span>
+</span><span class='line'><span class="nv">auth_unix_ro</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+</span><span class='line'><span class="nv">auth_unix_rw</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>浏览器登录测试</h3>
+<p>修改/etc/sysconfig/libvirtd相关配置：</p>
 
-<p>http://192.168.80.130:9869</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">LIBVIRTD_ARGS</span><span class="o">=</span><span class="s2">&quot;--listen&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p><img src="/images/OpenNebula_web.png" width="500" /></p>
 
-<p>用户名和密码在安装的时候已经随机生成，oneadmin 是用户名，后面的一串是密码</p>
+<p>启动libvirtd服务[安全起见可以只监听内网IP]：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /var/lib/one/.one/one_auth </span>
-</span><span class='line'>oneadmin:023c0bd7b09d0631074cc16aa61b7d60
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd restart</span>
+</span><span class='line'><span class="c"># netstat -tulnp | grep libvirtd</span>
+</span><span class='line'>tcp        0      0 0.0.0.0:16509     0.0.0.0:*       LISTEN      50818/libvirtd
+</span><span class='line'>tcp        0      0 :::16509          :::*            LISTEN      50818/libvirtd
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h3>参考文档</h3>
+<p>修改 /etc/sudoers 文件，最后一行加上：</p>
 
-<ul>
-<li><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></li>
-<li><a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></li>
-</ul>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>oneadmin <span class="nv">ALL</span><span class="o">=(</span>root<span class="o">)</span>NOPASSWD:ALL
+</span></code></pre></td></tr></table></div></figure>
 
+
+<p>CentOS系统的sudo选项requiretty是默认打开的，远程执行命令时，ssh默认不会分配tty。没有tty，sudo就无法在获取密码时关闭回显。使用-tt选项强制SSH分配tty（使用两次-tt）。另一方面，sudoers中的Defaults选项requiretty要求只有拥有tty的用户才能使用sudo。可以通过visudo编辑配置文件，禁用这个选项：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c">#Defaults    requiretty</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>添加<code>oneadmin</code>用户和OpenNebula Server主机ssh公钥认证，使得OpenNebula Server主机<code>oneadmin</code>用户可以使用公钥无密码登陆，关于ssh密钥配置这里不再进一步说明。</p>
+
+<h4>其它配置</h4>
+
+<p>另外OpenNebula的脚本要用到/sbin/brctl，而CentOS的路径是/usr/sbin/brctl，添加软链接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/sbin/brctl /sbin/brctl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>还要用到/usr/bin/kvm，而CentOS没有链接，需要设置软链接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /usr/libexec/qemu-kvm /usr/bin/kvm
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>最后在Web上添加host主机节点即可，状态显示为<code>on</code>则表示添加成功。</p>
+
+<p>&#8211;EOF&#8211;</p>
 </div>
 
 
@@ -290,7 +318,7 @@
   
 
 
-<time datetime="2013-08-22T11:10:00+08:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2013</time>
+<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
       
 
 <span class="categories">
@@ -314,10 +342,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/08/12/pssh/" title="Previous Post: pssh使用方法">&laquo; pssh使用方法</a>
+        <a class="basic-alignment left articlenav" href="/blog/2013/11/07/rsync/" title="Previous Post: 修改CentOS/RHEL rsync监听地址">&laquo; 修改CentOS/RHEL rsync监听地址</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/08/22/kvm/" title="Next Post: CentOS6.4 X86_64 kvm+PXE备忘">CentOS6.4 X86_64 kvm+PXE备忘 &raquo;</a>
       
     </p>
   </footer>
@@ -432,8 +458,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/11/07/opennubula-node/';
         var disqus_script = 'embed.js';
       
     (function () {

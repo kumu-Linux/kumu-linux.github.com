@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-07T10:54:54+08:00</updated>
+  <updated>2013-11-07T15:29:36+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -870,6 +870,26 @@ opennebula-server-4.2.0-1.x86_64.rpm opennebula-ozones-4.2.0-1.x86_64.rpm \
 opennebula-ruby-4.2.0-1.x86_64.rpm opennebula-sunstone-4.2.0-1.x86_64.rpm -y
 ```</p>
 
+<p>默认使用sqlite，如果使用mysql，则修改配置文件<code>/etc/one/oned.conf</code>，修改如下行
+``` bash</p>
+
+<h1>DB = [ backend = "sqlite" ]</h1>
+
+<p>DB = [ backend = "mysql" ]</p>
+
+<h1>Sample configuration for MySQL</h1>
+
+<p>DB = [ backend = "mysql",</p>
+
+<pre><code>   server  = "localhost",
+   port    = 3306,
+   user    = "oneadmin",
+   passwd  = "123321",
+   db_name = "opennebula" ]
+</code></pre>
+
+<p>```</p>
+
 <h3>启动相关服务</h3>
 
 <p>``` bash</p>
@@ -920,8 +940,11 @@ ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 (LISTEN)<
 
 <h3>参考文档</h3>
 
-<p><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a>
-<a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></p>
+<ul>
+<li><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></li>
+<li><a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></li>
+</ul>
+
 ]]></content>
   </entry>
   

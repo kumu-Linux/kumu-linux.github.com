@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Shell/Python | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/shell-slash-python/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-07T15:41:42+08:00</updated>
+  <updated>2013-11-11T12:14:17+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -85,8 +85,8 @@ key = paramiko.DSSKey.from_private_key_file(pkey_file, password=pkey_pass)
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 ssh.connect(hostip, ssh_port, ssh_user, pkey=key)
 stdin, stdout, stderr = ssh.exec_command(cmd)
+print stderr.read()
 ssh.close()
-return stderr.read()
 </code></pre>
 
 <p>if <strong>name</strong> == "<strong>main</strong>":</p>

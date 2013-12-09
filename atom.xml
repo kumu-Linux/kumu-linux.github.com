@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-11-07T15:41:42+08:00</updated>
+  <updated>2013-12-09T15:09:12+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,146 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[svn and git Server备忘]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/12/09/svn-git/"/>
+    <updated>2013-12-09T13:58:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/12/09/svn-git</id>
+    <content type="html"><![CDATA[<h2><u>Git Server with ssh</u></h2>
+
+<!--more-->
+
+
+<ul>
+<li>Server</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>useradd -s /usr/bin/git-shell git   //创建git用户
+</span><span class='line'>git init --bare /home/git/testrepo  //初始化名为testrepo，Server端操作
+</span><span class='line'>mkdir /home/git/.ssh -p
+</span><span class='line'>vim .ssh/authorized_keys            //加入客户端ssh公钥，设置ssh公钥认证
+</span><span class='line'>chmod 700 /home/git/.ssh/
+</span><span class='line'>chmod 400 /home/git/.ssh/authorized_keys
+</span><span class='line'>chown git:git -R /home/git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：如果是root用户执行的命令，需要修改权限如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>chow -R git:git testrepo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Client</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@sevrer_ip:/home/git/testrepo  //克隆repo
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>具体操作</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd </span>testrepo                         //进入本地版本库
+</span><span class='line'><span class="nb">echo</span> <span class="s2">&quot;hello&quot;</span> &gt;&gt; <span class="nb">test</span>                //新建测试文件
+</span><span class='line'>git add <span class="nb">test</span>                        //添加到git缓存
+</span><span class='line'>git commit -m <span class="s2">&quot;first commit&quot;</span> <span class="nb">test</span>   //本地提交
+</span><span class='line'>git push -u origin master           //提交给远程服务器
+</span><span class='line'>git pull                            //客户端拉取数据
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2><u>Svn Server with apache &amp;&amp; ldap</u></h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>yum install subversion mod_dav_svn -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>yum安装后会生成subversion.conf并添加相应模块配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep LoadModule /etc/httpd/conf.d/subversion.conf </span>
+</span><span class='line'>LoadModule dav_svn_module     modules/mod_dav_svn.so
+</span><span class='line'>LoadModule authz_svn_module   modules/mod_authz_svn.so
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>svn创建库</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>svnadmin create --fs-type fsfs /var/www/svn
+</span><span class='line'>chown apache:apache -R /var/www/svn
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置ldap认证</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -vE &#39;^$|^#&#39; /etc/httpd/conf.d/subversion.conf </span>
+</span><span class='line'>LoadModule dav_svn_module     modules/mod_dav_svn.so
+</span><span class='line'>LoadModule authz_svn_module   modules/mod_authz_svn.so
+</span><span class='line'>&lt;Location /svn&gt;
+</span><span class='line'>    DAV svn
+</span><span class='line'>    SVNPath /var/www/svn
+</span><span class='line'>    AuthBasicProvider ldap
+</span><span class='line'>    AuthType Basic
+</span><span class='line'>    AuthzLDAPAuthoritative off
+</span><span class='line'>    AuthName <span class="s2">&quot;Please provide your windows login credentials to continue.&quot;</span>
+</span><span class='line'>    AuthLDAPURL <span class="s2">&quot;ldap://ldap_ip/ou=users,ou=test,dc=intranet,dc=test,dc=com?sAMAccountName&quot;</span> NONE
+</span><span class='line'>    AuthLDAPBindDN <span class="s2">&quot;test@intranet.test.com&quot;</span>
+</span><span class='line'>    AuthLDAPBindPassword password
+</span><span class='line'>    require valid-user
+</span><span class='line'>&lt;/Location&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动apache</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>service httpd start
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>浏览器登陆<br/>
+<a href="http://svn_ip/svn">http://svn_ip/svn</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula添加节点]]></title>
@@ -360,8 +500,8 @@
 </span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
 </span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">,</span> <span class="n">ssh_user</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
 </span><span class='line'>    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">print</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
 </span><span class='line'>    <span class="n">ssh_cmd</span><span class="o">=</span><span class="s">&#39;touch /tmp/test&#39;</span>
@@ -3854,83 +3994,6 @@ pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出�
 </span><span class='line'>Wed Jun 19 16:24:19 CST 2013
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[top实践小技巧]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/07/top-hacks/"/>
-    <updated>2013-06-07T17:32:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/07/top-hacks</id>
-    <content type="html"><![CDATA[<p>之前介绍了<a href="http://kumu-linux.github.io/blog/2013/06/02/top/">top基本介绍</a>,本章主要介绍一些top的实用技巧。</p>
-
-<!--more-->
-
-
-<p>终端执行top命令之后【也可后接一些选项，比如<code>top -p 1</code>只监控init进程，<code>top -u root</code>只显示root运行进程等等】，可以敲击如下按键，实现不同功能：</p>
-
-<ul>
-<li><code>1</code>(数字1)：列出所有的单个CPU负载情况</li>
-<li><code>z</code>:top显示颜色</li>
-<li><code>P</code>[大写]:按CPU占用高低顺序列出程序</li>
-<li><code>M</code>[大写]:按内存占用高低顺序列出程序</li>
-<li><code>x</code>:类似高亮显示，在z显示模式下效果才会更明显</li>
-</ul>
-
-
-<p>如下效果图:</p>
-
-<center><img src="http://kumu-Linux.github.io/images/top1.png" alt="geek" title="geek" width="600" /></center>
-
-
-<ul>
-<li>top显示Swap利用率，使用top命令后按f键，然后按p键，回车之后即可看到Swap状态</li>
-</ul>
-
-
-<center><img src="http://kumu-Linux.github.io/images/top2.png" alt="geek" title="geek" width="600" /></center>
-
-
-<ul>
-<li><code>d</code>:top默认的刷新时间是3s，使用d键可以自定义刷新时间</li>
-</ul>
-
-
-<center><img src="http://kumu-Linux.github.io/images/top3.png" alt="geek" title="geek" width="600" /></center>
-
-
-
-
-<p></p>
-
-
-<p><strong>top类似上下翻页的方法：</strong></p>
-
-<ul>
-<li>shift &lt;  下翻页</li>
-<li>shift >   上翻页</li>
-</ul>
-
-
-<p>top默认按cpu占用排序，这也是可以修改的，按F(大写)即可选择相应排序，之后任意键退出即可</p>
-
-<center><img src="http://kumu-Linux.github.io/images/top4.png" alt="geek" title="geek" width="600" /></center>
-
-
-<ul>
-<li><code>c</code>:显示进程命令的全路径与参数</li>
-<li><code>f</code>:可以指定top显示的内容，如ppid、swap等都可以选择显示</li>
-<li><code>k</code>:输入k之后可以kill掉指定的进程</li>
-<li><code>A</code>:分类显示各种系统资源高的进程。可用于快速识别系统上的性能要求极高的任务，<strong>推荐使用</strong></li>
-<li><code>h</code>:获取top的命令帮助</li>
-<li><code>H</code>:显示线程，默认只显示进程</li>
-<li><code>W</code>[大写]:将当前设置写入~/.toprc文件中。这是写top配置文件的推荐方法</li>
-</ul>
-
-
-<p>参考: <a href="http://linux.vbird.org/">鸟哥Linux私房菜</a>  <a href="http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">top - Process Activity Command</a>  <a href="http://how-to.linuxcareer.com/learning-linux-commands-top">Learning Linux Commands: top</a></p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

@@ -9,10 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Sed 替换命令语法 Sed替换命令语法如下： 1
-2
-sed &#39;[address-range|pattern-range] s/originalstring/
-replacement-string/[substitute-flags]&#39; inputfile ">
+  <meta name="description" content="SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -91,6 +88,51 @@ replacement-string/[substitute-flags]&#39; inputfile ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/05/05/sed-7/">2-2、Global Flag (G Flag)[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T09:15:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/05/sed-7/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/05/sed-7/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -377,51 +419,6 @@ replacement-string/[substitute-flags]&#39; inputfile ">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/26/sed-2/">1-2、Sed Scripting Flow[译]</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-26T16:28:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/26/sed-2/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用<code>REPE</code>首字母缩写来记住sed的执行流程。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/26/sed-2/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/6/">&larr; Older</a>
@@ -443,6 +440,10 @@ replacement-string/[substitute-flags]&#39; inputfile ">
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/09/svn-git/">Svn and Git Server备忘</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a>
       </li>
     
@@ -462,15 +463,11 @@ replacement-string/[substitute-flags]&#39; inputfile ">
         <a href="/blog/2013/09/26/ssh-safe/">Ssh的一些安全设定</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/09/25/kvm-disk-hotplug/">OpenNebula KVM磁盘热插拔</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (15)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (5)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (16)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (5)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

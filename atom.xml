@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-12-09T15:09:12+08:00</updated>
+  <updated>2013-12-10T23:00:11+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,126 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[qemu-kvm桥接网络]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap/"/>
+    <updated>2013-12-10T22:22:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2>手动桥接</h2>
+
+<p>qemu-kvm安装或者启动虚拟系统的时候如果需要和外界通信，那么就要设置网络桥接</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/libexec/qemu-kvm -m 1024 <span class="se">\</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/images/CentOS6_4.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
+</span><span class='line'>-net nic,model<span class="o">=</span>virtio -net tap,script<span class="o">=</span>no -nographic -vnc :0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>-net tap,script=no</code>方式启动之后，系统会生成tapX的虚拟网卡,默认是DOWN状态的</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link show dev tap0</span>
+</span><span class='line'>37: tap0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN qlen 500
+</span><span class='line'>    link/ether d2:b0:af:7b:23:0f brd ff:ff:ff:ff:ff:ff
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果想和外界通信，可以手动执行生效，如下所示当前与br0桥接的设备，并没有tap相关的网卡</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># brctl show br0</span>
+</span><span class='line'>bridge name   bridge id       STP enabled interfaces
+</span><span class='line'>br0       8000.b8975a626020   no      eth0
+</span><span class='line'>                          vnet0
+</span><span class='line'>                          vnet1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们需要把tap0也桥接到br0下以便和外界通信，方法如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link set tap0 up        //使tap0状态变为up</span>
+</span><span class='line'><span class="c"># brctl addif br0 tap0        //桥接tap0到br0</span>
+</span><span class='line'><span class="c"># brctl show br0          </span>
+</span><span class='line'>bridge name   bridge id       STP enabled interfaces
+</span><span class='line'>br0       8000.b8975a626020   no      eth0
+</span><span class='line'>                          tap0
+</span><span class='line'>                          vnet0
+</span><span class='line'>                          vnet1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>brctl delif br0 tap0</code>删除桥接网络，qemu-kvm工具在客户机关闭时会自动解除TAP设备的bridge绑定，所以这一步无需操作</p>
+
+<h2>脚本实现</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/libexec/qemu-kvm -m 1024 <span class="se">\</span>
+</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/images/CentOS6_4.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
+</span><span class='line'>-net nic,model<span class="o">=</span>virtio -net tap,script<span class="o">=</span>/tmp/qemu-ifup.sh -nographic -vnc :0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上<code>tap,script=/tmp/qemu-ifup.sh</code>指定script网络配置启动前启动脚本，脚本内容如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /tmp/qemu-ifup.sh </span>
+</span><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 桥接网络设备</span>
+</span><span class='line'><span class="nv">switch</span><span class="o">=</span>br0
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>
+</span><span class='line'><span class="k">    </span>ip link <span class="nb">set</span> <span class="nv">$1</span> up
+</span><span class='line'>    brctl addif <span class="k">${</span><span class="nv">switch</span><span class="k">}</span> <span class="nv">$1</span>
+</span><span class='line'>    <span class="nb">exit </span>0
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'><span class="k">   </span><span class="nb">echo</span> <span class="s2">&quot;no interface!&quot;</span>
+</span><span class='line'>   <span class="nb">exit </span>1
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如此，便不需要每次手动添加了</p>
+
+<p>这部分内容的理解主要是 <a href="http://smilejay.com/2012/08/kvm-bridge-networking/">KVM使用网桥模式</a> 这篇文章，顺便推荐此博主的《KVM虚拟化技术：实战与原理解析》一书，对系统的学习KVM很有帮助</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[svn and git Server备忘]]></title>
@@ -3815,183 +3935,6 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 </span><span class='line'>
 </span><span class='line'>;; ANSWER SECTION:
 </span><span class='line'>105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[pdsh使用方法]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/19/pdsh/"/>
-    <updated>2013-06-19T15:26:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/19/pdsh</id>
-    <content type="html"><![CDATA[<p>PDSH(Parallel Distributed SHell)可并行的执行对目标主机的操作，对于批量执行命令和分发任务有很大的帮助，在使用前需要配置ssh无密码登录，<a href="http://sourceforge.net/projects/pdsh/">点击下载</a></p>
-
-<!--more-->
-
-
-<h2>pdsh基本用法</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> pdsh -h
-</span><span class='line'>Usage: pdsh <span class="o">[</span>-options<span class="o">]</span> <span class="nb">command</span> ...
-</span><span class='line'>-S                <span class="k">return </span>largest of remote <span class="nb">command </span><span class="k">return </span>values
-</span><span class='line'>-h                output usage menu and quit                获取帮助
-</span><span class='line'>-V                output version information and quit       查看版本
-</span><span class='line'>-q                list the option settings and quit         列出pdsh执行的一些信息
-</span><span class='line'>-b                disable ^C status feature <span class="o">(</span>batch mode<span class="o">)</span>
-</span><span class='line'>-d                <span class="nb">enable </span>extra debug information from ^C status
-</span><span class='line'>-l user           execute remote commands as user           指定远程使用的用户
-</span><span class='line'>-t seconds        <span class="nb">set </span>connect timeout <span class="o">(</span>default is 10 sec<span class="o">)</span>   指定超时时间
-</span><span class='line'>-u seconds        <span class="nb">set command </span>timeout <span class="o">(</span>no default<span class="o">)</span>          类似-t
-</span><span class='line'>-f n              use fanout of n nodes                     设置同时连接的目标主机的个数
-</span><span class='line'>-w host,host,...  <span class="nb">set </span>target node list on <span class="nb">command </span>line      指定主机，host可以是主机名也可以是ip
-</span><span class='line'>-x host,host,...  <span class="nb">set </span>node exclusion list on <span class="nb">command </span>line   排除某些或者某个主机
-</span><span class='line'>-R name           <span class="nb">set </span>rcmd module to name                   指定rcmd的模块名，默认使用ssh
-</span><span class='line'>-N                disable hostname: labels on output lines  输出不显示主机名或者ip
-</span><span class='line'>-L                list info on all loaded modules and <span class="nb">exit</span>  列出pdsh加载的模块信息
-</span><span class='line'>-a                target all nodes                          指定所有的节点
-</span><span class='line'>-g groupname      target hosts in dsh group <span class="s2">&quot;groupname&quot;</span>     指定dsh组名
-</span><span class='line'>-X groupname      exclude hosts in dsh group <span class="s2">&quot;groupname&quot;</span>    排除组，一般和-a连用
-</span><span class='line'>available rcmd modules: <span class="nb">exec</span>,xcpu,ssh <span class="o">(</span>default: ssh<span class="o">)</span>        可用的执行命令模块，默认为ssh
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>使用实例</h2>
-
-<p><strong>单个主机测试</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231 -l root uptime
-</span><span class='line'>192.168.0.231:  16:16:11 up 32 days, 22:14, ? users,  load average: 0.10, 0.14, 0.16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>多个主机测试</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -l root uptime
-</span><span class='line'>192.168.0.233:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.13, 0.12, 0.10
-</span><span class='line'>192.168.0.232:  16:17:05 up 32 days, 22:17, ? users,  load average: 0.45, 0.34, 0.27
-</span><span class='line'>192.168.0.231:  16:17:06 up 32 days, 22:15, ? users,  load average: 0.09, 0.13, 0.15
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>逗号分隔主机</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.231,192.168.0.234 -l root uptime
-</span><span class='line'>192.168.0.234:  16:19:44 up 32 days, 22:19, ? users,  load average: 0.17, 0.21, 0.20
-</span><span class='line'>192.168.0.231:  16:19:44 up 32 days, 22:17, ? users,  load average: 0.29, 0.18, 0.16
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>-x排除某个主机</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -w 192.168.0.<span class="o">[</span>231-233<span class="o">]</span> -x 192.168.0.232 -l root uptime
-</span><span class='line'>192.168.0.233:  16:18:24 up 32 days, 22:19, ? users,  load average: 0.11, 0.12, 0.09
-</span><span class='line'>192.168.0.231:  16:18:25 up 32 days, 22:16, ? users,  load average: 0.11, 0.13, 0.15
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>主机组</strong><br/>
-对于-g组，把对应的主机写入到<code>/etc/dsh/group/</code>或<code>~/.dsh/group/</code>目录下的文件中即可，文件名就是对应组名</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat ~/.dsh/group/dsh-test
-</span><span class='line'>192.168.0.231
-</span><span class='line'>192.168.0.232
-</span><span class='line'>192.168.0.233
-</span><span class='line'>192.168.0.234
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root uptime
-</span><span class='line'>192.168.0.232:  16:21:38 up 32 days, 22:22, ? users,  load average: 0.01, 0.15, 0.21
-</span><span class='line'>192.168.0.231:  16:21:38 up 32 days, 22:19, ? users,  load average: 0.17, 0.16, 0.16
-</span><span class='line'>192.168.0.234:  16:21:39 up 32 days, 22:21, ? users,  load average: 0.15, 0.19, 0.19
-</span><span class='line'>192.168.0.233:  16:21:40 up 32 days, 22:22, ? users,  load average: 0.15, 0.15, 0.10
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>dshbak格式化输出</strong><br/>
-pdsh的缺省输出格式为主机名加该主机的输出，在主机或输出多时会比较混乱，可以采用<code>dshbak</code>做一些格式化，让输出更清晰。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span>       <span class="c">#查看哪些主机时间不一样，主机一多，可读性不强</span>
-</span><span class='line'>192.168.0.232: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.231: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.234: Wed Jun 19 16:24:40 CST 2013
-</span><span class='line'>192.168.0.233: Wed Jun 19 16:24:40 CST 2013
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用dshbak之后可读性变得好了很多</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pdsh -g dsh-test -l root <span class="s1">&#39;date&#39;</span> | dshbak -c
-</span><span class='line'>----------------
-</span><span class='line'>192.168.0.<span class="o">[</span>231-232,234<span class="o">]</span>
-</span><span class='line'>----------------
-</span><span class='line'>Wed Jun 19 16:24:18 CST 2013
-</span><span class='line'>----------------
-</span><span class='line'>192.168.0.233
-</span><span class='line'>----------------
-</span><span class='line'>Wed Jun 19 16:24:19 CST 2013
 </span></code></pre></td></tr></table></div></figure>
 
 

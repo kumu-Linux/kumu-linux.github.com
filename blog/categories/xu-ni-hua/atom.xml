@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-12-09T15:09:12+08:00</updated>
+  <updated>2013-12-10T23:00:11+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[qemu-kvm桥接网络]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap/"/>
+    <updated>2013-12-10T22:22:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h2>手动桥接</h2>
+
+<p>qemu-kvm安装或者启动虚拟系统的时候如果需要和外界通信，那么就要设置网络桥接
+<code>bash
+/usr/libexec/qemu-kvm -m 1024 \
+-drive file=/data/images/CentOS6_4.qcow2,if=virtio \
+-net nic,model=virtio -net tap,script=no -nographic -vnc :0
+</code></p>
+
+<p>使用<code>-net tap,script=no</code>方式启动之后，系统会生成tapX的虚拟网卡,默认是DOWN状态的
+``` bash</p>
+
+<h1>ip link show dev tap0</h1>
+
+<p>37: tap0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN qlen 500</p>
+
+<pre><code>link/ether d2:b0:af:7b:23:0f brd ff:ff:ff:ff:ff:ff
+</code></pre>
+
+<p>```</p>
+
+<p>如果想和外界通信，可以手动执行生效，如下所示当前与br0桥接的设备，并没有tap相关的网卡
+``` bash</p>
+
+<h1>brctl show br0</h1>
+
+<p>bridge name bridge id       STP enabled interfaces
+br0     8000.b8975a626020   no      eth0</p>
+
+<pre><code>                        vnet0
+                        vnet1
+</code></pre>
+
+<p>```</p>
+
+<p>我们需要把tap0也桥接到br0下以便和外界通信，方法如下
+``` bash</p>
+
+<h1>ip link set tap0 up       //使tap0状态变为up</h1>
+
+<h1>brctl addif br0 tap0      //桥接tap0到br0</h1>
+
+<h1>brctl show br0</h1>
+
+<p>bridge name bridge id       STP enabled interfaces
+br0     8000.b8975a626020   no      eth0</p>
+
+<pre><code>                        tap0
+                        vnet0
+                        vnet1
+</code></pre>
+
+<p>```</p>
+
+<p><code>brctl delif br0 tap0</code>删除桥接网络，qemu-kvm工具在客户机关闭时会自动解除TAP设备的bridge绑定，所以这一步无需操作</p>
+
+<h2>脚本实现</h2>
+
+<p><code>bash
+/usr/libexec/qemu-kvm -m 1024 \
+-drive file=/data/images/CentOS6_4.qcow2,if=virtio \
+-net nic,model=virtio -net tap,script=/tmp/qemu-ifup.sh -nographic -vnc :0
+</code></p>
+
+<p>如上<code>tap,script=/tmp/qemu-ifup.sh</code>指定script网络配置启动前启动脚本，脚本内容如下
+``` bash</p>
+
+<h1>cat /tmp/qemu-ifup.sh</h1>
+
+<h1>!/bin/bash</h1>
+
+<h1>桥接网络设备</h1>
+
+<p>switch=br0</p>
+
+<p>if [ -n $1 ]; then</p>
+
+<pre><code>ip link set $1 up
+brctl addif ${switch} $1
+exit 0
+</code></pre>
+
+<p>else
+   echo "no interface!"
+   exit 1
+fi
+```
+如此，便不需要每次手动添加了</p>
+
+<p>这部分内容的理解主要是 <a href="http://smilejay.com/2012/08/kvm-bridge-networking/">KVM使用网桥模式</a> 这篇文章，顺便推荐此博主的《KVM虚拟化技术：实战与原理解析》一书，对系统的学习KVM很有帮助</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula添加节点]]></title>
@@ -950,156 +1051,6 @@ Allocating 'centos6_2.img'           1% [-              ] 9.0 MB/s | 112 MB     
 <p>自己之前的两篇挫文： <a href="http://blog.csdn.net/kumu_linux/article/details/8263987">KVM在线迁移(动态迁移)</a> <a href="http://blog.csdn.net/kumu_linux/article/details/8263326">RHEL6 KVM安装备忘</a></p>
 
 <p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenNebula在CentOS6.4安装备忘]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install/"/>
-    <updated>2013-08-22T11:10:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/08/22/opennebula-install</id>
-    <content type="html"><![CDATA[<h3>简介</h3>
-
-<p>OpenNebula是一款为云计算而打造的开源工具箱。它允许你和Xen、KVM或VMware ESX一起建立和管理私有云，同时还提供Deltacloud适配器与Amazon EC2相配合来管理混合云。目前版本4.2，可支持XEN、KVM和VMware，以及实时存取EC2和 ElasticHosts，OpenNebula可以构建私有云、混合云、公开云。</p>
-
-<!--more-->
-
-
-<h3>OpenNebula 4.2 相关</h3>
-
-<ul>
-<li><a href="http://opennebula.org/documentation:rel4.2">OpenNebula 4.2 Guides</a></li>
-<li>ruby >= 1.8.7 #　CentOS6.4默认支持版本</li>
-<li>OpenNebula<a href="http://downloads.opennebula.org/">下载地址</a>
-
-<ul>
-<li>CentOS选择对应版本即可<strong>CentOS-6-opennebula-4.2.0-1.tar.gz</strong></li>
-</ul>
-</li>
-</ul>
-
-
-<h3>更新配置源和update软件</h3>
-
-<p>``` bash</p>
-
-<h1>rpm -ivh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</h1>
-
-<h1>rpm -ivh http://pkgs.repoforge.org/rpmforge-release/rpmforge-release-0.5.3-1.el6.rf.x86_64.rpm</h1>
-
-<h1>yum update</h1>
-
-<p>```</p>
-
-<h3>安装OpenNubula4.2</h3>
-
-<h4>解压下载的OpenNebula4.2软件包</h4>
-
-<ul>
-<li>opennebula-server: main OpenNebula daemon, scheduler, etc</li>
-<li>opennebula-sunstone: OpenNebula Sunstone, EC2, OCCI</li>
-<li>opennebula-ozones: OpenNebula OZones</li>
-<li>opennebula-ruby: Ruby Bindings</li>
-<li>opennebula-java: Java Bindings</li>
-<li>opennebula-gate: Gate server that enables communication between VMs and OpenNebula</li>
-<li>opennebula-flow: Manages services and elasticity</li>
-<li>opennebula-node-kvm: meta-package that installs the oneadmin user, libvirt and kvm</li>
-</ul>
-
-
-<p>可以直接配置OpenNebula yum源直接安装，也可以下载tar包安装</p>
-
-<p>``` bash</p>
-
-<h1>tar xf CentOS-6-opennebula-4.2.0-1.tar.gz</h1>
-
-<h1>cd opennebula-4.2.0-1</h1>
-
-<h1>yum localinstall opennebula-4.2.0-1.x86_64.rpm \</h1>
-
-<p>opennebula-common-4.2.0-1.x86_64.rpm opennebula-java-4.2.0-1.x86_64.rpm \
-opennebula-gate-4.2.0-1.x86_64.rpm opennebula-flow-4.2.0-1.x86_64.rpm \
-opennebula-server-4.2.0-1.x86_64.rpm opennebula-ozones-4.2.0-1.x86_64.rpm \
-opennebula-ruby-4.2.0-1.x86_64.rpm opennebula-sunstone-4.2.0-1.x86_64.rpm -y
-```</p>
-
-<p>默认使用sqlite，如果使用mysql，则修改配置文件<code>/etc/one/oned.conf</code>，找到并修改如下行
-``` bash
-...</p>
-
-<h1>DB = [ backend = "sqlite" ]</h1>
-
-<p>DB = [ backend = "mysql" ]</p>
-
-<h1>Sample configuration for MySQL</h1>
-
-<p>DB = [ backend = "mysql",</p>
-
-<pre><code>   server  = "localhost",
-   port    = 3306,
-   user    = "oneadmin",
-   passwd  = "123321",
-   db_name = "opennebula" ]
-</code></pre>
-
-<p>...
-```</p>
-
-<h3>启动相关服务</h3>
-
-<p>``` bash</p>
-
-<h1>/etc/init.d/opennebula start</h1>
-
-<h1>/etc/init.d/opennebula-sunstone start</h1>
-
-<p>```</p>
-
-<h3>修改sunstone默认监听网址</h3>
-
-<p>``` bash</p>
-
-<h1>lsof -i:9869  # 默认监听本地9869端口，如果连接需要修改为和外网通信地址</h1>
-
-<p>COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
-ruby    22131 oneadmin    6u  IPv4 107999      0t0  TCP localhost:9869 (LISTEN)</p>
-
-<h1>grep ':host' /etc/one/sunstone-server.conf</h1>
-
-<p>:host: 127.0.0.1</p>
-
-<h1>sed -i '/:host/s/127.0.0.1/192.168.80.130/g' /etc/one/sunstone-server.conf</h1>
-
-<h1>grep ':host' /etc/one/sunstone-server.conf</h1>
-
-<p>:host: 192.168.80.130</p>
-
-<h1>/etc/init.d/opennebula-sunstone restart</h1>
-
-<p>```</p>
-
-<h3>浏览器登录测试</h3>
-
-<p>http://192.168.80.130:9869</p>
-
-<p><img src="http://kumu-Linux.github.io/images/OpenNebula_web.png" width="500" /></p>
-
-<p>用户名和密码在安装的时候已经随机生成，oneadmin 是用户名，后面的一串是密码</p>
-
-<p>``` bash</p>
-
-<h1>cat /var/lib/one/.one/one_auth</h1>
-
-<p>oneadmin:023c0bd7b09d0631074cc16aa61b7d60
-```</p>
-
-<h3>参考文档</h3>
-
-<ul>
-<li><a href="http://opennebula.org/documentation:rel4.2:ignc#centos_platform_notes">One install doc</a></li>
-<li><a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></li>
-</ul>
-
 ]]></content>
   </entry>
   

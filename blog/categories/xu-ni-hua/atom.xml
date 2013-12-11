@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-12-10T23:00:11+08:00</updated>
+  <updated>2013-12-11T09:10:11+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -96,7 +96,7 @@ br0     8000.b8975a626020   no      eth0</p>
 
 <p>switch=br0</p>
 
-<p>if [ -n $1 ]; then</p>
+<p>if [ -n $1 ]; then          //$1为qemu-kvm传递值，这里是tap</p>
 
 <pre><code>ip link set $1 up
 brctl addif ${switch} $1

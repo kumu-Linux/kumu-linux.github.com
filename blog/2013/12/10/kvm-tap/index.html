@@ -221,8 +221,8 @@
 </span><span class='line'><span class="c"># 桥接网络设备</span>
 </span><span class='line'><span class="nv">switch</span><span class="o">=</span>br0
 </span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'><span class="k">    </span>ip link <span class="nb">set</span> <span class="nv">$1</span> up
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>          //<span class="nv">$1</span>为qemu-kvm传递值，这里是tap
+</span><span class='line'>    ip link <span class="nb">set</span> <span class="nv">$1</span> up
 </span><span class='line'>    brctl addif <span class="k">${</span><span class="nv">switch</span><span class="k">}</span> <span class="nv">$1</span>
 </span><span class='line'>    <span class="nb">exit </span>0
 </span><span class='line'><span class="k">else</span>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-12-10T23:00:11+08:00</updated>
+  <updated>2013-12-12T10:32:20+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -116,8 +116,8 @@
 </span><span class='line'><span class="c"># 桥接网络设备</span>
 </span><span class='line'><span class="nv">switch</span><span class="o">=</span>br0
 </span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>
-</span><span class='line'><span class="k">    </span>ip link <span class="nb">set</span> <span class="nv">$1</span> up
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>          //<span class="nv">$1</span>为qemu-kvm传递值，这里是tap
+</span><span class='line'>    ip link <span class="nb">set</span> <span class="nv">$1</span> up
 </span><span class='line'>    brctl addif <span class="k">${</span><span class="nv">switch</span><span class="k">}</span> <span class="nv">$1</span>
 </span><span class='line'>    <span class="nb">exit </span>0
 </span><span class='line'><span class="k">else</span>

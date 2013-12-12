@@ -128,18 +128,18 @@
 
 <p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>lrwxrwxrwx. 1 root root 19 2月  20 20:34 /etc/sysconfig/selinux -&gt; /etc/selinux/config
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>-rw-r--r-- 1 root root 457 2月  20 22:50 /etc/sysconfig/selinux
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c">#   </span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -175,7 +175,7 @@
 
 <p>以上说明就不作过多解释了，说的很明显，看下面实例</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -189,20 +189,20 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard   </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft   </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*  </span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">04</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271656</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">05</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271657</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mo">06</span> <span class="n">test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ln -s ~/test ~/test_soft  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ln ~/test ~/test_hard  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll -i test*  </span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:04 <span class="nb">test  </span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:04 test_hard
+</span><span class='line'>271655 lrwxrwxrwx 1 root root 10 2月  20 23:04 test_soft -&gt; /root/test
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/test/hard/g&quot; test_hard   </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/test/soft/g&quot; test_soft   </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll -i test*  </span>
+</span><span class='line'>271653 -rw-r--r-- 1 root root 5 2月  20 23:04 <span class="nb">test  </span>
+</span><span class='line'>271656 -rw-r--r-- 1 root root 5 2月  20 23:05 test_hard
+</span><span class='line'>271657 -rw-r--r-- 1 root root 5 2月  20 23:06 test_soft
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c">#   </span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -210,7 +210,7 @@
 
 <h2>问题解决</h2>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -224,20 +224,20 @@
 <span class='line-number'>12</span>
 <span class='line-number'>13</span>
 <span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># rm -rf test*</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ln ~/test ~/test_hard</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll -i test*</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test</span>
-</span><span class='line'><span class="mi">271653</span> <span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">2</span> <span class="n">root</span> <span class="n">root</span>  <span class="mi">5</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">11</span> <span class="n">test_hard</span>
-</span><span class='line'><span class="mi">271655</span> <span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">10</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">23</span><span class="p">:</span><span class="mi">08</span> <span class="n">test_soft</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">root</span><span class="o">/</span><span class="n">test</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># rm -rf test*</span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># echo &quot;test&quot; &gt;&gt;test</span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ln -s ~/test ~/test_soft</span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ln ~/test ~/test_hard</span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll -i test*</span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:08 <span class="nb">test</span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:08 test_hard
+</span><span class='line'>271655 lrwxrwxrwx 1 root root 10 2月  20 23:08 test_soft -&gt; /root/test
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_soft </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i -c  &quot;s/test/soft/g&quot; test_hard </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll -i test*</span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:11 <span class="nb">test</span>
+</span><span class='line'>271653 -rw-r--r-- 2 root root  5 2月  20 23:11 test_hard
+</span><span class='line'>271655 lrwxrwxrwx 1 root root 10 2月  20 23:08 test_soft -&gt; /root/test
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -247,20 +247,20 @@
 
 <p>后来发现在RHEL5上运行相同的操作居然没有出现类似的现象，运行结果如下：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">$</span> <span class="n">echo</span> <span class="s">&quot;test&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ln</span> <span class="o">-</span><span class="n">s</span> <span class="o">~/</span><span class="n">test</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
-</span><span class='line'><span class="err">$</span> <span class="n">sed</span> <span class="o">-</span><span class="n">i</span> <span class="s">&quot;s/test/test1/g&quot;</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="err">$</span> <span class="n">ll</span> <span class="o">~/</span><span class="n">test1</span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span> <span class="mi">1</span> <span class="n">sxkj</span> <span class="n">sxkj</span> <span class="mi">15</span> <span class="mo">02</span><span class="o">-</span><span class="mi">21</span> <span class="mi">13</span><span class="p">:</span><span class="mi">26</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test1</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">sxkj</span><span class="o">/</span><span class="n">test</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">echo</span> <span class="s2">&quot;test&quot;</span> &gt;&gt; <span class="nb">test</span>
+</span><span class='line'><span class="nv">$ </span>ln -s ~/test ~/test1
+</span><span class='line'><span class="nv">$ </span>ll ~/test1
+</span><span class='line'>lrwxrwxrwx 1 sxkj sxkj 15 02-21 13:26 /home/sxkj/test1 -&gt; /home/sxkj/test
+</span><span class='line'><span class="nv">$ </span>sed -i <span class="s2">&quot;s/test/test1/g&quot;</span> ~/test1
+</span><span class='line'><span class="nv">$ </span>ll ~/test1
+</span><span class='line'>lrwxrwxrwx 1 sxkj sxkj 15 02-21 13:26 /home/sxkj/test1 -&gt; /home/sxkj/test
 </span></code></pre></td></tr></table></div></figure>
 
 

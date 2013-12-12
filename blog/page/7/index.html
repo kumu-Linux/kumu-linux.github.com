@@ -131,18 +131,18 @@
 
 <p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="n">lrwxrwxrwx</span><span class="o">.</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">19</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">20</span><span class="p">:</span><span class="mi">34</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span> <span class="o">-&gt;</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">selinux</span><span class="o">/</span><span class="n">config</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'><span class="o">-</span><span class="n">rw</span><span class="o">-</span><span class="n">r</span><span class="o">--</span><span class="n">r</span><span class="o">--</span> <span class="mi">1</span> <span class="n">root</span> <span class="n">root</span> <span class="mi">457</span> <span class="mi">2</span><span class="err">月</span>  <span class="mi">20</span> <span class="mi">22</span><span class="p">:</span><span class="mi">50</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">sysconfig</span><span class="o">/</span><span class="n">selinux</span>
-</span><span class='line'><span class="p">[</span><span class="n">root</span><span class="nd">@node1</span> <span class="o">~</span><span class="p">]</span><span class="c">#   </span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>lrwxrwxrwx. 1 root root 19 2月  20 20:34 /etc/sysconfig/selinux -&gt; /etc/selinux/config
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>-rw-r--r-- 1 root root 457 2月  20 22:50 /etc/sysconfig/selinux
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c">#   </span>
 </span></code></pre></td></tr></table></div></figure>
 
 

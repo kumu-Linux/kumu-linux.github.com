@@ -132,31 +132,31 @@
 
 <p>以下为本地执行sed替换，本地替换没有什么问题</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
 </span><span class='line'><span class="c"># sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;:g&#39; snmpd</span>
 </span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
 <p>尝试远程替换，发现ssh直接后接命令替换失败</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
 </span><span class='line'><span class="c"># ssh root@localhost sed -i &#39;s:OPTIONS=&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;:OPTIONS=&quot;-Lf /dev/null/snmpd.pid&quot;:g&#39; ~/snmpd </span>
 </span><span class='line'><span class="c"># grep &#39;OPTIONS=&#39; ~/snmpd </span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -164,12 +164,12 @@
 
 <p>之后使用\转义命令中的&#8221;，再把远程命令加到&#8221;&#8220;中,远程替换成功</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@localhost &quot;sed -i &#39;s:OPTIONS=\&quot;-LS0-6d -Lf /dev/null -p /var/run/snmpd.pid\&quot;:OPTIONS=\&quot;-Lf /dev/null/snmpd.pid\&quot;:g&#39; ~/snmpd&quot;</span>
 </span><span class='line'><span class="c"># grep &quot;OPTIONS=&quot; ~/snmpd</span>
-</span><span class='line'><span class="n">OPTIONS</span><span class="o">=</span><span class="s">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
+</span><span class='line'><span class="nv">OPTIONS</span><span class="o">=</span><span class="s2">&quot;-Lf /dev/null/snmpd.pid&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

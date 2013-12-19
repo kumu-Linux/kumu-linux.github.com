@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2013-12-12T14:16:51+08:00</updated>
+  <updated>2013-12-19T11:16:57+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,562 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula4.4入门之安装和节点配置]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/12/19/opennebula4-dot-4/"/>
+    <updated>2013-12-19T10:51:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/12/19/opennebula4-dot-4</id>
+    <content type="html"><![CDATA[<p>OpenNebula入门的PDF文档已可下载，<a href="http://vdisk.weibo.com/s/EKoLFfHiE-oT/1387002741">OpenNebula4.4入门配置</a>，本博客连载更新相关内容</p>
+
+<h2>环境说明</h2>
+
+<p>因为CentOS6.4虚拟化有很大的一个提升，所以系统环境管理端和节点宿主机都采用CentOS6.4 x86_64</p>
+
+<!--more-->
+
+
+<h2>软件包组成</h2>
+
+<p>从OpenNebula官网下载<a href="http://downloads.opennebula.org/packages/opennebula-4.4.0/CentOS-6/CentOS-6-opennebula-4.4.0-1.tar.gz">CentOS/RHEL 6</a>对应软件包或者加入OpenNebula源，直接下载软件包这里不再赘述，添加OpenNebula源方法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat &lt;&lt; EOT &gt; /etc/yum.repos.d/opennebula.repo</span>
+</span><span class='line'><span class="o">[</span>opennebula<span class="o">]</span>
+</span><span class='line'><span class="nv">name</span><span class="o">=</span>opennebula
+</span><span class='line'><span class="nv">baseurl</span><span class="o">=</span>http://downloads.opennebula.org/repo/CentOS/6/stable/<span class="se">\$</span>basearch
+</span><span class='line'><span class="nv">enabled</span><span class="o">=</span>1
+</span><span class='line'><span class="nv">gpgcheck</span><span class="o">=</span>0
+</span><span class='line'>EOT
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>OpenNebula4.4主要有以下几个软件组成：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ls opennebula-*</span>
+</span><span class='line'>opennebula-4.4.0-1.x86_64.rpm           //OpenNebula命令行指令
+</span><span class='line'>opennebula-flow-4.4.0-1.x86_64.rpm      //管理OpenNebula服务
+</span><span class='line'>opennebula-java-4.4.0-1.x86_64.rpm      //OpenNebula Java Api
+</span><span class='line'>opennebula-ozones-4.4.0-1.x86_64.rpm    //OpenNebula网页使用界面
+</span><span class='line'>opennebula-server-4.4.0-1.x86_64.rpm    //OpenNebula Server守护进程
+</span><span class='line'>opennebula-common-4.4.0-1.x86_64.rpm    //基本依赖性组件
+</span><span class='line'>opennebula-gate-4.4.0-1.x86_64.rpm      //使虚拟机和OpenNebula之间的通信
+</span><span class='line'>opennebula-node-kvm-4.4.0-1.x86_64.rpm  //元软件包，包括安装oneadmin用户、libvirt和kvm
+</span><span class='line'>opennebula-ruby-4.4.0-1.x86_64.rpm      //ruby依赖性组件
+</span><span class='line'>opennebula-sunstone-4.4.0-1.x86_64.rpm  //OpenNebula网页使用界面
+</span><span class='line'>opennebula-context-4.4.0-1.x86_64.rpm   //context组件
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Server端安装和配置</h2>
+
+<p>为解决一些依赖关系，安装之前可以激活epel源，因为测试为CentOS6.4，因此激活方式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># rpm -ivh http://dl.fedoraproject.org/pub/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果下载的是OpenNebula软件包，则进入解压目录，安装方式如下 [以下安装为组成Server端最基本的软件]：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum localinstall opennebula-server-4.4.0-1.x86_64.rpm  \</span>
+</span><span class='line'>opennebula-4.4.0-1.x86_64.rpm opennebula-common-4.4.0-1.x86_64.rpm <span class="se">\</span>
+</span><span class='line'>opennebula-ruby-4.4.0-1.x86_64.rpm opennebula-sunstone-4.4.0-1.x86_64 -y
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果使用OpenNebula的源，安装如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install opennebula-server opennebula-sunstone -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装完成之后创建如下用户以及目录文件：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep oneadmin /etc/passwd</span>
+</span><span class='line'>oneadmin:x:9869:9869::/var/lib/one:/bin/bash
+</span><span class='line'><span class="c"># ls -ld /etc/one/  //OpenNebula相关配置文件所在目录</span>
+</span><span class='line'>drwxr-x---. 11 root oneadmin 4096 Aug 20 11:35 /etc/one/
+</span><span class='line'><span class="c"># ls /etc/init.d/opennebula*</span>
+</span><span class='line'>/etc/init.d/opennebula  /etc/init.d/opennebula-occi  /etc/init.d/opennebula-sunstone
+</span><span class='line'><span class="c"># ls -ld /var/log/one/</span>
+</span><span class='line'>drwxr-x---. 2 oneadmin oneadmin 4096 Jul 25 01:13 /var/log/one/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认OpenNebula数据存储使用sqlite，如果需要使用MySQL，则需要做如下操作：<br/>
+<strong>1.</strong>  创建相关数据库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mysql&gt; create database opennebula;
+</span><span class='line'>Query OK, 1 row affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>mysql&gt; grant all privileges on opennebula.* to oneadmin@<span class="s1">&#39;localhost&#39;</span> identified by <span class="s1">&#39;oneadmin&#39;</span>;
+</span><span class='line'>Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>mysql&gt; flush privileges;
+</span><span class='line'>Query OK, 0 rows affected <span class="o">(</span>0.00 sec<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>2.</strong>  修改配置文件如下 [用户、端口、密码、库名和实际情况对应修改]：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vim /etc/one/oned.conf</span>
+</span><span class='line'>… …
+</span><span class='line'><span class="c">#DB = [ backend = &quot;sqlite&quot; ]</span>
+</span><span class='line'><span class="c"># Sample configuration for MySQL</span>
+</span><span class='line'><span class="nv">DB</span> <span class="o">=</span> <span class="o">[</span> <span class="nv">backend</span> <span class="o">=</span> <span class="s2">&quot;mysql&quot;</span>,
+</span><span class='line'>       <span class="nv">server</span>  <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span>,
+</span><span class='line'>       <span class="nv">port</span>    <span class="o">=</span> 3306,
+</span><span class='line'>       <span class="nv">user</span>    <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>,
+</span><span class='line'>       <span class="nv">passwd</span>  <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>,
+</span><span class='line'>       <span class="nv">db_name</span> <span class="o">=</span> <span class="s2">&quot;opennebula&quot;</span> <span class="o">]</span>
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改sunstone默认监听IP:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf </span>
+</span><span class='line'>:host: 127.0.0.1
+</span><span class='line'><span class="c"># sed -i &#39;/:host/s/127.0.0.1/192.168.80.130/g&#39; /etc/one/sunstone-server.conf</span>
+</span><span class='line'><span class="c"># grep &#39;:host&#39; /etc/one/sunstone-server.conf </span>
+</span><span class='line'>:host: 192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动相关服务:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/opennebula start</span>
+</span><span class='line'><span class="c"># /etc/init.d/opennebula-sunstone start</span>
+</span><span class='line'><span class="c"># lsof -i:9869</span>
+</span><span class='line'>COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+</span><span class='line'>ruby    22266 oneadmin    6u  IPv4 106746      0t0  TCP 192.168.80.130:9869 <span class="o">(</span>LISTEN<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改datastore:</p>
+
+<p>OpenNebula默认用的是Shared Transfer Driver，这种模式比较适合快速部署和热迁移，只是要配置网络文件系统。如果没有网络文件系统，不想做热迁移，那么可以换成SSH Transfer Driver测试部署。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onedatastore list
+</span><span class='line'>  ID NAME                SIZE AVAIL CLUSTER      IMAGES TYPE DS       TM
+</span><span class='line'>   0 system                0M -     -                 0 sys  -        shared
+</span><span class='line'>   1 default            98.4G 85%   -                 1 img  fs       shared
+</span><span class='line'>   2 files              98.4G 85%   -                 0 fil  fs       ssh
+</span><span class='line'><span class="nv">$ </span>onedatastore update 1
+</span><span class='line'><span class="nv">CLONE_TARGET</span><span class="o">=</span><span class="s2">&quot;SYSTEM&quot;</span>
+</span><span class='line'><span class="nv">DISK_TYPE</span><span class="o">=</span><span class="s2">&quot;FILE&quot;</span>
+</span><span class='line'><span class="nv">DS_MAD</span><span class="o">=</span><span class="s2">&quot;fs&quot;</span>
+</span><span class='line'><span class="nv">LN_TARGET</span><span class="o">=</span><span class="s2">&quot;SYSTEM&quot;</span>
+</span><span class='line'><span class="nv">TM_MAD</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span>
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span><span class="s2">&quot;IMAGE_DS&quot;</span>
+</span><span class='line'><span class="nv">$ </span>onedatastore list
+</span><span class='line'>  ID NAME                SIZE AVAIL CLUSTER      IMAGES TYPE DS       TM
+</span><span class='line'>   0 system                0M -     -                 0 sys  -        shared
+</span><span class='line'>   1 default            98.4G 85%   -                 1 img  fs       ssh
+</span><span class='line'>   2 files              98.4G 85%   -                 0 fil  fs       ssh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改过程产生如下错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onedatastore update 1
+</span><span class='line'>Editor not defined
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是因为如下原因，CentOS默认vi位置是/bin/vi，添加相关链接即可</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep -i editor_path= /usr/lib/one/ruby/cli/one_helper.rb</span>
+</span><span class='line'><span class="nv">EDITOR_PATH</span><span class="o">=</span><span class="s1">&#39;/usr/bin/vi&#39;</span>
+</span><span class='line'><span class="c"># ln -s /bin/vi /usr/bin/vi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>用户名和密码通过以下方式获得：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /var/lib/one/.one/one_auth </span>
+</span><span class='line'>oneadmin:cd24c3a59c9fd8a7ab853b10247e8147
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>注</strong>：测试过程中因为测试环境服务端时间不对，导致cookie被忽略，OpenNebula Sunstone选择Keep me logged in一直登陆不上或者直接登陆很快退出，寻找原因花了很长时间，最后调整到正确时间，登陆显示ok。P.S: 时间是一个非常容易被我们忽略的问题，切记切记!</p>
+
+<p>完成以上步骤之后，浏览器登陆 <a href="http://ip:9869">http://ip:9869</a> 即可</p>
+
+<h2>节点端安装配置</h2>
+
+<p>软件包下载见Server端安装章节，节点只需要安装以下两个软件</p>
+
+<pre><code>opennebula-node-kvm-4.4.0-1.x86_64.rpm  
+opennebula-common-4.4.0-1.x86_64.rpm
+</code></pre>
+
+<p>yum安装以上软件即可，安装过程同时会安装虚拟化相关组件，包括bridge-utils、libvirt、qemu-kvm、qemu-img等。</p>
+
+<p>桥接网络：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-eth0 </span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span>eth0
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span>Ethernet
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">BRIDGE</span><span class="o">=</span>br0
+</span><span class='line'><span class="nv">NAME</span><span class="o">=</span><span class="s2">&quot;System eth0&quot;</span>
+</span><span class='line'><span class="c"># cat /etc/sysconfig/network-scripts/ifcfg-br0</span>
+</span><span class='line'><span class="nv">DEVICE</span><span class="o">=</span>br0
+</span><span class='line'><span class="nv">ONBOOT</span><span class="o">=</span>yes
+</span><span class='line'><span class="nv">TYPE</span><span class="o">=</span>Bridge
+</span><span class='line'><span class="nv">BOOTPROTO</span><span class="o">=</span>static
+</span><span class='line'><span class="nv">IPADDR</span><span class="o">=</span>192.168.80.131
+</span><span class='line'><span class="nv">NETMASK</span><span class="o">=</span>255.255.255.0
+</span><span class='line'><span class="nv">GATEWAY</span><span class="o">=</span>192.168.80.2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改之后，重启网络并查看确认：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># service network restart</span>
+</span><span class='line'><span class="c"># brctl show</span>
+</span><span class='line'>bridge name bridge id       STP enabled interfaces
+</span><span class='line'>br0     8000.000c2942e561   no      eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改/etc/libvirt/qemu.conf的相关配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">user</span>  <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">group</span> <span class="o">=</span> <span class="s2">&quot;oneadmin&quot;</span>
+</span><span class='line'><span class="nv">dynamic_ownership</span> <span class="o">=</span> 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改/etc/libvirt/libvirtd.conf相关配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">listen_tcp</span> <span class="o">=</span> 1          //OpenNebula使用libvirt提供的TCP协议
+</span><span class='line'><span class="nv">listen_tls</span> <span class="o">=</span> 0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修改/etc/sysconfig/libvirtd开启监听选项：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">LIBVIRTD_ARGS</span><span class="o">=</span><span class="s2">&quot;--listen&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动libvirtd服务：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /etc/init.d/libvirtd start</span>
+</span><span class='line'><span class="c"># netstat -tulnp | grep libvirt</span>
+</span><span class='line'>tcp        0      0 0.0.0.0:16509               0.0.0.0:*                   LISTEN      2664/libvirtd
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ssh无密码登陆：</p>
+
+<p>ssh使用公钥认证无密码登陆这个比较简单，顺带也提一下，方法如下：</p>
+
+<p><strong>管理端</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># su - oneadmin</span>
+</span><span class='line'><span class="nv">$ </span>cat ~/.ssh/config     //增加超时时间，不询问直接添加主机到known_hosts文件
+</span><span class='line'>ConnectTimeout 5
+</span><span class='line'>Host *
+</span><span class='line'>    StrictHostKeyChecking no
+</span><span class='line'>    UserKnownHostsFile /dev/null
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>节点端</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># su - oneadmin</span>
+</span><span class='line'><span class="nv">$ </span>vim .ssh/authorized_keys          //把管理端ssh公钥加入节点.ssh/authorized_keys文件
+</span><span class='line'><span class="nv">$ </span>chmod 400 .ssh/authorized_keys
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如此，Server端的oneadmin用户就可以无密码登陆节点oneadmin了。</p>
+
+<h2>添加节点</h2>
+
+<p>节点如此安装软件和配置之后便可以在Server端添加了，可以使用web添加，也可以使用命令添加。关于web界面的添加可以参考本人共享的pdf文档，这里不作具体的介绍，只介绍命令添加。</p>
+
+<h3>onehost命令</h3>
+
+<p>使用命令行添加主机也比较简单，这里使用的命令是<strong>onehost</strong></p>
+
+<p>使用onehost命令删除之前web创建的主机，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>su - oneadmin
+</span><span class='line'><span class="nv">$ </span>onehost list
+</span><span class='line'>  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM STAT
+</span><span class='line'>   1 192.168.80.131  -           0       0 / 400 <span class="o">(</span>0%<span class="o">)</span>     0K / 3.7G <span class="o">(</span>0%<span class="o">)</span> on
+</span><span class='line'><span class="nv">$ </span>onehost delete 1      //删除主机，可以是ID也可以是NAME
+</span><span class='line'><span class="nv">$ </span>onehost list
+</span><span class='line'>  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM static
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然删除之后我们还是需要再创建一遍，虽然很无聊，But你懂的，如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onehost create 192.168.80.131 --im kvm --vm kvm --net dummy
+</span><span class='line'>ID: 2
+</span><span class='line'><span class="nv">$ </span>onehost list
+</span><span class='line'>  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM STAT
+</span><span class='line'>   2 192.168.80.131  -           0       0 / 400 <span class="o">(</span>0%<span class="o">)</span>     0K / 3.7G <span class="o">(</span>0%<span class="o">)</span> on
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  &#8211;im/-i:信息管理driver. 可选: kvm, xen, vmware, ec2, ganglia, dummy.
+  &#8211;vm/-v: 虚拟化管理driver. 可选: kvm, xen, vmware, ec2, dummy.
+  &#8211;net/-n: 虚拟网络driver. 可选: 802.1Q,dummy,ebtables,fw,ovswitch,vmware.</p>
+
+<p>查看主机的详细信息 <strong>onehost show</strong></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onehost show 2
+</span><span class='line'>HOST 2 INFORMATION
+</span><span class='line'>ID                    : 2
+</span><span class='line'>NAME                  : 192.168.80.131
+</span><span class='line'>CLUSTER               : -
+</span><span class='line'>STATE                 : MONITORED
+</span><span class='line'>IM_MAD                : kvm
+</span><span class='line'>VM_MAD                : kvm
+</span><span class='line'>VN_MAD                : dummy
+</span><span class='line'>LAST MONITORING TIME  : 11/29 22:19:21
+</span><span class='line'>
+</span><span class='line'>HOST SHARES
+</span><span class='line'>TOTAL MEM             : 3.7G
+</span><span class='line'>USED MEM <span class="o">(</span>REAL<span class="o">)</span>       : 111M
+</span><span class='line'>USED MEM <span class="o">(</span>ALLOCATED<span class="o">)</span>  : 0K
+</span><span class='line'>TOTAL CPU             : 400
+</span><span class='line'>USED CPU <span class="o">(</span>REAL<span class="o">)</span>       : 0
+</span><span class='line'>USED CPU <span class="o">(</span>ALLOCATED<span class="o">)</span>  : 0
+</span><span class='line'>RUNNING VMS           : 0
+</span><span class='line'>
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过-x选项还可以以xml的格式显示主机相关信息</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onehost show -x 2
+</span><span class='line'>&lt;HOST&gt;
+</span><span class='line'>  &lt;ID&gt;2&lt;/ID&gt;
+</span><span class='line'>  &lt;NAME&gt;192.168.80.131&lt;/NAME&gt;
+</span><span class='line'>  &lt;STATE&gt;2&lt;/STATE&gt;
+</span><span class='line'>  &lt;IM_MAD&gt;kvm&lt;/IM_MAD&gt;
+</span><span class='line'>  &lt;VM_MAD&gt;kvm&lt;/VM_MAD&gt;
+</span><span class='line'>  &lt;VN_MAD&gt;dummy&lt;/VN_MAD&gt;
+</span><span class='line'>  &lt;LAST_MON_TIME&gt;1385735001&lt;/LAST_MON_TIME&gt;
+</span><span class='line'>  &lt;CLUSTER_ID&gt;-1&lt;/CLUSTER_ID&gt;
+</span><span class='line'>  &lt;CLUSTER/&gt;
+</span><span class='line'>  &lt;HOST_SHARE&gt;
+</span><span class='line'>    &lt;DISK_USAGE&gt;0&lt;/DISK_USAGE&gt;
+</span><span class='line'>    &lt;MEM_USAGE&gt;0&lt;/MEM_USAGE&gt;
+</span><span class='line'>    &lt;CPU_USAGE&gt;0&lt;/CPU_USAGE&gt;
+</span><span class='line'>    &lt;MAX_DISK&gt;0&lt;/MAX_DISK&gt;
+</span><span class='line'>    &lt;MAX_MEM&gt;3916984&lt;/MAX_MEM&gt;
+</span><span class='line'>    &lt;MAX_CPU&gt;400&lt;/MAX_CPU&gt;
+</span><span class='line'>    &lt;FREE_DISK&gt;0&lt;/FREE_DISK&gt;
+</span><span class='line'>    &lt;FREE_MEM&gt;3803128&lt;/FREE_MEM&gt;
+</span><span class='line'>    &lt;FREE_CPU&gt;399&lt;/FREE_CPU&gt;
+</span><span class='line'>    &lt;USED_DISK&gt;0&lt;/USED_DISK&gt;
+</span><span class='line'>    &lt;USED_MEM&gt;113856&lt;/USED_MEM&gt;
+</span><span class='line'>    &lt;USED_CPU&gt;0&lt;/USED_CPU&gt;
+</span><span class='line'>    &lt;RUNNING_VMS&gt;0&lt;/RUNNING_VMS&gt;
+</span><span class='line'>  &lt;/HOST_SHARE&gt;
+</span><span class='line'>… …
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>onehost还有两个选项,disable和enable，disable表示不再监控该物理主机，但是不影响正在运行的虚拟机，enable表示开启监控</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>onehost disable 0
+</span><span class='line'><span class="nv">$ </span>onehost <span class="nb">enable </span>0
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[qemu-kvm桥接网络]]></title>
@@ -3653,290 +4209,6 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 </code></pre>
 
 <p>《艾伦·图灵传》让我对图灵有了一个更直观的认识，一个时代不应忘却的人物。孤僻、低调，一个显得和这个世界格格不入，一个为社会做出重大贡献，却又被社会置于死地的巨人。对于Turing的死现在仍然是个谜，我想也许死对于当时的他才是解脱，他杀、自杀也好，我只想说他在自己的世界真的很潇洒。对于图灵，如本书的副标题一样，如谜一样解迷者，有太多难解，推荐这本书，体会书中图灵的喜怒哀乐。现在，计算机的发展迅速，社会也变得越来越人性化。很多年前他播下了一颗种子，此时这颗种子正茁壮成长。</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[nslookup、host和dig]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host/"/>
-    <updated>2013-06-19T16:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/19/nslookup-dig-host</id>
-    <content type="html"><![CDATA[<p><code>nslookup</code>、<code>host</code>和<code>dig</code>是三个DNS查询工具，以下会分别介绍它们的使用方法。</p>
-
-<!--more-->
-
-
-<h2>nslookup</h2>
-
-<blockquote><p>nslookup is a tried and true program that has weathered the ages. nslookup has been deprecated and may be removed from future releases. There is not even a man page for this program.</p></blockquote>
-
-<p>因此，这里不过多介绍这个古老的工具了</p>
-
-<h2>host</h2>
-
-<p><code>host</code>命令和<code>dig</code>命令很相像，但是<code>host</code>命令的输出要更简洁，如下示例</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="c"># host www.google.com</span>
-</span><span class='line'>  www.google.com has address 74.125.135.106
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>host</code>命令只输出给我们<code>dig</code>命令的ANSWER section，相对<code>dig</code>提供的一些不必要的信息来说更简洁快速。也可指定DNS Server来查询，例如我想使用Google DNS<code>8.8.8.8</code>,named可以如下指定</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host www.google.com 8.8.8.8</span>
-</span><span class='line'>Using domain server:
-</span><span class='line'>Name: 8.8.8.8
-</span><span class='line'>Address: 8.8.8.8#53
-</span><span class='line'>Aliases:
-</span><span class='line'>
-</span><span class='line'>www.google.com has address 173.194.72.147
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>host</code>当然也支持反解析</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host 173.194.72.147</span>
-</span><span class='line'>147.72.194.173.in-addr.arpa domain name pointer tf-in-f147.1e100.net.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指定查询类型可以使用<code>-t</code>选项</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -t SOA google.com  #查询SOA记录信息</span>
-</span><span class='line'>google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查询<code>MX</code>记录</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>host -t MX google.com
-</span><span class='line'>google.com mail is handled by 10 aspmx.l.google.com.
-</span><span class='line'>google.com mail is handled by 40 alt3.aspmx.l.google.com.
-</span><span class='line'>google.com mail is handled by 20 alt1.aspmx.l.google.com.
-</span><span class='line'>google.com mail is handled by 50 alt4.aspmx.l.google.com.
-</span><span class='line'>google.com mail is handled by 30 alt2.aspmx.l.google.com.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>-C</code>对比认证DNS SOA信息</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -C google.com</span>
-</span><span class='line'>Nameserver 216.239.34.10:
-</span><span class='line'>        google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</span><span class='line'>Nameserver 216.239.36.10:
-</span><span class='line'>        google.com has SOA record ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</span><span class='line'>Nameserver 216.239.32.10:
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查询DNS Server软件版本信息,10.10.10.2为DNS Server</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host -c CH -t txt version.bind 10.10.10.2  </span>
-</span><span class='line'>Using domain server:
-</span><span class='line'>Name: 10.10.10.2
-</span><span class='line'>Address: 10.10.10.2#53
-</span><span class='line'>Aliases:
-</span><span class='line'>
-</span><span class='line'>version.bind descriptive text <span class="s2">&quot;9.8.1-P2&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>host帮助</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># host</span>
-</span><span class='line'>Usage: host <span class="o">[</span>-aCdlriTwv<span class="o">]</span> <span class="o">[</span>-c class<span class="o">]</span> <span class="o">[</span>-N ndots<span class="o">]</span> <span class="o">[</span>-t <span class="nb">type</span><span class="o">]</span> <span class="o">[</span>-W <span class="nb">time</span><span class="o">]</span>
-</span><span class='line'>            <span class="o">[</span>-R number<span class="o">]</span> <span class="o">[</span>-m flag<span class="o">]</span> hostname <span class="o">[</span>server<span class="o">]</span>
-</span><span class='line'>       -a is equivalent to -v -t ANY
-</span><span class='line'>       -c specifies query class <span class="k">for </span>non-IN data  搜索非网络数据时要指定要查找的类
-</span><span class='line'>       -C compares SOA records on authoritative nameservers
-</span><span class='line'>       -d is equivalent to -v
-</span><span class='line'>       -l lists all hosts in a domain, using AXFR
-</span><span class='line'>       -i IP6.INT reverse lookups
-</span><span class='line'>       -N changes the number of dots allowed before root lookup is <span class="k">done</span>
-</span><span class='line'>       -r disables recursive processing
-</span><span class='line'>       -R specifies number of retries <span class="k">for </span>UDP packets
-</span><span class='line'>       -s a SERVFAIL response should stop query
-</span><span class='line'>       -t specifies the query <span class="nb">type</span> 指定要查询的记录类型
-</span><span class='line'>       -T enables TCP/IP mode
-</span><span class='line'>       -v enables verbose output  输出更详细的信息
-</span><span class='line'>       -w specifies to <span class="nb">wait </span>forever <span class="k">for </span>a reply
-</span><span class='line'>       -W specifies how long to <span class="nb">wait </span><span class="k">for </span>a reply
-</span><span class='line'>       -4 use IPv4 query transport only
-</span><span class='line'>       -6 use IPv6 query transport only
-</span><span class='line'>       -m <span class="nb">set </span>memory debugging flag <span class="o">(</span>trace|record|usage<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>dig</h2>
-
-<p>dig也是一个很强大的命令，相对host来说输出较为繁杂，如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig www.google.com
-</span><span class='line'>... ...
-</span><span class='line'>
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>www.google.com.         297     IN      A       74.125.135.106
-</span><span class='line'>www.google.com.         297     IN      A       74.125.135.104
-</span><span class='line'>... ...
-</span><span class='line'>
-</span><span class='line'>;; AUTHORITY SECTION:
-</span><span class='line'>google.com.             172796  IN      NS      ns3.google.com.
-</span><span class='line'>google.com.             172796  IN      NS      ns1.google.com.
-</span><span class='line'>google.com.             172796  IN      NS      ns4.google.com.
-</span><span class='line'>google.com.             172796  IN      NS      ns2.google.com.
-</span><span class='line'>
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查询<code>MX</code>记录</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig google.com MX | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 5
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>google.com.             368     IN      MX      50 alt4.aspmx.l.google.com.
-</span><span class='line'>google.com.             368     IN      MX      40 alt3.aspmx.l.google.com.
-</span><span class='line'>google.com.             368     IN      MX      10 aspmx.l.google.com.
-</span><span class='line'>google.com.             368     IN      MX      30 alt2.aspmx.l.google.com.
-</span><span class='line'>google.com.             368     IN      MX      20 alt1.aspmx.l.google.com.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>查询<code>SOA</code>记录</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig google.com SOA | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>google.com.             85539   IN      SOA     ns1.google.com. dns-admin.google.com. 2013061100 7200 1800 1209600 300
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>指定DNS Server查询</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig www.baidu.com @8.8.8.8
-</span><span class='line'>... ...
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>www.baidu.com.          1024    IN      CNAME   www.a.shifen.com.
-</span><span class='line'>www.a.shifen.com.       166     IN      A       119.75.217.56
-</span><span class='line'>www.a.shifen.com.       166     IN      A       119.75.218.77
-</span><span class='line'>... ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>dig</code>查询版本号</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig chaos txt version.bind  10.10.10.2 | grep <span class="s1">&#39;^;; ANSWER SECTION:&#39;</span> -A 1
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>version.bind.           0       CH      TXT     <span class="s2">&quot;9.8.1-P2&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>dig</code>反解析<code>-x</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>dig -x 74.125.135.105
-</span><span class='line'>;; QUESTION SECTION:
-</span><span class='line'>;105.135.125.74.in-addr.arpa.   IN      PTR
-</span><span class='line'>
-</span><span class='line'>;; ANSWER SECTION:
-</span><span class='line'>105.135.125.74.in-addr.arpa. 83205 IN   PTR     ni-in-f105.1e100.net.
-</span></code></pre></td></tr></table></div></figure>
-
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

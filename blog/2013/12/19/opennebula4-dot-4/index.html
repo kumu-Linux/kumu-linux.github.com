@@ -9,7 +9,11 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="OpenNebula入门的PDF文档已可下载，OpenNebula4.4入门配置，本博客连载更新相关内容 环境说明 因为CentOS6.4虚拟化有很大的一个提升，所以系统环境管理端和节点宿主机都采用CentOS6.4 x86_64 软件包组成 从OpenNebula官网下载CentOS/RHEL &hellip;">
+  <meta name="description" content="OpenNebula入门的PDF文档已可下载，OpenNebula4.4入门配置，本博客连载更新相关内容 本文内容目录组成如下： 环境说明
+软件包组成
+Server端安装和配置
+节点端安装配置
+添加节点 onehost 环境说明 因为CentOS6.4虚拟化有很大的一个提升， &hellip;">
   <meta name="keywords" content="OpenNebula4.4">
 
   <!-- http://t.co/dKP3o1e -->
@@ -120,14 +124,32 @@
 
 <div class="entry-content"><p>OpenNebula入门的PDF文档已可下载，<a href="http://vdisk.weibo.com/s/EKoLFfHiE-oT/1387002741">OpenNebula4.4入门配置</a>，本博客连载更新相关内容</p>
 
-<h2>环境说明</h2>
-
-<p>因为CentOS6.4虚拟化有很大的一个提升，所以系统环境管理端和节点宿主机都采用CentOS6.4 x86_64</p>
-
 <!--more-->
 
 
-<h2>软件包组成</h2>
+<p><strong>本文内容目录组成如下</strong>：</p>
+
+<ul>
+<li><a href="#env">环境说明</a></li>
+<li><a href="#soft">软件包组成</a></li>
+<li><a href="#server">Server端安装和配置</a></li>
+<li><a href="#node_server">节点端安装配置</a></li>
+<li><a href="#node_add">添加节点</a>
+
+<ul>
+<li><a href="#onehost">onehost</a></li>
+</ul>
+</li>
+</ul>
+
+
+<h2 id="env">环境说明</h2>
+
+
+<p>因为CentOS6.4虚拟化有很大的一个提升，所以系统环境管理端和节点宿主机都采用CentOS6.4 x86_64</p>
+
+<h2 id="soft">软件包组成</h2>
+
 
 <p>从OpenNebula官网下载<a href="http://downloads.opennebula.org/packages/opennebula-4.4.0/CentOS-6/CentOS-6-opennebula-4.4.0-1.tar.gz">CentOS/RHEL 6</a>对应软件包或者加入OpenNebula源，直接下载软件包这里不再赘述，添加OpenNebula源方法如下：</p>
 
@@ -177,7 +199,10 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>Server端安装和配置</h2>
+
+
+<h2 id="server">Server端安装和配置</h2>
+
 
 <p>为解决一些依赖关系，安装之前可以激活epel源，因为测试为CentOS6.4，因此激活方式如下：</p>
 
@@ -378,7 +403,8 @@
 
 <p>完成以上步骤之后，浏览器登陆 <a href="http://ip:9869">http://ip:9869</a> 即可</p>
 
-<h2>节点端安装配置</h2>
+<h2 id="node_server">节点端安装配置</h2>
+
 
 <p>软件包下载见Server端安装章节，节点只需要安装以下两个软件</p>
 
@@ -506,11 +532,13 @@ opennebula-common-4.4.0-1.x86_64.rpm
 
 <p>如此，Server端的oneadmin用户就可以无密码登陆节点oneadmin了。</p>
 
-<h2>添加节点</h2>
+<h2 id="node_add">添加节点</h2>
+
 
 <p>节点如此安装软件和配置之后便可以在Server端添加了，可以使用web添加，也可以使用命令添加。关于web界面的添加可以参考本人共享的pdf文档，这里不作具体的介绍，只介绍命令添加。</p>
 
-<h3>onehost命令</h3>
+<h3 id="onehost">onehost命令</h3>
+
 
 <p>使用命令行添加主机也比较简单，这里使用的命令是<strong>onehost</strong></p>
 

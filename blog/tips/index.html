@@ -331,6 +331,34 @@ export &hellip;">
 </span></code></pre></td></tr></table></div></figure>
 
 
+<p><u><em>13</em>、rsync同步目录指定文件</u></p>
+
+<p>有时候有需求只同步rsync库中单个文件，则可以通过如下方式同步</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">RSYNC_PASSWORD</span><span class="o">=</span>your_pass rsync -az --include<span class="o">=</span>filename --exclude<span class="o">=</span>* <span class="se">\</span>
+</span><span class='line'>    <span class="nb">test</span>@test.com::test /test/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><u><em>14</em>、crontab百分号</u></p>
+
+<p>当写crontab时，如果命令中有%号的时候，需要使用\转移，否则计划任务会执行失败</p>
+
+<p><u><em>15</em>、ssh controlmaster选项</u></p>
+
+<p>有时用ssh使用密码登陆多个相同主机时，为避免多次输入密码，可以在<code>~/.ssh/config</code>文件中加入如下选项</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host *
+</span><span class='line'>    controlmaster auto
+</span><span class='line'>    controlPath ~/.ssh/master-%r@%h:%p  <span class="c"># 会话保存格式</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
   
 </article>
 
@@ -431,7 +459,7 @@ export &hellip;">
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - 枯木 -
+  Copyright &copy; 2014 - 枯木 -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

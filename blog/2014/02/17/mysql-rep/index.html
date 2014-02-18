@@ -422,11 +422,11 @@
 
 
 <ul>
-<li>[主]主库上二进制日志最重要的选项:sync_binlog，推荐设置成1，保证在服务器崩溃时不丢失事件，虽然会降低性能</li>
-<li>[主从]innodb_flush_log_at_trx_commit根据实际情况设置</li>
-<li>二进制日志推荐使用指定命名，如log-bin=bin[主从]，中继日志指定命名relay-log=mysqld-relay-bin[从]</li>
-<li>[从]skip_slave_start选项可以阻止备库崩溃后自动启动复制，预留时间修复</li>
-<li>[从]read_only，可以阻止大部分用户更改非临时表，除了复制SQL线程和其它拥有超级权限的用户之外</li>
+<li>[主]主库上二进制日志最重要的选项:<code>sync_binlog</code>，推荐设置成1，保证在服务器崩溃时不丢失事件，虽然会降低性能</li>
+<li>[主从]<code>innodb_flush_log_at_trx_commit</code>根据实际情况设置</li>
+<li>二进制日志推荐使用指定命名，如<code>log-bin=bin</code>[主从]，中继日志指定命名<code>relay-log=mysqld-relay-bin</code>[从]</li>
+<li>[从]<code>skip_slave_start</code>选项可以阻止备库崩溃后自动启动复制，预留时间修复</li>
+<li>[从]<code>read_only</code>，可以阻止大部分用户更改非临时表，除了复制SQL线程和其它拥有超级权限的用户之外</li>
 </ul>
 
 

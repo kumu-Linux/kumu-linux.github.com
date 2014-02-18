@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MySQL | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-18T17:41:24+08:00</updated>
+  <updated>2014-02-18T23:02:49+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -274,6 +274,8 @@ mysqldump -hmaster_ip --single-transaction --all-databases \</p>
 <li>[从]<code>read_only</code>，可以阻止大部分用户更改非临时表，除了复制SQL线程和其它拥有超级权限的用户之外</li>
 </ul>
 
+
+<p>关于主从复制的一些问题，这里暂不讨论</p>
 
 <h2 id="repl9">参考</h2>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-12T18:04:55+08:00</updated>
+  <updated>2014-02-18T16:23:13+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -440,6 +440,8 @@ $ onehost show -x 2
 $ onehost disable 0
 $ onehost enable 0
 </code></p>
+
+<p>--EOF--</p>
 ]]></content>
   </entry>
   

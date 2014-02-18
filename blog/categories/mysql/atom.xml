@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MySQL | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/mysql/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-18T17:36:04+08:00</updated>
+  <updated>2014-02-18T17:41:24+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -224,7 +224,7 @@ mysql> SHOW SLAVE STATUS\G
 
 <p>```</p>
 
-<h2 id="repl6">线上服务器配置主从</h2>
+<h2 id="repl7">线上服务器配置主从</h2>
 
 
 <p>很多情况下,一些主库已经运行很长时间了，需要做主从同步，这时从库还没有数据，那么就要把主的数据导入到从。</p>

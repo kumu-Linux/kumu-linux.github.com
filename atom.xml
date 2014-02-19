@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-18T23:03:41+08:00</updated>
+  <updated>2014-02-19T22:33:18+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -73,7 +73,7 @@
 <ul>
 <li>1、主库把数据更改记录到二进制日志[Binary Log]中</li>
 <li>2、备库将主库上的日志复制到自己的中继日志[Relay Log]中</li>
-<li>3、备库读取终极日志的实践中，将其重放到备库数据之上</li>
+<li>3、备库读取中继日志中的事件，将其重放到备库数据之上</li>
 </ul>
 
 

@@ -5,17 +5,23 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>qemu-kvm桥接网络 - Linux SA Notes By 枯木</title>
+  <title>[2]salt文件分发 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="手动桥接 qemu-kvm安装或者启动虚拟系统的时候如果需要和外界通信，那么就要设置网络桥接 1
+  <meta name="description" content="取消配置文件/etc/salt/master以下注释 1
 2
 3
-/usr/libexec/qemu-kvm -m 1024 \
--drive file=/data/images/CentOS6_4.qcow2,if=virtio \
--net nic, &hellip;">
-  <meta name="keywords" content="qemu-kvm, br0, 桥接">
+4
+5
+... ...
+file_roots: base: - /srv/salt
+... ... 新建相关目录 1
+2
+mkdir /srv/salt
+touch /srv/salt/top.sls top.sls文件
+/srv/ &hellip;">
+  <meta name="keywords" content="salt, file, ssh">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -23,7 +29,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -97,7 +103,7 @@
   <header>
     
       
-        <h1 class="entry-title">Qemu-kvm桥接网络</h1>
+        <h1 class="entry-title">[2]salt文件分发</h1>
       
     
     
@@ -114,7 +120,7 @@
   
 
 
-<time datetime="2013-12-10T22:22:00+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
+<time datetime="2014-02-20T22:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -123,85 +129,55 @@
   </header>
 
 
-<div class="entry-content"><!--more-->
+<div class="entry-content"><p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
 
-
-<h2>手动桥接</h2>
-
-<p>qemu-kvm安装或者启动虚拟系统的时候如果需要和外界通信，那么就要设置网络桥接</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/libexec/qemu-kvm -m 1024 <span class="se">\</span>
-</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/images/CentOS6_4.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
-</span><span class='line'>-net nic,model<span class="o">=</span>virtio -net tap,script<span class="o">=</span>no -nographic -vnc :0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用<code>-net tap,script=no</code>方式启动之后，系统会生成tapX的虚拟网卡,默认是DOWN状态的</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link show dev tap0</span>
-</span><span class='line'>37: tap0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN qlen 500
-</span><span class='line'>    link/ether d2:b0:af:7b:23:0f brd ff:ff:ff:ff:ff:ff
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果想和外界通信，可以手动执行生效，如下所示当前与br0桥接的设备，并没有tap相关的网卡</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># brctl show br0</span>
-</span><span class='line'>bridge name   bridge id       STP enabled interfaces
-</span><span class='line'>br0       8000.b8975a626020   no      eth0
-</span><span class='line'>                          vnet0
-</span><span class='line'>                          vnet1
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>file_roots:
+</span><span class='line'>  base:
+</span><span class='line'>    - /srv/salt
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
 
 
-<p>我们需要把tap0也桥接到br0下以便和外界通信，方法如下</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+
+<!--more-->
+
+
+<p><strong>新建相关目录</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir /srv/salt
+</span><span class='line'>touch /srv/salt/top.sls</span></code></pre></td></tr></table></div></figure>
+
+
+<p>top.sls文件
+<code>/srv/salt/top.sls</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link set tap0 up        //使tap0状态变为up</span>
-</span><span class='line'><span class="c"># brctl addif br0 tap0        //桥接tap0到br0</span>
-</span><span class='line'><span class="c"># brctl show br0          </span>
-</span><span class='line'>bridge name   bridge id       STP enabled interfaces
-</span><span class='line'>br0       8000.b8975a626020   no      eth0
-</span><span class='line'>                          tap0
-</span><span class='line'>                          vnet0
-</span><span class='line'>                          vnet1
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>base:
+</span><span class='line'>  '*':
+</span><span class='line'>    - ssh_key.key</span></code></pre></td></tr></table></div></figure>
 
 
-<p><code>brctl delif br0 tap0</code>删除桥接网络，qemu-kvm工具在客户机关闭时会自动解除TAP设备的bridge绑定，所以这一步无需操作</p>
 
-<h2>脚本实现</h2>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>/usr/libexec/qemu-kvm -m 1024 <span class="se">\</span>
-</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/images/CentOS6_4.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
-</span><span class='line'>-net nic,model<span class="o">=</span>virtio -net tap,script<span class="o">=</span>/tmp/qemu-ifup.sh -nographic -vnc :0
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir /srv/salt/ssh_key
+</span><span class='line'>touch /srv/salt/test.sls</span></code></pre></td></tr></table></div></figure>
 
 
-<p>如上<code>tap,script=/tmp/qemu-ifup.sh</code>指定script网络配置启动前启动脚本，脚本内容如下</p>
+<p><code>/srv/salt/test.sls</code></p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -210,31 +186,26 @@
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
 <span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /tmp/qemu-ifup.sh </span>
-</span><span class='line'><span class="c">#!/bin/bash</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 桥接网络设备</span>
-</span><span class='line'><span class="nv">switch</span><span class="o">=</span>br0
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>          //<span class="nv">$1</span>为qemu-kvm传递值，这里是tap
-</span><span class='line'>    ip link <span class="nb">set</span> <span class="nv">$1</span> up
-</span><span class='line'>    brctl addif <span class="k">${</span><span class="nv">switch</span><span class="k">}</span> <span class="nv">$1</span>
-</span><span class='line'>    <span class="nb">exit </span>0
-</span><span class='line'><span class="k">else</span>
-</span><span class='line'><span class="k">   </span><span class="nb">echo</span> <span class="s2">&quot;no interface!&quot;</span>
-</span><span class='line'>   <span class="nb">exit </span>1
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/root/.ssh/authorized_keys: 
+</span><span class='line'># 客户端文件存放路径和命名，如果.ssh目录不存在则会自动新建
+</span><span class='line'>  file:
+</span><span class='line'>    - managed
+</span><span class='line'>    - source: salt://ssh_key/test   
+</span><span class='line'>    # 默认file根目录为`/srv/salt`，拷贝相应文件至所在目录
+</span><span class='line'>    - user: root
+</span><span class='line'>    - group: root
+</span><span class='line'>    - mode: 600</span></code></pre></td></tr></table></div></figure>
 
 
-<p>如此，便不需要每次手动添加了</p>
+<p><strong>server端主动推送</strong></p>
 
-<p>这部分内容的理解主要是 <a href="http://smilejay.com/2012/08/kvm-bridge-networking/">KVM使用网桥模式</a> 这篇文章，顺便推荐此博主的《KVM虚拟化技术：实战与原理解析》一书，对系统的学习KVM很有帮助</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>salt '*' state.highstate -v     # 按照top.sls执行所有
+</span><span class='line'>salt '*' state.sls ssh_key.ms   # 指定sls执行</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
 </div>
 
 
@@ -257,12 +228,12 @@
   
 
 
-<time datetime="2013-12-10T22:22:00+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
+<time datetime="2014-02-20T22:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/xu-ni-hua/'>虚拟化</a>
+    <a class='category' href='/blog/categories/yun-wei-li-qi/'>运维利器</a>
   
 </span>
 
@@ -281,10 +252,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/12/09/svn-git/" title="Previous Post: svn and git Server备忘">&laquo; svn and git Server备忘</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/02/20/salt-install/" title="Previous Post: [1]salt install">&laquo; [1]salt install</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/12/19/opennebula4-dot-4/" title="Next Post: OpenNebula4.4入门之安装和节点配置">OpenNebula4.4入门之安装和节点配置 &raquo;</a>
       
     </p>
   </footer>
@@ -399,8 +368,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/12/10/kvm-tap/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager/';
         var disqus_script = 'embed.js';
       
     (function () {

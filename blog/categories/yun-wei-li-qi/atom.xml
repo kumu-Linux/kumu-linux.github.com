@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-20T16:32:21+08:00</updated>
+  <updated>2014-02-20T22:31:35+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,264 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[2]salt文件分发]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager/"/>
+    <updated>2014-02-20T22:12:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager</id>
+    <content type="html"><![CDATA[<p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
+
+<p>```
+... ...
+file_roots:
+  base:</p>
+
+<pre><code>- /srv/salt
+</code></pre>
+
+<p>... ...
+```</p>
+
+<!--more-->
+
+
+<p><strong>新建相关目录</strong>
+<code>
+mkdir /srv/salt
+touch /srv/salt/top.sls
+</code></p>
+
+<p>top.sls文件
+<code>/srv/salt/top.sls</code>
+```
+base:
+  '*':</p>
+
+<pre><code>- ssh_key.key
+</code></pre>
+
+<p>```</p>
+
+<p><code>
+mkdir /srv/salt/ssh_key
+touch /srv/salt/test.sls
+</code></p>
+
+<p><code>/srv/salt/test.sls</code>
+```
+/root/.ssh/authorized_keys:</p>
+
+<h1>客户端文件存放路径和命名，如果.ssh目录不存在则会自动新建</h1>
+
+<p>  file:</p>
+
+<pre><code>- managed
+- source: salt://ssh_key/test   
+# 默认file根目录为`/srv/salt`，拷贝相应文件至所在目录
+- user: root
+- group: root
+- mode: 600
+</code></pre>
+
+<p>```</p>
+
+<p><strong>server端主动推送</strong>
+<code>
+salt '*' state.highstate -v     # 按照top.sls执行所有
+salt '*' state.sls ssh_key.ms   # 指定sls执行
+</code></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[1]salt install]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/salt-install/"/>
+    <updated>2014-02-20T21:57:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/salt-install</id>
+    <content type="html"><![CDATA[<h2>Install</h2>
+
+<p>First => repl源</p>
+
+<p>rhel6
+<code>
+rpm -ivh \
+http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+</code></p>
+
+<!--more-->
+
+
+<p>rhel5
+<code>
+rpm -ivh \
+http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+</code></p>
+
+<h3>Server</h3>
+
+<p><code>
+yum install salt-master
+chkconfig salt-master on
+service salt-master start  # salt-master -d也可以启动
+</code></p>
+
+<h3>Client</h3>
+
+<p><code>
+yum install salt-minion
+chkconfig salt-minion on
+service salt-minion start  # salt-minion -d也可以启动
+</code></p>
+
+<p>使用<code>--user</code>选项可以选择运行salt的用户</p>
+
+<p><code>   
+salt-master -d --user test
+salt-minion -d --user test
+</code></p>
+
+<h2>Configure</h2>
+
+<h3>Master基本配置</h3>
+
+<p><code>/etc/salt/master</code>主配置文件</p>
+
+<p><code>
+... ...
+interface: 192.168.80.131   # 取消外网监听
+... ...
+autosign_file: /etc/salt/autosign.conf  # 设定匹配主机自动接受key
+... ...
+</code></p>
+
+<p>restart生效
+<code>
+/etc/init.d/salt-master restart
+</code></p>
+
+<h3>Client基本配置</h3>
+
+<p><code>/etc/salt/minion</code>主配置文件</p>
+
+<p><code>
+... ...
+master: 192.168.80.131  # 取消外网监听
+... ...
+</code></p>
+
+<p>restart生效
+<code>
+service salt-minion restart
+</code></p>
+
+<h2>基本命令</h2>
+
+<p>```</p>
+
+<h1>salt-key -L   # 列出当前所有key，包括接受、未接受、拒绝的key</h1>
+
+<p>Accepted Keys:
+Unaccepted Keys:
+kumu-ops-130.puppet.com
+Rejected Keys:</p>
+
+<h1>salt-key -A   # 接受所有未认证key</h1>
+
+<p>The following keys are going to be accepted:
+Unaccepted Keys:
+kumu-ops-130.puppet.com
+Proceed? [n/Y] y
+Key for minion kumu-ops-130.puppet.com accepted.
+```</p>
+
+<ul>
+<li>添加某个key, <code>salt-key -a keyname</code></li>
+<li>删除某个key，<code>slat-key -d keyname</code></li>
+</ul>
+
+
+<p>```</p>
+
+<h1>salt kumu-ops-130.puppet.com test.ping</h1>
+
+<h1>salt '*' test.ping    # 测试所有主机连通性</h1>
+
+<p>```</p>
+
+<h3>匹配</h3>
+
+<ul>
+<li>匹配所有的Client
+
+<ul>
+<li><code>salt '*' test.ping</code></li>
+</ul>
+</li>
+<li>匹配符合条件的Client
+
+<ul>
+<li><code>salt '*.example.net' test.ping</code></li>
+<li><code>salt '*.example.*' test.ping</code></li>
+</ul>
+</li>
+<li>单个匹配Client
+
+<ul>
+<li><code>salt 'web?.example.net' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web1到web5
+
+<ul>
+<li><code>salt 'web[1-5]' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web-x、web-y、web-z Client
+
+<ul>
+<li><code>salt 'web-[x-z]' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web1-prod和web1-devel的Client
+
+<ul>
+<li><code>salt -E 'web1-(prod|devel)' test.ping</code></li>
+</ul>
+</li>
+<li>列表
+
+<ul>
+<li><code>salt -L 'web1,web2,web3' test.ping</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Grains</h3>
+
+<p>salt配备了一个获取底层信息的接口<code>Grains</code>，grains的信息都是静态信息，不可变的</p>
+
+<ul>
+<li>匹配所有的CentOS Client：
+
+<ul>
+<li>salt -G 'os:CentOS' test.ping</li>
+</ul>
+</li>
+<li>salt '*' grains.ls      # 查看grains分类</li>
+<li>salt '*' grains.items   # 查看grains所有信息</li>
+<li>salt '*' grains.item    # osrelease查看grains某个信息</li>
+</ul>
+
+
+<h3>More...</h3>
+
+<p>查看salt更多的命令手册 <code>salt '*' sys.doc</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Xshell基本设置备忘]]></title>
@@ -499,405 +757,6 @@ tmux -2 attach-session -d           # tmux -2强制启用256color，连接已开
 <p>参考: <a href="http://linux.vbird.org/">鸟哥Linux私房菜</a>  <a href="http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html">top - Process Activity Command</a>  <a href="http://how-to.linuxcareer.com/learning-linux-commands-top">Learning Linux Commands: top</a></p>
 
 <p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[iproute]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/04/iproute/"/>
-    <updated>2013-06-04T11:16:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/04/iproute</id>
-    <content type="html"><![CDATA[<h3>iproute基本介绍</h3>
-
-<p>iproute是用于linux下网络配置工具，该工具包包含以下组件</p>
-
-<!--more-->
-
-
-<p>``` bash</p>
-
-<h1>rpm -ql  iproute | grep bin</h1>
-
-<p>/sbin/cbq           #流量控制
-/sbin/ifcfg         #网络地址配置管理
-/sbin/ip            #网络配置命令
-/sbin/rtmon         #rtmon listens on netlink socket and monitors routing table changes.
-/sbin/tc            #进行流量控制的命令
-/usr/sbin/arpd      #收集arp信息保存到本地cache daemon
-/usr/sbin/lnstat    #网络统计信息
-/usr/sbin/nstat     #显示网络统计信息
-/usr/sbin/rtacct    #查看数据包流量状态
-【nstat and rtacct are simple tools to monitor kernel snmp counters and network interface statistics.】
-/usr/sbin/ss        #类似netstat命令，显示活动连接
-```</p>
-
-<p>iproute的中心是<code>ip</code>这个命令，类似<code>arp</code>、<code>ifconfig</code>、<code>route</code>命令虽然这些工具能够工作，但是在Linux2.2和更高版本的内核上就有点out了。</p>
-
-<h3>ip基本使用方法</h3>
-
-<p>``` bash</p>
-
-<h1>ip --help</h1>
-
-<p>Usage: ip [ OPTIONS ] OBJECT { COMMAND | help }</p>
-
-<pre><code>   ip [ -force ] -batch filename
-</code></pre>
-
-<p>where  OBJECT := { link | addr | addrlabel | route | rule | neigh | ntable |</p>
-
-<pre><code>               tunnel | maddr | mroute | mrule | monitor | xfrm }
-   OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[esolve] |
-                -f[amily] { inet | inet6 | ipx | dnet | link } |
-                -o[neline] | -t[imestamp] | -b[atch] [filename] |
-                -rc[vbuf] [size]}
-</code></pre>
-
-<p>```</p>
-
-<p><strong>OBJECT</strong></p>
-
-<ul>
-<li>link          指网络设备，通过此对象命令，我们可以查看及更改网络设备的属性。</li>
-<li>addr          地址管理</li>
-<li>neigh         arp表管理</li>
-<li>route         路由管理</li>
-<li>rule          路由策略</li>
-<li>maddr         多址广播地址</li>
-<li>mroute        多播路由缓存管理</li>
-<li>tunnel        通道管理</li>
-</ul>
-
-
-<p>``` bash</p>
-
-<h1>ip -V         #打印iproute信息</h1>
-
-<p>ip utility, iproute2-ss091226
-```</p>
-
-<p><strong>显示链路信息</strong>
-``` bash</p>
-
-<h1>ip link</h1>
-
-<p>1: lo: &lt;LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN</p>
-
-<pre><code>link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-</code></pre>
-
-<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
-
-<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff 
-</code></pre>
-
-<h1>ip link show dev eth0</h1>
-
-<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
-
-<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
-</code></pre>
-
-<p>```</p>
-
-<p><strong>显示IP地址</strong>
-``` bash</p>
-
-<h1>ip addr</h1>
-
-<p>1: lo: &lt;LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN</p>
-
-<pre><code>link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-inet 127.0.0.1/8 scope host lo
-inet6 ::1/128 scope host 
-   valid_lft forever preferred_lft forever
-</code></pre>
-
-<p>2: eth0: &lt;BROADCAST,MULTICAST> mtu 1500 qdisc pfifo_fast state DOWN qlen 1000</p>
-
-<pre><code>link/ether 00:0c:29:3b:9c:6f brd ff:ff:ff:ff:ff:ff
-inet 192.168.0.10/24 brd 192.168.0.255 scope global eth0
-</code></pre>
-
-<p>```</p>
-
-<p>显示路由<code>ip route</code> [类似<code>route -n</code>]
-``` bash</p>
-
-<h1>ip route | column -t</h1>
-
-<p>192.168.0.0/24  dev  eth1          scope  link
-10.2.0.0/16     dev  eth2          proto  kernel  scope  link  src  10.2.0.111
-default         via  10.2.255.254  dev    eth2</p>
-
-<h1>ip route del 192.168.0.0/24 dev eth1</h1>
-
-<h1>ip route add 192.168.0.0/24 dev eth1</h1>
-
-<h1>ip route del via 10.2.255.254  //删除默认路由</h1>
-
-<h1>ip route add via 10.2.255.254  //增加默认路由</h1>
-
-<h1>ip route add 192.168.1.0/24 via 192.168.0.1  //增加静态路由，192.168.0.1为下一跳地址</h1>
-
-<h1>ip route del 192.168.1.0/24 via 192.168.0.1  //删除静态路由</h1>
-
-<p>```</p>
-
-<p>显示arp信息<code>ip neigh</code> [可以取代<code>arp -n</code>],删除则是<code>ip neigh del IP地址 dev 设备名</code></p>
-
-<h3>路由策略数据库</h3>
-
-<p>如果你有一个大规模的路由器，需要同时满足不同用户对于路由的不通需求，路由策略数据库可以帮你通过多路由表技术来实现。当内核需要做出路由选择时，它会找出应该参考哪一张路由表。除了<code>ip</code>外,<code>route</code>也可以修改main和local表。</p>
-
-<p><strong>默认规则</strong>
-``` bash</p>
-
-<h1>ip rule</h1>
-
-<p>0:  from all lookup local
-32766:  from all lookup main
-32767:  from all lookup default
-```</p>
-
-<p>上面列出了规则的优先顺序。<code>ip route</code>命令默认显示的就是main表。<code>ip route show table all</code>显示所有规则中的表</p>
-
-<p>``` bash</p>
-
-<h1>ip route list table local</h1>
-
-<p>broadcast 192.168.0.255 dev eth0  proto kernel  scope link  src 192.168.0.10
-broadcast 10.2.0.0 dev eth1  proto kernel  scope link  src 10.2.0.217
-broadcast 127.255.255.255 dev lo  proto kernel  scope link  src 127.0.0.1
-... ...
-```</p>
-
-<p>default表为空</p>
-
-<h3>例 简单策略路由添加 [引用自<a href="https://www.google.com.hk/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;ved=0CDkQFjAB&amp;url=%68%74%74%70%3a%2f%2f%77%77%77%2e%6c%61%72%74%63%2e%6f%72%67%2f%4c%41%52%54%43%2d%7a%68%5f%43%4e%2e%47%42%32%33%31%32%2e%70%64%66&amp;ei=4XeuUc3RPIG1lQW1voGwAg&amp;usg=AFQjCNEI4pFvc81u0hYutCtbC4mEoh44qA&amp;sig2=Txgnxnm1LMqWL87RKUsWDQ">Linux高级路由中文HOWTO</a>]</h3>
-
-<p>让我们再来一个真实的例子。我有两个Cable Modem，连接到了一个 Linux的NAT (“伪装”) 路由器上。这里的室友们向我付费使用Internet。假如我其中的一个室友因为只想访问 hotmail 而希望少付一些钱。对我来说这没有问题,他们肯定只能使用那个比较次的Cable Modem。</p>
-
-<p>那个比较快的cable modem 的IP地址是 212.64.94.251，PPP 链路，对端IP是212.64.94.1。而那个比较慢的cable modem的IP地址是212.64.78.148，对端是195.96.98.253。</p>
-
-<p>local 表：
-<code>bash
-[ahu@home ahu]$ ip route list table local
-broadcast 127.255.255.255 dev lo proto kernel scope link src 127.0.0.1
-local 10.0.0.1 dev eth0 proto kernel scope host src 10.0.0.1
-broadcast 10.0.0.0 dev eth0 proto kernel scope link src 10.0.0.1
-local 212.64.94.251 dev ppp0 proto kernel scope host src 212.64.94.251
-broadcast 10.255.255.255 dev eth0 proto kernel scope link src 10.0.0.1
-broadcast 127.0.0.0 dev lo proto kernel scope link src 127.0.0.1
-local 212.64.78.148 dev ppp2 proto kernel scope host src 212.64.78.148
-local 127.0.0.1 dev lo proto kernel scope host src 127.0.0.1
-local 127.0.0.0/8 dev lo proto kernel scope host src 127.0.0.1
-</code></p>
-
-<p>让我们看看“main”路由表：
-<code>bash
-[ahu@home ahu]$ ip route list table main
-195.96.98.253 dev ppp2 proto kernel scope link src 212.64.78.148
-212.64.94.1 dev ppp0 proto kernel scope link src 212.64.94.251
-10.0.0.0/8 dev eth0 proto kernel scope link src 10.0.0.1
-127.0.0.0/8 dev lo scope link
-default via 212.64.94.1 dev ppp0
-</code></p>
-
-<p>我们现在为我们的朋友创建了一个叫做“John”的规则。其实我们完全可以使用纯数字表示规则，但是不方便。我们可以向<code>/etc/iproute2/rt_tables</code>文件中添加数字与名字的关联：
-``` bash</p>
-
-<h1>echo 200 John >> /etc/iproute2/rt_tables</h1>
-
-<h1>ip rule add from 10.0.0.10 table John</h1>
-
-<h1>ip rule</h1>
-
-<p>0:  from all lookup local
-32765:  from 10.0.0.10 lookup John
-32766:  from all lookup main
-32767:  from all lookup default
-```</p>
-
-<p>现在，剩下的事情就是为 John 的路由表创建路由项了。别忘了刷新路由缓存：
-``` bash</p>
-
-<h1>ip route add default via 195.96.98.253 dev ppp2 table John</h1>
-
-<h1>ip route flush cache</h1>
-
-<p>```</p>
-
-<p>总结主要是以下几步：</p>
-
-<ul>
-<li>echo 200 John >> /etc/iproute2/rt_tables #方便表示，把规则名字和数字对应加入到<code>/etc/iproute2/rt_tables</code>文件</li>
-<li>ip rule add from 10.0.0.10 table John    #新增规则</li>
-<li>ip route add default via 195.96.98.253 dev ppp2 table John #规则中添加路由表</li>
-<li>ip route flush cache  #刷新路由表</li>
-</ul>
-
-
-<p>--EOF--</p>
-
-<p>未完待续<br/>
-下一篇预报--Linux下高级路由</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[top基本介绍]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/06/02/top/"/>
-    <updated>2013-06-02T09:49:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/06/02/top</id>
-    <content type="html"><![CDATA[<p><code>top</code>命令是Linux下常用的性能分析工具，能够实时显示系统中各个进程的资源占用状况，类似于Windows的任务管理器。下面跟着笔者一起<code>top</code>一下吧：</p>
-
-<!--more-->
-
-
-<p>``` bash</p>
-
-<h1>top</h1>
-
-<p>top - 10:52:40 up 3 days, 52 min,  1 user,  load average: 57.28, 112.40, 123.60
-Tasks:  99 total,   1 running,  98 sleeping,   0 stopped,   0 zombie
-Cpu(s): 19.5%us, 11.4%sy,  0.0%ni,  0.0%id, 65.7%wa,  0.0%hi,  3.4%si,  0.0%st
-Mem:  16435896k total, 16232468k used,   203428k free,    58004k buffers
-Swap:  1044476k total,   713552k used,   330924k free, 10052032k cached</p>
-
-<p>  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
-  ... ...
-```</p>
-
-<p>统计信息区前五行是系统整体的统计信息。第一行是任务队列信息，同uptime命令的执行结果。其内容如下：</p>
-
-<table class="table table-striped">
-    <tr>
-        <td>10:52:40</td>
-        <td>当前时间</td>
-    </tr>
-    <tr>
-        <td>up 3 days, 52 min</td>
-        <td>系统运行时间</td>
-    </tr>
-    <tr>
-        <td>1 users</td>
-        <td>当前登录用户数</td>
-    </tr>
-    <tr>
-        <td>load average: 57.28, 112.40, 123.60</td>
-        <td>系统负载，即任务队列平均长度。
-        <br>分别为1、5、15min前到现在平均值。</br></td>
-    </tr>
-</table>
-
-
-<p></p>
-
-
-<p>第二、三行为进程和CPU的信息。当有多个CPU时，这些内容可能会超过两行。内容如下：</p>
-
-<table>
-    <tr>
-        <td>Tasks:99 total</td>
-        <td>进程总数[键入H可查看线程数]</td>
-    </tr>
-    <tr>
-        <td>1 running,  98 sleeping,  0 stopped</td>
-        <td>正在运行的进程、睡眠进程、停止的进程</td>
-    </tr>
-    <tr>
-        <td>0 zombie</td>
-        <td>僵尸进程数</td>
-    </tr>
-    <tr>
-        <td>Cpu(s): 19.5%us, 11.4%sy,  
-        <br> 0.0%ni, 0.0%id,</br> 
-        65.7%wa, 0.0%hi, 3.4%si, 0.0%st</td>
-        <td>用户空间占用CPU百分比、内核空间占用CPU百分比
-        <br>用户进程空间内改变进程优先级占用CPU、空闲CPU百分比</br>
-        等待IO的CPU时间百分比，最后三个是中断请求相关</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<p>倒数第2、3行为内存相关信息：</p>
-
-<table>
-    <tr>
-        <td>Mem: 16435896k total, 16232468k used, 
-        <br>203428k free, 58004k buffers</br></td>
-        <td>分别是物理内存总量、使用物理内存总量
-        <br>空闲内存总量、用作内核缓存内存量</br></td>
-    </tr>
-    <tr>
-        <td>Swap: 1044476k total, 713552k used, 
-        <br>330924k free, 10052032k cached<br></td>
-        <td>分别是交换分区量、使用交换分区总量
-        <br>空闲交换区总量、缓存交换区总量</br></td>
-    </tr>
-</table>
-
-
-<p></p>
-
-
-<p><strong>buffer</strong>   <a href="http://wiki.answers.com/Q/Difference_between_buffer_and_cache">Difference between buffer and cache?</a></p>
-
-<blockquote><p>A data area, shared by hardware devices or program a process is called buffer. They are operated at different speeds or with different sets of priorities. The buffer allows each device or process to operate without holding up by the other. In order to a buffer to be effective, the size of the buffer needs to be considered by the buffer designer. Like a cache, a buffer is a "midpoint holding place" but does not exist so much to accelerate the speed of an activity as for supporting the coordination of separate activities.</p></blockquote>
-
-<p></p>
-
-
-<p></p>
-
-<blockquote><p>This term is used not only in programming but in hardware as well. In programming, buffering sometimes needs to screen data from its final intended place so that it can be edited or processed before moving to a regular file or database.</p></blockquote>
-
-<p><strong>cached</strong></p>
-
-<blockquote><p>Cache memory is type of random access memory (RAM). Cache Memory can be accessed more quickly by the computer microprocessor than it can be accessed by regular RAM. Like microprocessor processes data, it looks first in the cache memory and if there, it finds the data from a previous reading of data, it does not need to do the more time consuming reading of data from larger memory.</p></blockquote>
-
-<p></p>
-
-
-<blockquote><p>Sometimes Cache memory is described in levels of closeness and convenience to the microprocessor. An L1 cache is on the same chip like the microprocessors.</p></blockquote>
-
-<p></p>
-
-
-<p></p>
-
-<blockquote><p>In addition to cache memory, RAM itself is a cache memory for hard disk storage since all of RAM's contents come up to the hard disk initially when you turn on your computer and load the operating system that you are loading it into RAM and later when you start new applications and access new data. RAM also contains a special area called a disk cache that consists of the data most recently read in from the hard disk.</p></blockquote>
-
-<p></p>
-
-
-<p>最后1行则是进程相关的资源占用信息:</p>
-
-<ul>
-<li>PID：进程的ID</li>
-<li>USER：进程所有者</li>
-<li>PR：进程的优先级别，越小越优先被执行</li>
-<li>NI：nice值。负值表示高优先级，正值表示低优先级</li>
-<li>VIRT：进程占用的虚拟内存</li>
-<li>RES：进程占用的物理内存</li>
-<li>SHR：进程使用的共享内存</li>
-<li>S：进程的状态。S表示休眠，R表示正在运行，Z表示僵死状态，N表示该进程优先值为负数</li>
-<li>%CPU：进程占用CPU的使用率</li>
-<li>%MEM：进程使用的物理内存和总内存的百分比</li>
-<li>TIME+：该进程启动后占用的总的CPU时间，即占用CPU使用时间的累加值。</li>
-<li>COMMAND：进程启动命令名称</li>
-</ul>
-
-
-<p>--EOF--</p>
-
-<p>top实践--<a href="http://kumu-linux.github.io/blog/2013/06/07/top-hacks/">top实践小技巧</a></p>
 ]]></content>
   </entry>
   

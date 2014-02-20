@@ -9,7 +9,14 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作 ">
+  <meta name="description" content="取消配置文件/etc/salt/master以下注释 1
+2
+3
+4
+5
+... ...
+file_roots: base: - /srv/salt
+... ... ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +95,122 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/20/salt-file-manager/">[2]salt文件分发</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-20T22:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/20/salt-file-manager/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>file_roots:
+</span><span class='line'>  base:
+</span><span class='line'>    - /srv/salt
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/20/salt-file-manager/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/20/salt-install/">[1]salt Install</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-20T21:57:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/20/salt-install/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Install</h2>
+
+<p>First => repl源</p>
+
+<p>rhel6</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -ivh \
+</span><span class='line'>http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/20/salt-install/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -337,106 +460,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/07/opennubula-node/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>需求</h3>
-
-<p>The hosts must have a working installation of KVM, that usually requires:</p>
-
-<ul>
-<li>CPU with VT extensions</li>
-<li>libvirt >= 0.4.0</li>
-<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
-<li>the qemu user-land tools</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/opennubula-node/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/rsync/">修改CentOS/RHEL Rsync监听地址</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T10:35:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/07/rsync/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/rsync/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -456,6 +479,14 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/20/salt-file-manager/">[2]salt文件分发</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/20/salt-install/">[1]salt Install</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/20/opennebula-market/">Opennebula 3.8 Market兼容问题</a>
       </li>
     
@@ -471,19 +502,11 @@
         <a href="/blog/2013/12/10/kvm-tap/">Qemu-kvm桥接网络</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/12/09/svn-git/">Svn and Git Server备忘</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a>
-      </li>
-    
   </ul>
 </section>
 <section>
   <h1>Categories</h1>
-  <ul id="category-list"><li><a href='/blog/categories/mysql/'>MySQL (1)</a></li><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (16)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (8)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (7)</a></li></ul>
+  <ul id="category-list"><li><a href='/blog/categories/mysql/'>MySQL (1)</a></li><li><a href='/blog/categories/octopress/'>Octopress (2)</a></li><li><a href='/blog/categories/sed-slash-awk/'>SED/AWK (7)</a></li><li><a href='/blog/categories/shell-slash-python/'>Shell/Python (1)</a></li><li><a href='/blog/categories/unix-slash-linux/'>UNIX/Linux (16)</a></li><li><a href='/blog/categories/bei-fen-hui-fu/'>备份恢复 (1)</a></li><li><a href='/blog/categories/sheng-huo-sui-xiang/'>生活随想 (5)</a></li><li><a href='/blog/categories/jian-kong-diao-you/'>监控调优 (2)</a></li><li><a href='/blog/categories/xu-ni-hua/'>虚拟化 (8)</a></li><li><a href='/blog/categories/yun-wei-li-qi/'>运维利器 (9)</a></li></ul>
 </section><section>
   <h1>Cool Links</h1>
   <ul>

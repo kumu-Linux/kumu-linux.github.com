@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-20T16:32:21+08:00</updated>
+  <updated>2014-02-20T22:31:35+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,301 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[[2]salt文件分发]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager/"/>
+    <updated>2014-02-20T22:12:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/salt-file-manager</id>
+    <content type="html"><![CDATA[<p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>file_roots:
+</span><span class='line'>  base:
+</span><span class='line'>    - /srv/salt
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p><strong>新建相关目录</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir /srv/salt
+</span><span class='line'>touch /srv/salt/top.sls</span></code></pre></td></tr></table></div></figure>
+
+
+<p>top.sls文件
+<code>/srv/salt/top.sls</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>base:
+</span><span class='line'>  '*':
+</span><span class='line'>    - ssh_key.key</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mkdir /srv/salt/ssh_key
+</span><span class='line'>touch /srv/salt/test.sls</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>/srv/salt/test.sls</code></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/root/.ssh/authorized_keys: 
+</span><span class='line'># 客户端文件存放路径和命名，如果.ssh目录不存在则会自动新建
+</span><span class='line'>  file:
+</span><span class='line'>    - managed
+</span><span class='line'>    - source: salt://ssh_key/test   
+</span><span class='line'>    # 默认file根目录为`/srv/salt`，拷贝相应文件至所在目录
+</span><span class='line'>    - user: root
+</span><span class='line'>    - group: root
+</span><span class='line'>    - mode: 600</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>server端主动推送</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>salt '*' state.highstate -v     # 按照top.sls执行所有
+</span><span class='line'>salt '*' state.sls ssh_key.ms   # 指定sls执行</span></code></pre></td></tr></table></div></figure>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[[1]salt install]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/salt-install/"/>
+    <updated>2014-02-20T21:57:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/salt-install</id>
+    <content type="html"><![CDATA[<h2>Install</h2>
+
+<p>First => repl源</p>
+
+<p>rhel6</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -ivh \
+</span><span class='line'>http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p>rhel5</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -ivh \
+</span><span class='line'>http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Server</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install salt-master
+</span><span class='line'>chkconfig salt-master on
+</span><span class='line'>service salt-master start  # salt-master -d也可以启动</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Client</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>yum install salt-minion
+</span><span class='line'>chkconfig salt-minion on
+</span><span class='line'>service salt-minion start  # salt-minion -d也可以启动</span></code></pre></td></tr></table></div></figure>
+
+
+<p>使用<code>--user</code>选项可以选择运行salt的用户</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>salt-master -d --user test
+</span><span class='line'>salt-minion -d --user test</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Configure</h2>
+
+<h3>Master基本配置</h3>
+
+<p><code>/etc/salt/master</code>主配置文件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>interface: 192.168.80.131   # 取消外网监听
+</span><span class='line'>... ...
+</span><span class='line'>autosign_file: /etc/salt/autosign.conf  # 设定匹配主机自动接受key
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>restart生效</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/etc/init.d/salt-master restart</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Client基本配置</h3>
+
+<p><code>/etc/salt/minion</code>主配置文件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>master: 192.168.80.131  # 取消外网监听
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>restart生效</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>service salt-minion restart</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>基本命令</h2>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># salt-key -L   # 列出当前所有key，包括接受、未接受、拒绝的key
+</span><span class='line'>Accepted Keys:
+</span><span class='line'>Unaccepted Keys:
+</span><span class='line'>kumu-ops-130.puppet.com
+</span><span class='line'>Rejected Keys:
+</span><span class='line'># salt-key -A   # 接受所有未认证key
+</span><span class='line'>The following keys are going to be accepted:
+</span><span class='line'>Unaccepted Keys:
+</span><span class='line'>kumu-ops-130.puppet.com
+</span><span class='line'>Proceed? [n/Y] y
+</span><span class='line'>Key for minion kumu-ops-130.puppet.com accepted.</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>添加某个key, <code>salt-key -a keyname</code></li>
+<li>删除某个key，<code>slat-key -d keyname</code></li>
+</ul>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># salt kumu-ops-130.puppet.com test.ping
+</span><span class='line'># salt '*' test.ping    # 测试所有主机连通性</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>匹配</h3>
+
+<ul>
+<li>匹配所有的Client
+
+<ul>
+<li><code>salt '*' test.ping</code></li>
+</ul>
+</li>
+<li>匹配符合条件的Client
+
+<ul>
+<li><code>salt '*.example.net' test.ping</code></li>
+<li><code>salt '*.example.*' test.ping</code></li>
+</ul>
+</li>
+<li>单个匹配Client
+
+<ul>
+<li><code>salt 'web?.example.net' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web1到web5
+
+<ul>
+<li><code>salt 'web[1-5]' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web-x、web-y、web-z Client
+
+<ul>
+<li><code>salt 'web-[x-z]' test.ping</code></li>
+</ul>
+</li>
+<li>匹配web1-prod和web1-devel的Client
+
+<ul>
+<li><code>salt -E 'web1-(prod|devel)' test.ping</code></li>
+</ul>
+</li>
+<li>列表
+
+<ul>
+<li><code>salt -L 'web1,web2,web3' test.ping</code></li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Grains</h3>
+
+<p>salt配备了一个获取底层信息的接口<code>Grains</code>，grains的信息都是静态信息，不可变的</p>
+
+<ul>
+<li>匹配所有的CentOS Client：
+
+<ul>
+<li>salt -G &#8216;os:CentOS&#8217; test.ping</li>
+</ul>
+</li>
+<li>salt &#8216;*&#8217; grains.ls      # 查看grains分类</li>
+<li>salt &#8216;*&#8217; grains.items   # 查看grains所有信息</li>
+<li>salt &#8216;*&#8217; grains.item    # osrelease查看grains某个信息</li>
+</ul>
+
+
+<h3>More&#8230;</h3>
+
+<p>查看salt更多的命令手册 <code>salt '*' sys.doc</code></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[opennebula 3.8 market兼容问题]]></title>
@@ -4048,491 +4343,6 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 <li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
 <li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
 </ul>
-
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux下终端利器tmux]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/08/06/tmux/"/>
-    <updated>2013-08-06T11:05:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/08/06/tmux</id>
-    <content type="html"><![CDATA[<blockquote><p>&#8220;君子生非异也，善假于物也&#8221; 。&#8211;语出《荀子·劝学》</p></blockquote>
-
-<p>如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说，好工具的选择和使用往往可以省去很多不必要的麻烦，好的开源工具很多，看你如何去使用。对于终端复用工具这里推荐使用tmux，当然此类工具比较好的还有screen，不过相对<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a> 这里我更倾向于推荐tmux[强悍的分屏等]。</p>
-
-<!--more-->
-
-
-<p>如果仅仅只是多标签的功能，那么putty结合一些工具也可以做到，或者干脆使用xshell，当然tmux此类工具不仅仅是那么简单。另外一个选择使用tmux/screen工具的原因是，有时我们会经常需要SSH或者telent远程登录到Linux服务器，有一些任务需要长时间运行，比如系统备份、数据传输等。通常情况下我们都是开一个远程终端窗口，因为执行时间比较长，一般需要等待它执行完毕，在此过程中不能关闭窗口或者网络原因断开连接，断开之后就Game Over了。这个功能就有点类似<code>nohup</code>和<code>setsid</code>命令的实现了，而tmux/screen则集nohup/setsid和多标签于一身。废话少说，我们接下来看如何安装使用它。</p>
-
-<h3>安装</h3>
-
-<p>安装的话这里就不过说明了，不同的Linux发行版相应的包管理机制不同，安装tmux包即可。</p>
-
-<h3>使用技巧</h3>
-
-<h4>几个名词</h4>
-
-<p>tmux主要包括以下几个模块：</p>
-
-<table>
-    <tr>
-        <td>session</td>
-        <td>会话:一个服务器可以包含多个会话</td>
-    </tr>
-    <tr>
-        <td>window</td>
-        <td>窗口:一个会话可以包含多个窗口</td>
-    </tr>
-    <tr>
-        <td>pane</td>
-        <td>面板:一个窗口可以包含多个面板[强悍的分屏]</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<h4>小试牛刀</h4>
-
-<p>列出了tmux的几个基本模块之后，就要来点实实在在的干货了，和<code>screen</code>默认激活控制台的<code>Ctrl+a</code>不同，tmux默认的是<code>Ctrl+b</code>，使用快捷键之后就可以执行一些相应的指令了。当然如果你不习惯使用<code>Ctrl+b</code>，也可以在<code>~/.tmux</code>文件中加入以下内容把快捷键变为<code>Ctrl+a</code>：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set prefix key to Ctrl-a</span>
-</span><span class='line'>unbind-key C-b
-</span><span class='line'><span class="nb">set</span>-option -g prefix C-a
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以下所有的操作都是激活控制台之后，即键入<code>Ctrl+b</code>前提下才可以使用的命令【这里假设快捷键没改，改了的话则用<code>Ctrl+b</code>】。</p>
-
-<p><u>基本操作</u>：</p>
-
-<table>
-    <tr>
-        <td>?</td>
-        <td>列出所有快捷键；按q返回</td>
-    </tr>
-    <tr>
-        <td>d</td>
-        <td>脱离当前会话,可暂时返回Shell界面，输入tmux attach能够重新进入之前会话</td>
-    </tr>
-    <tr>
-        <td>s</td>
-        <td>选择并切换会话；在同时开启了多个会话时使用</td>
-    </tr>
-    <tr>
-        <td>D</td>
-        <td>选择要脱离的会话；在同时开启了多个会话时使用</td>
-    </tr>   
-    <tr>
-        <td>:</td>
-        <td>进入命令行模式；此时可输入支持的命令，例如kill-server所有tmux会话</td>
-    </tr>
-    <tr>
-        <td>[</td>
-        <td>复制模式，光标移动到复制内容位置，空格键开始，方向键选择复制，回车确认，q/Esc退出</td>
-    </tr>
-    <tr>
-        <td>]</td>
-        <td>进入粘贴模式，粘贴之前复制的内容，按q/Esc退出</td>
-    </tr>
-    <tr>
-        <td>~</td>
-        <td>列出提示信息缓存；其中包含了之前tmux返回的各种提示信息</td>
-    </tr>
-    <tr>
-        <td>t</td>
-        <td>显示当前的时间</td>
-    </tr>
-    <tr>
-        <td>Ctrl+z</td>
-        <td>挂起当前会话</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<p><u>窗口操作</u>:</p>
-
-<table>
-    <tr>
-        <td>c</td>
-        <td>创建新窗口</td>
-    </tr>
-    <tr>
-        <td>&</td>
-        <td>关闭当前窗口</td>
-    </tr>
-    <tr>
-        <td>数字键</td>
-        <td>切换到指定窗口</td>
-    </tr>
-    <tr>
-        <td>p</td>
-        <td>切换至上一窗口</td>
-    </tr>
-    <tr>
-        <td>n</td>
-        <td>切换至下一窗口</td>
-    </tr>
-    <tr>
-        <td>l</td>
-        <td>前后窗口间互相切换</td>
-    </tr>
-    <tr>
-        <td>w</td>
-        <td>通过窗口列表切换窗口</td>
-    </tr>
-    <tr>
-        <td>,</td>
-        <td>重命名当前窗口，便于识别</td>
-    </tr>
-    <tr>
-        <td>.</td>
-        <td>修改当前窗口编号，相当于重新排序</td>
-    </tr>
-    <tr>
-        <td>f</td>
-        <td>在所有窗口中查找关键词，便于窗口多了切换</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<p><u>面板操作</u>:</p>
-
-<table>
-    <tr>
-        <td>&#8220;</td>
-        <td>将当前面板上下分屏</td>
-    </tr>
-    <tr>
-        <td>%</td>
-        <td>将当前面板左右分屏</td>
-    </tr>
-    <tr>
-        <td>x</td>
-        <td>关闭当前分屏</td>
-    </tr>
-    <tr>
-        <td>!</td>
-        <td>将当前面板置于新窗口,即新建一个窗口,其中仅包含当前面板</td>
-    </tr>
-    <tr>
-        <td>Ctrl+方向键</td>
-        <td>以1个单元格为单位移动边缘以调整当前面板大小</td>
-    </tr>
-    <tr>
-        <td>Alt+方向键</td>
-        <td>以5个单元格为单位移动边缘以调整当前面板大小</td>
-    </tr>
-    <tr>
-        <td>空格键</td>
-        <td>可以在默认面板布局中切换，试试就知道了</td>
-    </tr>
-    <tr>
-        <td>q</td>
-        <td>显示面板编号</td>
-    </tr>
-    <tr>
-        <td>o</td>
-        <td>选择当前窗口中下一个面板</td>
-    </tr>
-    <tr>
-        <td>方向键</td>
-        <td>移动光标选择对应面板</td>
-    </tr>
-    <tr>
-        <td>{</td>
-        <td>向前置换当前面板</td>
-    </tr>
-    <tr>
-        <td>}</td>
-        <td>向后置换当前面板</td>
-    </tr>
-    <tr>
-        <td>Alt+o</td>
-        <td>逆时针旋转当前窗口的面板</td>
-    </tr>
-    <tr>
-        <td>Ctrl+o</td>
-        <td>顺时针旋转当前窗口的面板</td>
-    </tr>
-    <tr>
-        <td>z</td>
-        <td>tmux 1.8新特性，最大化当前所在面板</td>
-    </tr>
-</table>
-
-
-
-
-<p></p>
-
-
-<h4>.tmux.conf基本配置</h4>
-
-<p>软件到手了，自己怎么舒服就怎么用。定制主要还是在于<code>.tmux.conf</code>配置文件的配置，以下列出我的配置文件：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set prefix key to Ctrl-a</span>
-</span><span class='line'>unbind-key C-b
-</span><span class='line'><span class="nb">set</span>-option -g prefix C-a
-</span><span class='line'><span class="nb">bind</span>-key C-a last-window <span class="c"># 方便切换，个人习惯</span>
-</span><span class='line'><span class="nb">bind</span>-key a send-prefix
-</span><span class='line'><span class="c"># shell下的Ctrl+a切换到行首在此配置下失效，此处设置之后Ctrl+a再按a即可切换至shell行首</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># reload settings # 重新读取加载配置文件</span>
-</span><span class='line'><span class="nb">bind </span>R <span class="nb">source</span>-file ~/.tmux.conf <span class="se">\;</span> display-message <span class="s2">&quot;Config reloaded...&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Ctrl-Left/Right cycles thru windows (no prefix) </span>
-</span><span class='line'><span class="c"># 不使用prefix键，使用Ctrl和左右方向键方便切换窗口</span>
-</span><span class='line'><span class="nb">bind</span>-key -n <span class="s2">&quot;C-Left&quot;</span> <span class="k">select</span>-window -t :-
-</span><span class='line'><span class="nb">bind</span>-key -n <span class="s2">&quot;C-Right&quot;</span> <span class="k">select</span>-window -t :+
-</span><span class='line'>
-</span><span class='line'><span class="c"># displays </span>
-</span><span class='line'><span class="nb">bind</span>-key * list-clients
-</span><span class='line'>
-</span><span class='line'><span class="nb">set</span> -g default-terminal <span class="s2">&quot;screen-256color&quot;</span>   <span class="c"># use 256 colors</span>
-</span><span class='line'><span class="nb">set</span> -g display-time 5000                    <span class="c"># status line messages display</span>
-</span><span class='line'><span class="nb">set</span> -g status-utf8 on                       <span class="c"># enable utf-8 </span>
-</span><span class='line'><span class="nb">set</span> -g <span class="nb">history</span>-limit 100000                 <span class="c"># scrollback buffer n lines</span>
-</span><span class='line'>setw -g mode-keys vi                        <span class="c"># use vi mode</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># start window indexing at one instead of zero 使窗口从1开始，默认从0开始 </span>
-</span><span class='line'><span class="nb">set</span> -g base-index 1
-</span><span class='line'>
-</span><span class='line'><span class="c"># key bindings for horizontal and vertical panes</span>
-</span><span class='line'>unbind %
-</span><span class='line'><span class="nb">bind</span> | split-window -h      <span class="c"># 使用|竖屏，方便分屏</span>
-</span><span class='line'>unbind <span class="s1">&#39;&quot;&#39;</span>
-</span><span class='line'><span class="nb">bind</span> - split-window -v      <span class="c"># 使用-横屏，方便分屏</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># window title string (uses statusbar variables)</span>
-</span><span class='line'><span class="nb">set</span> -g <span class="nb">set</span>-titles-string <span class="s1">&#39;#T&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># status bar with load and time </span>
-</span><span class='line'><span class="nb">set</span> -g status-bg blue
-</span><span class='line'><span class="nb">set</span> -g status-fg <span class="s1">&#39;#bbbbbb&#39;</span>
-</span><span class='line'><span class="nb">set</span> -g status-left-fg green
-</span><span class='line'><span class="nb">set</span> -g status-left-bg blue
-</span><span class='line'><span class="nb">set</span> -g status-right-fg green
-</span><span class='line'><span class="nb">set</span> -g status-right-bg blue
-</span><span class='line'><span class="nb">set</span> -g status-left-length 90
-</span><span class='line'><span class="nb">set</span> -g status-right-length 90
-</span><span class='line'><span class="nb">set</span> -g status-left <span class="s1">&#39;[#(whoami)]&#39;</span>
-</span><span class='line'><span class="nb">set</span> -g status-right <span class="s1">&#39;[#(date +&quot; %m-%d %H:%M &quot;)]&#39;</span>
-</span><span class='line'><span class="nb">set</span> -g status-justify <span class="s2">&quot;centre&quot;</span>
-</span><span class='line'><span class="nb">set</span> -g window-status-format <span class="s1">&#39;#I #W&#39;</span>
-</span><span class='line'><span class="nb">set</span> -g window-status-current-format <span class="s1">&#39; #I #W &#39;</span>
-</span><span class='line'>setw -g window-status-current-bg blue
-</span><span class='line'>setw -g window-status-current-fg green
-</span><span class='line'>
-</span><span class='line'><span class="c"># pane border colors</span>
-</span><span class='line'><span class="nb">set</span> -g pane-active-border-fg <span class="s1">&#39;#55ff55&#39;</span>
-</span><span class='line'><span class="nb">set</span> -g pane-border-fg <span class="s1">&#39;#555555&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>开启批量执行</h4>
-
-<p>如果已经修改prefix键位<code>Ctrl+a</code>，则<code>Ctrl+a</code>[默认Ctrl+b]后输入<code>:set synchronize-panes</code> ，输入:set sync [TAB]键可自动补齐</p>
-
-<p><img src="http://kumu-Linux.github.io/images/tmux.jpg"></p>
-
-<p></p>
-
-
-<p>取消批量执行模式重复之前操作即可</p>
-
-<h4>脚本化启动</h4>
-
-<p>把以下脚本内容加入到~/.bashrc，即可每次登录进入到tmux</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>tmux_init<span class="o">()</span>
-</span><span class='line'><span class="o">{</span>
-</span><span class='line'>    tmux new-session -s <span class="s2">&quot;kumu&quot;</span> -d -n <span class="s2">&quot;local&quot;</span>    <span class="c"># 开启一个会话</span>
-</span><span class='line'>    tmux new-window -n <span class="s2">&quot;other&quot;</span>          <span class="c"># 开启一个窗口</span>
-</span><span class='line'>    tmux split-window -h                <span class="c"># 开启一个竖屏</span>
-</span><span class='line'>    tmux split-window -v <span class="s2">&quot;top&quot;</span>          <span class="c"># 开启一个横屏,并执行top命令</span>
-</span><span class='line'>    tmux -2 attach-session -d           <span class="c"># tmux -2强制启用256color，连接已开启的tmux</span>
-</span><span class='line'><span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 判断是否已有开启的tmux会话，没有则开启</span>
-</span><span class='line'><span class="k">if </span>which tmux 2&gt;&amp;1 &gt;/dev/null; <span class="k">then</span>
-</span><span class='line'><span class="k">    </span><span class="nb">test</span> -z <span class="s2">&quot;$TMUX&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">(</span>tmux attach <span class="o">||</span> tmux_init<span class="o">)</span>
-</span><span class='line'><span class="k">fi</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>效果如下：</p>
-
-<p><img src="http://kumu-Linux.github.io/images/tmux1.jpg"></p>
-
-<p></p>
-
-
-<p>&#8211;EOF&#8211;</p>
-
-<h3>参考文档</h3>
-
-<ul>
-<li><a href="https://wiki.freebsdchina.org/software/t/tmux">使用tmux</a></li>
-<li><a href="https://wiki.archlinux.org/index.php/Tmux">archlinux tmux</a></li>
-<li><a href="http://wiki.wutianqi.com/software/tmux.html">Tankywoo tmux wiki</a></li>
-<li><a href="http://www.lovelin.info/blog/2012/10/25/tmuxshi-yong-xin-de-xiao-ji/">Tmux 使用心得小记 </a></li>
-<li><a href="http://www.openbsd.org/cgi-bin/man.cgi?query=tmux&amp;sektion=1">Tmux Openbsd Manual Pages</a></li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[旅途]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/08/02/journey/"/>
-    <updated>2013-08-02T17:50:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/08/02/journey</id>
-    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/journey.png" alt="journey" title="journey" width="500" /></center>
-
-
-
-
-<p></p>
-
-
-
-
-<!--more-->
-
-
-<p>2012年6月毕业，到现在也就差不多1年的时间吧。大三暑假的抉择让我彻底和自己的大学专业说再见了，年初的时候我又和生活4年多的城市说再见了，而现在来北京才半年多的时间我又要和北京说再见了。对于我们每个人来说，人生都是一场旅途，有太多的不确定。</p>
-
-<p>大四上学期的时候就开始工作了，现在的自己也就工作了1年半。其实自己并不喜欢经常变动，在一个地方工作久了，也就对一个地方有点难舍，包括那个地方的人或物。可是，天下终究没有不散的宴席，现在还算年轻，跟着自己的感觉走，去拼搏。有些地方停留的久，有些地方停留的短暂，希望下一站能够好好安稳。</p>
-
-<p>技术上来说，我刚开始接触的面比较广，其实这也是有好处的，先面后点，再做到精细 [<strong>所谓专家，就是在一个很小的领域里把所有错误都犯过的人</strong>]。该学的东西还有很多，需要不断的积累和蜕变。貌似最近也有点懒了，博客写的越来越少了，坚持是个很重要的事情，有时候还是要逼一下自己比较好。</p>
-
-<p>生活上来说，我觉得每个人都应像个行者，多些随遇而安，少些浮躁，至少自己可以让自己静下来，保持清醒的头脑比什么都重要。找一点生活乐趣，虽然说技术是自己的一大爱好，但是也不能太拘泥于技术。我想新的开始，我需要好好把自己的字练好，虽然之前的字写的还算凑合，但是已经许久不提笔写字了，这是个不好的信号。可以利用业余的时间去徒步呼吸呼吸新鲜空气，来北京半年的时间也没怎么出去过，印象中一个人就出去过一次，绕着故宫的城墙走了一圈，在景山顶部看了看京城的美景，这座古城已经不再古老。也考虑买辆入门级的山地自行车，找些车友，骑行旅途应该也是件很美妙的事情。</p>
-
-<p>理想很丰满，现实很骨感。力所能及的事情自己就要好好把握，每一次的抉择都是新的开始，努力！</p>
-
-<pre><code>许巍-旅行
-
-阵阵晚风吹动着松涛
-吹响这风铃声如天籁
-站在这城市的寂静处
-让一切喧嚣走远
-
-只有青山藏在白云间
-蝴蝶自由穿行在清涧
-看那晚霞盛开在天边
-有一群向西归鸟
-
-谁画出这天地又画下我和你
-让我们的世界绚丽多彩
-谁让我们哭泣又给我们惊喜
-让我们就这样相爱相遇
-总是要说再见相聚又分离
-总是走在漫长的路上
-
-只有青山藏在白云间
-蝴蝶自由穿行在清涧
-看那晚霞盛开在天边
-有一群向西归鸟
-
-谁画出这天地又画下我和你
-让我们的世界绚丽多彩
-谁让我们哭泣又给我们惊喜
-让我们就这样相爱相遇
-总是要说再见相聚又分离
-总是走在漫长的路上
-</code></pre>
-
-<center><img src="http://kumu-Linux.github.io/images/beijing.jpg" alt="北京中轴线" title="北京中轴线" width="500" /></center>
 
 
 <p>&#8211;EOF&#8211;</p>

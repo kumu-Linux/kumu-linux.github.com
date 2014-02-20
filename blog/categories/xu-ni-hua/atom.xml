@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-19T22:33:18+08:00</updated>
+  <updated>2014-02-20T16:24:47+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,43 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[opennebula 3.8market兼容问题]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/"/>
+    <updated>2014-02-20T16:12:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market</id>
+    <content type="html"><![CDATA[<p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err.png" /></center>
+
+
+
+
+<!--more-->
+
+
+<p>Firebug获知锁定错误为market插件</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err2.png" /></center>
+
+
+<p>Google获知原因所在，具体问题可以参见<a href="http://www.marshut.com/iqmmzn/opennebula-3-8-and-market-compatiable-problem.html">opennebula-3-8-and-market-compatiable-problem</a> ，解决方法是关闭sunstone的Market plugins，修改<code>etc/sunstone-plugins.yaml</code>配置文件，修改下行从<code>True</code>变为<code>false</code>，如下：
+``` ruby
+- plugins/marketplace-tab.js:</p>
+
+<pre><code>:ALL: false
+:user:
+</code></pre>
+
+<p>:group:
+```</p>
+
+<p>完成之后刷新页面即可恢复正常</p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[OpenNebula4.4入门之安装和节点配置]]></title>
@@ -816,77 +853,6 @@ Units = cylinders of 2013 * 512 = 1030656 bytes</p>
 <li><a href="http://serverfault.com/questions/453456/adding-virtio-block-devices-at-runtime-in-libvirt-kvm">Adding Virtio block devices at runtime in Libvirt KVM</a></li>
 </ul>
 
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenNebula Windows Server镜像制作]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/"/>
-    <updated>2013-09-22T11:01:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win</id>
-    <content type="html"><![CDATA[<p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
-
-<h3>创建虚拟机镜像文件</h3>
-
-<p>``` bash</p>
-
-<h1>qemu-img create -f qcow2 win_2008.qcow2 50G</h1>
-
-<p>```</p>
-
-<!--more-->
-
-
-<h3>安装虚拟机</h3>
-
-<p>网卡推荐使用e1000，磁盘类型使用virtio。使用virtio需要安装virtio设备驱动，否则默认是不能识别virtio设备的。</p>
-
-<h4>下载fedora项目组最新的virtio驱动iso</h4>
-
-<ul>
-<li><a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/">virtio官网地址</a> 目前的提供virtio最新驱动iso为 <a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-65.iso">virtio-win-0.1-65.iso</a> ，下载之后使用如下方式安装</li>
-</ul>
-
-
-<p>``` bash</p>
-
-<h1>kvm -m 2048 -cdrom cn_windows_server_2008_r2.iso \</h1>
-
-<p>-drive file=/data/virtio-win-0.1-65.iso,media=cdrom \
--drive file=win_2008.qcow2,if=virtio \
--net nic,model=e1000 -net tap,ifname=tap0,script=no \
--boot d -nographic -vnc :0
-```</p>
-
-<p>客户端通过VNC连接，启动之后virtio的硬盘是不能被识别的，如下图</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win1.jpg" width="500" /></center>
-
-
-
-
-<p></p>
-
-
-<p>此时，需要安装virtio驱动，点击加载驱动程序，Windows Server 2008对应win7版本</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win2.jpg" width="500" /></center>
-
-
-<p></p>
-
-
-<p>选择之后，按提示操作安装，安装完之后就会识别之前建立的磁盘</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win3.jpg" width="500" /></center>
-
-
-<p></p>
-
-
-<p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
 
 <p>--EOF--</p>
 ]]></content>

@@ -5,19 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>通过sysfs获取dmi硬件信息 - Linux SA Notes By 枯木</title>
+  <title>opennebula 3.8market兼容问题 - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="获取dmi系统硬件信息的方法有很多，之前笔者在Dmidecode 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科sysfs 1
-2
-3
-4
-5
-6
-7
-# pwd &hellip;">
-  <meta name="keywords" content="枯木,linux,hardware">
+  <meta name="description" content="今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作 Firebug获知锁定错误为market插件 Google获知原因所在，具体问题可以参见opennebula-3-8-and-market-compatiable-problem ， &hellip;">
+  <meta name="keywords" content="market,opennebula 3.8">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -25,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/05/02/hardware/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -99,7 +92,7 @@
   <header>
     
       
-        <h1 class="entry-title">通过sysfs获取dmi硬件信息</h1>
+        <h1 class="entry-title">Opennebula 3.8market兼容问题</h1>
       
     
     
@@ -116,7 +109,7 @@
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+<time datetime="2014-02-20T16:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -125,44 +118,35 @@
   </header>
 
 
-<div class="entry-content"><p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
+<div class="entry-content"><p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
+
+<center><img src="/images/OpenNebula/OpenNebula_market_err.png" /></center>
+
+
+
 
 <!--more-->
 
 
+<p>Firebug获知锁定错误为market插件</p>
+
+<center><img src="/images/OpenNebula/OpenNebula_market_err2.png" /></center>
 
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/sys/class/dmi/id
-</span><span class='line'><span class="c"># ls </span>
-</span><span class='line'>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
-</span><span class='line'>bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
-</span><span class='line'>bios_version     board_vendor   chassis_type       power            product_version  uevent
-</span><span class='line'>board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下</p>
+<p>Google获知原因所在，具体问题可以参见<a href="http://www.marshut.com/iqmmzn/opennebula-3-8-and-market-compatiable-problem.html">opennebula-3-8-and-market-compatiable-problem</a> ，解决方法是关闭sunstone的Market plugins，修改<code>etc/sunstone-plugins.yaml</code>配置文件，修改下行从<code>True</code>变为<code>false</code>，如下：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</span>
-</span><span class='line'>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16
-</span><span class='line'><span class="c"># cat product_name </span>
-</span><span class='line'>VMware Virtual Platform
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">plugins</span><span class="o">/</span><span class="n">marketplace</span><span class="o">-</span><span class="n">tab</span><span class="o">.</span><span class="n">js</span><span class="p">:</span>
+</span><span class='line'>    <span class="ss">:ALL</span><span class="p">:</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="ss">:user</span><span class="p">:</span>
+</span><span class='line'><span class="ss">:group</span><span class="p">:</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
+<p>完成之后刷新页面即可恢复正常</p>
 
 <p>&#8211;EOF&#8211;</p>
 </div>
@@ -187,12 +171,12 @@
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+<time datetime="2014-02-20T16:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
+    <a class='category' href='/blog/categories/xu-ni-hua/'>虚拟化</a>
   
 </span>
 
@@ -211,10 +195,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left articlenav" href="/blog/2013/05/02/sed-5/" title="Previous Post: 1-5. Write Pattern Space to File[译]">&laquo; 1-5. Write Pattern Space to File[译]</a>
+        <a class="basic-alignment left articlenav" href="/blog/2014/02/17/mysql-rep/" title="Previous Post: MySQL复制备忘">&laquo; MySQL复制备忘</a>
       
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/05/04/sed-6/" title="Next Post: 2-1、Sed Substitute Command[译]">2-1、Sed Substitute Command[译] &raquo;</a>
       
     </p>
   </footer>
@@ -329,8 +311,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/05/02/hardware/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/05/02/hardware/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -5,19 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>通过sysfs获取dmi硬件信息 - Linux SA Notes By 枯木</title>
+  <title>Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="获取dmi系统硬件信息的方法有很多，之前笔者在Dmidecode 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科sysfs 1
-2
-3
-4
-5
-6
-7
-# pwd &hellip;">
-  <meta name="keywords" content="枯木,linux,hardware">
+  <meta name="description" content="始末 大概是2011-05开始创建自己的第一个博客 枯木新浪博客，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。 ">
+  
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -25,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2013/05/02/hardware/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/page/8/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -93,13 +86,16 @@
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      
-        <h1 class="entry-title">通过sysfs获取dmi硬件信息</h1>
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/05/hello/">用Markdown写日志</a></h1>
       
     
     
@@ -116,118 +112,38 @@
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+<time datetime="2013-04-05T22:30:00+08:00" pubdate data-updated="true">Apr 5<span>th</span>, 2013</time>
         
-         | <a href="#disqus_thread">Comments</a>
+         | <a href="/blog/2013/04/05/hello/#disqus_thread">Comments</a>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>获取dmi系统硬件信息的方法有很多，之前笔者在<a href="http://kumu-linux.github.io//blog/2013/04/27/dmidecode/">Dmidecode</a> 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科<a href="https://zh.wikipedia.org/wiki/Sysfs">sysfs</a></p>
+  <div class="entry-content"><h3>始末</h3>
 
-<!--more-->
+<p>大概是2011-05开始创建自己的第一个博客 <a href="http://blog.sina.com.cn/kumuspring">枯木新浪博客</a>，也差不多是自己刚刚接触Linux的时候，至今(2013-04-06)也差不多有两年的博客生涯了。</p>
 
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># pwd</span>
-</span><span class='line'>/sys/class/dmi/id
-</span><span class='line'><span class="c"># ls </span>
-</span><span class='line'>bios_date        board_name     chassis_asset_tag  chassis_version  product_serial   subsystem
-</span><span class='line'>bios_vendor      board_serial   chassis_serial     modalias         product_uuid     sys_vendor
-</span><span class='line'>bios_version     board_vendor   chassis_type       power            product_version  uevent
-</span><span class='line'>board_asset_tag  board_version  chassis_vendor     product_name     smbios_version
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>/sys/class/dmi/id</code>目录中存放了很多的硬件信息，包括产品信息、主板信息、Bios信息、底板信息等，我们可以直接<code>cat</code>所有获取信息的文件名即可，如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat product_serial #查看产品序列号，实验在Vmware下操作，因此显示是VMware类型</span>
-</span><span class='line'>VMware-56 4d 55 a2 5e ff cf 90-57 50 f8 4d 13 60 c4 16
-</span><span class='line'><span class="c"># cat product_name </span>
-</span><span class='line'>VMware Virtual Platform
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>根据需要获取的硬件信息类别，查看相应的文件即可，这里不再一一说明，可以对照<code>dmidecode</code>学习。</p>
-
-<p>&#8211;EOF&#8211;</p>
 </div>
-
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
-
-      
-
-
-
-
-
-
-
-
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/05/hello/">阅读全文 &rarr;</a>
+    </footer>
   
 
 
-<time datetime="2013-05-02T22:27:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
-      
-
-<span class="categories">
+    </article>
   
-    <a class='category' href='/blog/categories/unix-slash-linux/'>UNIX/Linux</a>
-  
-</span>
-
-
-    </p>
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  
-  
-  
-  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left articlenav" href="/blog/2013/05/02/sed-5/" title="Previous Post: 1-5. Write Pattern Space to File[译]">&laquo; 1-5. Write Pattern Space to File[译]</a>
-      
-      
-        <a class="basic-alignment right articlenav" href="/blog/2013/05/04/sed-6/" title="Next Post: 2-1、Sed Substitute Command[译]">2-1、Sed Substitute Command[译] &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a class="next" href="/blog/page/7/">Newer &rarr;</a>
+    
+  </div>
 </div>
-  </section>
-
-</div>
-
 <aside class="sidebar">
   
     <section>
@@ -313,7 +229,6 @@
   
 </aside>
 
-
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -328,10 +243,7 @@
       var disqus_shortname = 'kumusanotes';
       
         
-        // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2013/05/02/hardware/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2013/05/02/hardware/';
-        var disqus_script = 'embed.js';
+        var disqus_script = 'count.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

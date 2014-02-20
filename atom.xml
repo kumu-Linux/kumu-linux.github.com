@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-19T22:33:18+08:00</updated>
+  <updated>2014-02-20T16:24:47+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,45 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[opennebula 3.8market兼容问题]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/"/>
+    <updated>2014-02-20T16:12:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market</id>
+    <content type="html"><![CDATA[<p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err.png" /></center>
+
+
+
+
+<!--more-->
+
+
+<p>Firebug获知锁定错误为market插件</p>
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err2.png" /></center>
+
+
+<p>Google获知原因所在，具体问题可以参见<a href="http://www.marshut.com/iqmmzn/opennebula-3-8-and-market-compatiable-problem.html">opennebula-3-8-and-market-compatiable-problem</a> ，解决方法是关闭sunstone的Market plugins，修改<code>etc/sunstone-plugins.yaml</code>配置文件，修改下行从<code>True</code>变为<code>false</code>，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">-</span> <span class="n">plugins</span><span class="o">/</span><span class="n">marketplace</span><span class="o">-</span><span class="n">tab</span><span class="o">.</span><span class="n">js</span><span class="p">:</span>
+</span><span class='line'>    <span class="ss">:ALL</span><span class="p">:</span> <span class="kp">false</span>
+</span><span class='line'>    <span class="ss">:user</span><span class="p">:</span>
+</span><span class='line'><span class="ss">:group</span><span class="p">:</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>完成之后刷新页面即可恢复正常</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[MySQL复制备忘]]></title>
@@ -4495,49 +4534,6 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 
 <center><img src="http://kumu-Linux.github.io/images/beijing.jpg" alt="北京中轴线" title="北京中轴线" width="500" /></center>
 
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[也谈伸手党]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/07/16/ssd/"/>
-    <updated>2013-07-16T12:43:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/07/16/ssd</id>
-    <content type="html"><![CDATA[<blockquote><p>所谓伸手，中国人俗称盗窃者（小偷，梁上君子）为三只手，手上功夫出神入化，而伸手党，则代表了无偿索要/剽窃别人劳动力或成果的人群。  &#8211;> 摘自百度百科 &lt;&#8211;</p></blockquote>
-
-<!--more-->
-
-
-<h3>什么是伸手党</h3>
-
-<p>今天我也学学基友 <a href="http://www.wutianqi.com/">Tankywoo</a> 来说说伸手党的事情，<a href="http://www.wutianqi.com/">Tankywoo</a> 的文章标题大意是伸手党是大学教育的产物。这里我不想扯上大学教育，中国的大学教育已经被人诟病很久了，一旦扯上中国教育就有点没完没了的调侃了，我觉得这是不公平的。毕竟，伸手党不仅仅局限于受过大学教育的，社会的每个角落都有他们的身影，这很明显是一个社会的普遍现象。何谓伸手党，我觉得这里有必要给伸手党讨个说法分个类。个人认为伸手党可以分为下几类：</p>
-
-<ul>
-<li>1、第一种伸手党我称为<code>“爷”级伸手党</code>，好比收保护费的。这种伸手党比较横，问你个问题他把自己当爷了，孙子给爷解决问题理所当然。这类人一般自认为很拽，直接抛个问题，口气还很横，并且从来不说谢谢。当然这种牛逼型伸手党，一般直接负分，滚粗！</li>
-<li>2、第二种伸手党是那种新手类，这里称之为<code>“小白型”伸手党</code>。这种人每次问问题，先把自己身份降低，一般开头是“菜鸟问个小白问题&#8230; &#8230;”。这类人比较多，不过这类伸手党还是情有可原的，可以读读<a href="http://www.wapm.cn/smart-questions/smart-questions-zh.html">《提问的智慧》</a>， 改善改善提问的方法。</li>
-<li>3、第三种伸手党就是那种<code>“资料型”伸手党</code>。每当要做某个东西的时候，就会问你，有这个的资料吗，有那个的文档吗，这种人是常年要资料的，很大一部分要了也未必看[看了也就罢了]。这种人从来不写文档，一味的向别人索取文档。尤其是笔者遇到过1年前问你要某个资料，当时给他了，然后隔了一年后还问你要那个资料，真想吐槽说这尼玛这里不是图书馆啊。</li>
-<li>4、第四种是<code>完全不动脑型伸手党</code>，对于这种人只能无语，遇到一个问题就问，给文档也不要，就是张嘴就问，巴不得手把手帮他把事给做了，这类人真的是无药可救了，无力吐槽。</li>
-</ul>
-
-
-<h3>关于杜绝伸手党</h3>
-
-<p>其实关于杜绝伸手党，还是要从提问开始。提问是一门很深的学问，之前也提到了 <a href="http://www.wapm.cn/smart-questions/smart-questions-zh.html">《提问的智慧》</a> ，这篇文章介绍了提问的一些技巧，非常值得一读。至少让别人乐意帮助你，而不会让别人觉得你就是一味地索取。曾经在北京西单那边看到一个行乞的老大爷，写得一手的好粉笔字，身旁摆着个大碗，自己头也不抬，自顾自的在地上写字，而行人路过纷纷给钱。相反，那些在地铁背个音响放噪音的，挨个挨个要钱却鲜有人给钱的。两个鲜明的对比，这就是行乞的艺术，我们提问也要有提问的艺术。</p>
-
-<p>有些伸手党是尝到甜头之后，就一直想不劳而获，这是行不通的，古人已经告诉我们了，这叫守株待兔。所以对于一味伸手的那种，你得适时的给点打击给他们。如果他们态度恶劣的，那只能让他们滚粗了。对于第四类直接无视就行了，时间一久估计他们自己也感到无趣了。遇到问题，首先想到的不应该是别人，而应该是自己，个人觉得解决问题可以3步走：</p>
-
-<ul>
-<li>1、<code>遇到问题不要怕</code>，自己先尝试解决，对于技术类的，如果程序运行错误，记得一定要看日志和错误提示，认真仔细了看，可能解决方法就在错误提示中，如果无果，那么走第二条</li>
-<li>2、<code>善用搜索引擎</code>，当然对于技术类的搜索，百度可以直接无视了。套用一句话，不用Google的技术人不是好技术人，所以这里推荐使用Google来搜索问题，把一些关键性的错误信息输入到Google中搜索，保准能看到别人和你犯的类似的错误，找一些解决方案测试。另外，推荐下<a href="http://www.google.com.hk/advanced_search">Google的高级搜索</a> ，方便过滤一些不需要的信息，找文档也非常有效，还有一篇文章<a href="http://jaychang.iteye.com/blog/1860361">善用GOOGLE &#8211; 从入门到精通</a> 。</li>
-<li>3、<code>懂得提问</code>，如果搜索引擎也解决不了，那么就考虑问同事，或去论坛和好一点的QQ群去咨询了。千万要描述清自己的问题，最好分点说明，这样调理清晰一点。而不是直接贴上大片的代码或者大片的Error，条理清楚很重要，你要明白问问题不是贴贴大字报就可以搞定的。</li>
-</ul>
-
-
-<p>这里推荐几个比较好的社区，国外的<a href="http://stackoverflow.com/">stackoverflow</a> 和<a href="http://serverfault.com/">serverfault</a> ，一个偏向编程一个偏向系统，可以说是全球最好的QA社区了。国内这类社区的技术氛围一直很一般，这里推荐<a href="http://www.zhihu.com">知乎</a> 和 <a href="http://www.v2ex.com/">v2ex</a> 。</p>
-
-<p>基本上是这样了，其实扯了那么多，无非就是希望每个技术人都能独立思考。当然独立思考并不是不交流，这是两码事，伸手党不是交流而是一味利己的索取，交流应该是共赢的，很遗憾目前国内还是很缺这种气氛的。当然你可以认为这篇文章完全是我的无病呻吟，看客若觉得不爽，可完全无视。最后，对广大伸手党同志说一句，回头吧！</p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-21T09:29:55+08:00</updated>
+  <updated>2014-02-21T09:33:01+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -84,6 +84,22 @@
 </span><span class='line'>    - user: root
 </span><span class='line'>    - group: root
 </span><span class='line'>    - mode: 600</span></code></pre></td></tr></table></div></figure>
+
+
+<p><strong>最终目录结构</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'># tree /srv/salt/
+</span><span class='line'>/srv/salt/
+</span><span class='line'>|-- ssh_key
+</span><span class='line'>|   |-- test
+</span><span class='line'>|   |-- test.sls
+</span><span class='line'>`-- top.sl</span></code></pre></td></tr></table></div></figure>
 
 
 <p><strong>server端主动推送</strong></p>

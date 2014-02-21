@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 运维利器 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/yun-wei-li-qi/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-21T09:29:55+08:00</updated>
+  <updated>2014-02-21T09:33:01+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -73,6 +73,18 @@ touch /srv/salt/test.sls
 </code></pre>
 
 <p>```</p>
+
+<p><strong>最终目录结构</strong>
+```</p>
+
+<h1>tree /srv/salt/</h1>
+
+<p>/srv/salt/
+|-- ssh_key
+|   |-- test
+|   |-- test.sls
+`-- top.sl
+```</p>
 
 <p><strong>server端主动推送</strong>
 <code>

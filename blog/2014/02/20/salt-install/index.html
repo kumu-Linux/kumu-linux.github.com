@@ -314,12 +314,27 @@ http://dl. &hellip;">
 <li>匹配所有的CentOS Client：
 
 <ul>
-<li>salt -G &#8216;os:CentOS&#8217; test.ping</li>
+<li><code>salt -G 'os:CentOS' test.ping</code></li>
 </ul>
 </li>
-<li>salt &#8216;*&#8217; grains.ls      # 查看grains分类</li>
-<li>salt &#8216;*&#8217; grains.items   # 查看grains所有信息</li>
-<li>salt &#8216;*&#8217; grains.item    # osrelease查看grains某个信息</li>
+<li>查看grains分类:
+
+<ul>
+<li><code>salt '*' grains.ls</code></li>
+</ul>
+</li>
+<li>查看grains所有信息:
+
+<ul>
+<li><code>salt '*' grains.items</code></li>
+</ul>
+</li>
+<li>osrelease查看grains某个信息:
+
+<ul>
+<li><code>salt '*' grains.item</code></li>
+</ul>
+</li>
 </ul>
 
 

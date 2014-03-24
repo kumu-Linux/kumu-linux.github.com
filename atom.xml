@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-21T09:33:01+08:00</updated>
+  <updated>2014-03-24T22:47:52+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,63 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula kvm被ssh端口占用]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port/"/>
+    <updated>2014-03-24T17:04:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port</id>
+    <content type="html"><![CDATA[<p>虚拟机重建出现如下错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>virsh create deployment.0
+</span><span class='line'>error: Failed to create domain from deployment.0
+</span><span class='line'>error: Unable to <span class="nb">read </span>from monitor: Connection reset by peer
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!--more-->
+
+
+<p>通过日志发现kvm端口被ssh占用</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># tail -f /var/log/libvirt/qemu/one-120.log</span>
+</span><span class='line'>… …
+</span><span class='line'>inet_listen_opts: <span class="nb">bind</span><span class="o">(</span>ipv4,0.0.0.0,6010<span class="o">)</span>: Address already in use
+</span><span class='line'>… …
+</span><span class='line'><span class="c"># netstat -tulnp | grep 6010</span>
+</span><span class='line'>tcp        0      0 127.0.0.1:6010          0.0.0.0:*               LISTEN      28575/5
+</span><span class='line'><span class="c"># ps -ef | grep 28575</span>
+</span><span class='line'>root     28575  0.0  0.0  73484  3656 ?        Ss   13:03   0:00 sshd: root@pts/5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>后查明原因是sshd_config配置文件默认开启<code>X11Forawarding</code>，<code>X11Forawarding</code>默认占用端口为6010开始，和OpenNebula kvm端口占用有冲突。另外，如果连接工具没有开启<code>X11Forawarding</code>，Server端也不会开启转发占用端口的，根本解决方法就是禁用<code>X11Forawarding</code>。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep X11Forwarding /etc/ssh/sshd_config </span>
+</span><span class='line'>X11Forwarding no
+</span><span class='line'><span class="c"># /etc/init.d/sshd restart</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>退出已登录的ssh连接，重新登录就不会出现端口占用的问题了，推荐默认关闭X11Forawarding，这在之前的文章<a href="http://kumu-linux.github.io/blog/2013/09/26/ssh-safe/">ssh的一些安全设定</a>已经介绍过了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[[2]salt文件分发]]></title>
@@ -4224,159 +4281,6 @@ Use 0.0.0.0 to allow access from other machines. This is use by ’vnc’ and �
 <li><a href="http://www.vpsee.com/2013/05/install-opennebula-4-0-on-centos-6-4/">在CentOS6.4上安装和配置OpenNebula4.0</a></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[pssh使用方法]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/08/12/pssh/"/>
-    <updated>2013-08-12T14:53:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/08/12/pssh</id>
-    <content type="html"><![CDATA[<p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
-
-<!--more -->
-
-
-<h3>安装</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>wget http://parallel-ssh.googlecode.com/files/pssh-2.3.1.tar.gz
-</span><span class='line'>tar zxvf pssh-2.3.1.tar.gz
-</span><span class='line'><span class="nb">cd </span>pssh-2.3.1/
-</span><span class='line'>python setup.py install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>pssh相关参数</h3>
-
-<ul>
-<li>pssh在多个主机上并行地运行命令
-
-<ul>
-<li>-h 执行命令的远程主机列表,文件内容格式[user@]host[:port]
-
-<ul>
-<li> 如 test@172.16.10.10:229</li>
-</ul>
-</li>
-<li>-H 执行命令主机，主机格式 user@ip:port</li>
-<li>-l 远程机器的用户名</li>
-<li>-p 一次最大允许多少连接</li>
-<li>-P 执行时输出执行信息</li>
-<li>-o 输出内容重定向到一个文件</li>
-<li>-e 执行错误重定向到一个文件</li>
-<li>-t 设置命令执行超时时间</li>
-<li>-A 提示输入密码并且把密码传递给ssh(如果私钥也有密码也用这个参数)</li>
-<li>-O 设置ssh一些选项</li>
-<li>-x 设置ssh额外的一些参数，可以多个，不同参数间空格分开</li>
-<li>-X 同-x,但是只能设置一个参数</li>
-<li>-i 显示标准输出和标准错误在每台host执行完毕后</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>附加工具</h3>
-
-<ul>
-<li>pscp 传输文件到多个hosts，类似scp
-
-<ul>
-<li>pscp -h hosts.txt -l irb2 foo.txt /home/irb2/foo.txt</li>
-</ul>
-</li>
-<li>pslurp 从多台远程机器拷贝文件到本地</li>
-<li>pnuke 并行在远程主机杀进程
-
-<ul>
-<li>pnuke -h hosts.txt -l irb2 java</li>
-</ul>
-</li>
-<li>prsync 使用rsync协议从本地计算机同步到远程主机
-
-<ul>
-<li>prsync -r -h hosts.txt -l irb2 foo /home/irb2/foo</li>
-</ul>
-</li>
-</ul>
-
-
-<h3>示例</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># cat host.txt </span>
-</span><span class='line'>root@192.168.230.128
-</span><span class='line'>wul@10.0.0.8
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>推荐使用<code>-i</code>选项输出信息而不是<code>-P</code>选项</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -i -h host.txt &#39;date&#39;</span>
-</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
-</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
-</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 16:32:38 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
-</span><span class='line'>Mon Aug 12 16:32:38 CST 2013
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>-x</code>选项</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -h host.txt date</span>
-</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> root@192.168.230.128
-</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
-</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
-</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:20:01 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
-</span><span class='line'>Mon Aug 12 17:20:01 CST 2013
-</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><code>-H</code>选项</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>kumu-opsdev ~ <span class="c"># pssh -x &#39;-t -t -o StrictHostKeyChecking=no&#39; -i -H 192.168.230.128 -H wul@10.0.0.8 date</span>
-</span><span class='line'><span class="o">[</span>1<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> 192.168.230.128
-</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
-</span><span class='line'>Stderr: Connection to 192.168.230.128 closed.
-</span><span class='line'><span class="o">[</span>2<span class="o">]</span> 17:22:58 <span class="o">[</span>SUCCESS<span class="o">]</span> wul@10.0.0.8
-</span><span class='line'>Mon Aug 12 17:22:58 CST 2013
-</span><span class='line'>Stderr: Connection to 10.0.0.8 closed.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>参考文档</h3>
-
-<ul>
-<li><a href="http://linux.die.net/man/1/pssh">pssh</a></li>
-<li><a href="http://www.theether.org/pssh/docs/0.2.3/pssh-HOWTO.html">pssh-howto</a></li>
-</ul>
-
-
-<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

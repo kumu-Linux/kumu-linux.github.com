@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-02-25T17:43:12+08:00</updated>
+  <updated>2014-03-24T22:47:52+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,55 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpenNebula kvm被ssh端口占用]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port/"/>
+    <updated>2014-03-24T17:04:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port</id>
+    <content type="html"><![CDATA[<p>虚拟机重建出现如下错误：
+<code>bash
+$ virsh create deployment.0
+error: Failed to create domain from deployment.0
+error: Unable to read from monitor: Connection reset by peer
+</code></p>
+
+<!--more-->
+
+
+<p>通过日志发现kvm端口被ssh占用
+``` bash</p>
+
+<h1>tail -f /var/log/libvirt/qemu/one-120.log</h1>
+
+<p>… …
+inet_listen_opts: bind(ipv4,0.0.0.0,6010): Address already in use
+… …</p>
+
+<h1>netstat -tulnp | grep 6010</h1>
+
+<p>tcp        0      0 127.0.0.1:6010          0.0.0.0:*               LISTEN      28575/5</p>
+
+<h1>ps -ef | grep 28575</h1>
+
+<p>root     28575  0.0  0.0  73484  3656 ?        Ss   13:03   0:00 sshd: root@pts/5
+```</p>
+
+<p>后查明原因是sshd_config配置文件默认开启<code>X11Forawarding</code>，<code>X11Forawarding</code>默认占用端口为6010开始，和OpenNebula kvm端口占用有冲突。另外，如果连接工具没有开启<code>X11Forawarding</code>，Server端也不会开启转发占用端口的，根本解决方法就是禁用<code>X11Forawarding</code>。</p>
+
+<p>``` bash</p>
+
+<h1>grep X11Forwarding /etc/ssh/sshd_config</h1>
+
+<p>X11Forwarding no</p>
+
+<h1>/etc/init.d/sshd restart</h1>
+
+<p>```</p>
+
+<p>退出已登录的ssh连接，重新登录就不会出现端口占用的问题了，推荐默认关闭X11Forawarding，这在之前的文章<a href="http://kumu-linux.github.io/blog/2013/09/26/ssh-safe/">ssh的一些安全设定</a>已经介绍过了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[opennebula 3.8 market兼容问题]]></title>
@@ -731,128 +780,6 @@ ln -s /usr/libexec/qemu-kvm /usr/bin/kvm
 </code></p>
 
 <p>最后在Web上添加host主机节点即可，状态显示为<code>on</code>则表示添加成功。</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenNebula KVM磁盘热插拔]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug/"/>
-    <updated>2013-09-25T15:22:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/09/25/kvm-disk-hotplug</id>
-    <content type="html"><![CDATA[<p>KVM支持以下两种磁盘类型的热插拔：</p>
-
-<ul>
-<li>sd: SCSI (default).</li>
-<li>vd: virtio.</li>
-</ul>
-
-
-<p>KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项：</p>
-
-<ul>
-<li>FEATURES = [ acpi="yes" ]</li>
-</ul>
-
-
-<!--more-->
-
-
-<h3>virtio磁盘热插拔</h3>
-
-<p>虚拟机加载acpiphp驱动</p>
-
-<p>``` bash</p>
-
-<h1>modprobe acpiphp  # 加载驱动</h1>
-
-<h1>fdisk -l</h1>
-
-<p>Disk /dev/vda: 32.2 GB, 32212254720 bytes
-255 heads, 63 sectors/track, 3916 cylinders
-Units = cylinders of 16065 * 512 = 8225280 bytes</p>
-
-<p>   Device Boot      Start         End      Blocks   Id  System
-/dev/vda1   *           1          13      104391   83  Linux
-/dev/vda2              14        3916    31350847+  8e  Linux LVM
-```</p>
-
-<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach 挂载使用</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk1.jpg" width="500"></center>
-
-
-<p>Device Prefix选择sd表示scsi磁盘，如果是vd则是vitio类型磁盘。选择Attach之后，刷新页面就会看到新建的磁盘。</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk2.jpg" width="500"></center>
-
-
-<p>此时查看vda磁盘是否生效
-``` bash</p>
-
-<h1>fdisk -l          # 查看磁盘识别</h1>
-
-<p>...</p>
-
-<p>Disk /dev/vdb: 1048 MB, 1048576000 bytes
-16 heads, 63 sectors/track, 2031 cylinders
-Units = cylinders of 1008 * 512 = 516096 bytes</p>
-
-<p>Disk /dev/vdb doesn't contain a valid partition table
-```</p>
-
-<h3>scsi磁盘热插拔</h3>
-
-<p>虚拟机加载acpiphp驱动</p>
-
-<p>``` bash</p>
-
-<h1>modprobe acpiphp  # 加载驱动</h1>
-
-<p>```</p>
-
-<p>选择需要添加磁盘的虚拟机- [ Disks &amp; Hotplugging ] ，配置完成之后选择 Attach挂载使用</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_disk3.jpg" width="500"></center>
-
-
-<p>如下即可看到新添加的磁盘
-``` bash</p>
-
-<h1>fdisk -l</h1>
-
-<p>...</p>
-
-<p>Disk /dev/sda: 1048 MB, 1048576000 bytes
-33 heads, 61 sectors/track, 1017 cylinders
-Units = cylinders of 2013 * 512 = 1030656 bytes</p>
-
-<p>Disk /dev/sda doesn't contain a valid partition table
-```</p>
-
-<p>如果未识别scsi磁盘，执行如下命令，使得KVM虚拟机识别
-``` bash</p>
-
-<h1>echo '- - -' > /sys/class/scsi_host/host0/scan</h1>
-
-<h1>fdisk -l</h1>
-
-<p>...
-Disk /dev/sdb: 1048 MB, 1048576000 bytes
-33 heads, 61 sectors/track, 1017 cylinders
-Units = cylinders of 2013 * 512 = 1030656 bytes</p>
-
-<p>Disk /dev/sdb doesn't contain a valid partition table
-```</p>
-
-<h3>参考文档</h3>
-
-<ul>
-<li><a href="http://opennebula.org/documentation:rel4.2:kvmg">KVM Driver 4.2</a></li>
-<li><a href="http://serverfault.com/questions/453456/adding-virtio-block-devices-at-runtime-in-libvirt-kvm">Adding Virtio block devices at runtime in Libvirt KVM</a></li>
-</ul>
-
 
 <p>--EOF--</p>
 ]]></content>

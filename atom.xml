@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-03-26T23:10:26+08:00</updated>
+  <updated>2014-03-26T23:13:54+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -48,6 +48,16 @@
 </span><span class='line'>&gt; root <span class="o">(</span>hd0,0<span class="o">)</span>
 </span><span class='line'>&gt; setup <span class="o">(</span>hd0<span class="o">)</span>
 </span><span class='line'>&gt; quit
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><code>/boot/grub/device.map</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">(</span>hd0<span class="o">)</span> /dev/vda
 </span></code></pre></td></tr></table></div></figure>
 
 ]]></content>

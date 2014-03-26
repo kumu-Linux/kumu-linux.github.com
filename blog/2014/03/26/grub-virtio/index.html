@@ -5,12 +5,20 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Category: Shell/Python - Linux SA Notes By 枯木</title>
+  <title>grub install with kvm virtio disk - Linux SA Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Category: Shell/Python">
-  
+  <meta name="description" content="grub-install ERROR: not suitable driver was found First 1
+grub-install /dev/vda Second 1
+2
+3
+4
+5
+# grub
+&gt; device (hd0) /dev/vda
+&gt; root (hd0,0 &hellip;">
+  <meta name="keywords" content="virtio, grub">
 
   <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +26,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.ioblog/categories/shell-slash-python/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/03/26/grub-virtio/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -87,36 +95,127 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">Category: Shell/Python</h1>
+    
+      
+        <h1 class="entry-title">Grub Install With Kvm Virtio Disk</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-26T14:31:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
+<div class="entry-content"><p>grub-install ERROR: not suitable driver was found</p>
 
-  
-  <h2>2013</h2>
-
-<article>
-  
-<h1><a href="/blog/2013/11/05/paramiko/">paramiko解析AES加密算法</a></h1>
-<time datetime="2013-11-05T21:01:00+08:00" pubdate><span class='month'>Nov</span> <span class='day'>05</span> <span class='year'>2013</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/shell-slash-python/'>Shell/Python</a></span>
-</footer>
+<!--more-->
 
 
-</article>
+<ul>
+<li>First</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>grub-install /dev/vda
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>Second</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grub</span>
+</span><span class='line'>&gt; device <span class="o">(</span>hd0<span class="o">)</span> /dev/vda
+</span><span class='line'>&gt; root <span class="o">(</span>hd0,0<span class="o">)</span>
+</span><span class='line'>&gt; setup <span class="o">(</span>hd0<span class="o">)</span>
+</span><span class='line'>&gt; quit
+</span></code></pre></td></tr></table></div></figure>
 
 </div>
 
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">枯木</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-26T14:31:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/xu-ni-hua/'>虚拟化</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  <div class="bshare-custom"><a title="分享到QQ空间" class="bshare-qzone"></a><a title="分享到新浪微博" class="bshare-sinaminiblog"></a><a title="分享到人人网" class="bshare-renren"></a><a title="分享到腾讯微博" class="bshare-qqmb"></a><a title="分享到网易微博" class="bshare-neteasemb"></a><a title="更多平台" class="bshare-more bshare-more-icon more-style-addthis"></a><span class="BSHARE_COUNT bshare-share-count">0</span></div><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/buttonLite.js#style=-1&amp;uuid=&amp;pophcol=1&amp;lang=zh"></script><script type="text/javascript" charset="utf-8" src="http://static.bshare.cn/b/bshareC0.js"></script>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left articlenav" href="/blog/2014/03/24/opennebula-port/" title="Previous Post: OpenNebula kvm被ssh端口占用">&laquo; OpenNebula kvm被ssh端口占用</a>
+      
+      
+    </p>
+  </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -220,7 +319,10 @@
       var disqus_shortname = 'kumusanotes';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/03/26/grub-virtio/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/03/26/grub-virtio/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

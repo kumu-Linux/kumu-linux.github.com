@@ -4,7 +4,7 @@
   <title><![CDATA[Linux SA Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-03-26T23:13:54+08:00</updated>
+  <updated>2014-04-02T21:00:30+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -783,6 +783,16 @@
 
 
 <p>master-data默认值是1，加上之后会记录Position点并执行<code>CHANGE MASTER TO MASTER_LOG_FILE='bin-log.xxxx', MASTER_LOG_POS=xxxx;</code>语句，为2则记录但会注释<code>CHANGE MASTER</code>语句，不会被执行。关于备份可以使用其它的工具如Percona Xtrabackup等等</p>
+
+<ul>
+<li>A-B-C方式
+
+<ul>
+<li>B为从和主身份时，B实例上需要设置<code>logs-slave-updates</code>选项，这个选项告诉从服务器将其SQL线程执行的更新记录到从服务器自己的二进制日志上，当然前提是需要开启binlog</li>
+</ul>
+</li>
+</ul>
+
 
 <h2 id="repl8">一些重要的选项</h2>
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Linux SA Notes By 枯木]]></title>
+  <title><![CDATA[OPS Notes By Kumu]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-02T21:00:30+08:00</updated>
+  <updated>2014-04-03T23:56:08+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -64,7 +64,7 @@
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[OpenNebula kvm被ssh端口占用]]></title>
+    <title type="html"><![CDATA[ssh X11Forawarding占用OpenNebula kvm端口]]></title>
     <link href="http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port/"/>
     <updated>2014-03-24T17:04:00+08:00</updated>
     <id>http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port</id>
@@ -453,12 +453,12 @@
     <id>http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market</id>
     <content type="html"><![CDATA[<p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
 
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err.png" /></center>
-
-
-
-
 <!--more-->
+
+
+
+
+<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err.png" /></center>
 
 
 <p>Firebug获知锁定错误为market插件</p>

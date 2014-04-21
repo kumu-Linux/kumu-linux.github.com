@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Unix/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-21T17:58:19+08:00</updated>
+  <updated>2014-04-21T18:00:41+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -142,7 +142,7 @@ grep 'mysqld'; sleep 1 ;done # ps通过查看psr队列获取进程占用哪个cp
 $ top -p `pgrep mysql | xargs | tr " " ","` # 执行如下命令之后
 </code></p>
 
-<p><code>pri</code>优先级动态值，<code>ni</code>为静态值，root用户可以调高优先级[-20~19]，-20为优先级最高，普通用户只能调低优先级，两者关系：<code>pri[new]=pri[old]+nice</code></p>
+<p><code>pri</code>优先级动态值，<code>ni</code>为静态值，root用户可以调高nice优先级[-20~19]，-20为优先级最高，普通用户只能调低优先级，两者关系：<code>pri[new]=pri[old]+nice</code></p>
 
 <p>监控CPU性能由以下几个部分组成：</p>
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Unix/Linux | OPS Notes By 枯木]]></title>
+  <title><![CDATA[Category: UNIX/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-21T18:18:42+08:00</updated>
+  <updated>2014-04-21T18:25:13+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -155,6 +155,847 @@ $ top -p `pgrep mysql | xargs | tr " " ","` # 执行如下命令之后
 
 
 <p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[svn and git Server备忘]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/12/09/svn-git/"/>
+    <updated>2013-12-09T13:58:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/12/09/svn-git</id>
+    <content type="html"><![CDATA[<h2><u>Git Server with ssh</u></h2>
+
+<!--more-->
+
+
+<ul>
+<li>Server</li>
+</ul>
+
+
+<p><code>bash
+useradd -s /usr/bin/git-shell git   //创建git用户
+git init --bare /home/git/testrepo  //初始化名为testrepo，Server端操作
+mkdir /home/git/.ssh -p
+vim .ssh/authorized_keys            //加入客户端ssh公钥，设置ssh公钥认证
+chmod 700 /home/git/.ssh/
+chmod 400 /home/git/.ssh/authorized_keys
+chown git:git -R /home/git
+</code></p>
+
+<p>注意：如果是root用户执行的命令，需要修改权限如下
+<code>
+chow -R git:git testrepo
+</code></p>
+
+<ul>
+<li>Client</li>
+</ul>
+
+
+<p><code>bash
+git clone git@sevrer_ip:/home/git/testrepo  //克隆repo
+</code></p>
+
+<p>具体操作<br/>
+<code>bash
+cd testrepo                         //进入本地版本库
+echo "hello" &gt;&gt; test                //新建测试文件
+git add test                        //添加到git缓存
+git commit -m "first commit" test   //本地提交
+git push -u origin master           //提交给远程服务器
+git pull                            //客户端拉取数据
+</code></p>
+
+<h2><u>Svn Server with apache &amp;&amp; ldap</u></h2>
+
+<p><code>bash
+yum install subversion mod_dav_svn -y
+</code></p>
+
+<p>yum安装后会生成subversion.conf并添加相应模块配置
+``` bash</p>
+
+<h1>grep LoadModule /etc/httpd/conf.d/subversion.conf</h1>
+
+<p>LoadModule dav_svn_module     modules/mod_dav_svn.so
+LoadModule authz_svn_module   modules/mod_authz_svn.so
+```</p>
+
+<p>svn创建库<br/>
+<code>bash
+svnadmin create --fs-type fsfs /var/www/svn
+chown apache:apache -R /var/www/svn
+</code></p>
+
+<p>设置ldap认证<br/>
+``` bash</p>
+
+<h1>grep -vE '<sup>$|<sup>#'</sup></sup> /etc/httpd/conf.d/subversion.conf</h1>
+
+<p>LoadModule dav_svn_module     modules/mod_dav_svn.so
+LoadModule authz_svn_module   modules/mod_authz_svn.so
+<Location /svn></p>
+
+<pre><code>DAV svn 
+SVNPath /var/www/svn
+AuthBasicProvider ldap
+AuthType Basic
+AuthzLDAPAuthoritative off
+AuthName "Please provide your windows login credentials to continue."
+AuthLDAPURL "ldap://ldap_ip/ou=users,ou=test,dc=intranet,dc=test,dc=com?sAMAccountName" NONE
+AuthLDAPBindDN "test@intranet.test.com"
+AuthLDAPBindPassword password 
+require valid-user
+</code></pre>
+
+<p></Location>
+```</p>
+
+<p>启动apache<br/>
+<code>
+service httpd start
+</code></p>
+
+<p>浏览器登陆<br/>
+<a href="http://svn_ip/svn">http://svn_ip/svn</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[修改CentOS/RHEL rsync监听地址]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/11/07/rsync/"/>
+    <updated>2013-11-07T10:35:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/11/07/rsync</id>
+    <content type="html"><![CDATA[<p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
+
+<!--more-->
+
+
+<p><code>bash
+...
+tcp        0      0 0.0.0.0:873                 0.0.0.0:*       ...
+...
+</code></p>
+
+<p>因为CentOS/RHEL是依赖xinetd的，所以我就想到了xinetd配置文件<code>/etc/xinetd.conf</code>，发现选项<code># bind       =</code>，于是修改如下</p>
+
+<p>``` bash
+...</p>
+
+<pre><code>bind        = 192.168.80.128    # 此处ip填写主机本地ip即可
+</code></pre>
+
+<p>...
+```</p>
+
+<p>修改完成保存，重启xinetd程序，修改生效</p>
+
+<p><code>bash
+...
+tcp        0      0 192.168.80.128:873               0.0.0.0:*                   LISTEN      25967/xinetd
+...
+</code></p>
+
+<p>当然你也可以直接不依赖xinetd修改监听地址，直接使用命令启动rsync，如下</p>
+
+<p><code>bash
+rsync --address=192.168.80.128 --config=/etc/rsyncd.conf --daemon
+</code></p>
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[ssh的一些安全设定]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe/"/>
+    <updated>2013-09-26T10:42:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/26/ssh-safe</id>
+    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/nmap_ssh.jpg" width="500"></center>
+
+
+
+
+<!--more-->
+
+
+<p>ssh是我们日常工作中必不可少的工具，所以它的安全性也是异常重要了，这里笔者简单介绍了一些ssh配置中需要注意的几个点。</p>
+
+<!--more-->
+
+
+<p>首先,作为root用户登录并备份原始文件，输入下面的命令：</p>
+
+<p><code>bash
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+</code></p>
+
+<h3>1、调整认证时限(默认单位为s)，即当用户登录ssh之后，要求输入密码的时间限制，规定时间没有输入则自动断线：</h3>
+
+<p><code>bash
+LoginGraceTime 60
+</code></p>
+
+<h3>2、最好限制root用户远程登录，修改如下：</h3>
+
+<p><code>bash
+PermitRootLogin no
+</code></p>
+
+<h3>3、关闭X11转发，防止额外的信息泄露</h3>
+
+<p><code>bash
+X11Forwarding no
+</code></p>
+
+<h3>4、取消以下两行的注释，使得登录后显示一些信息</h3>
+
+<p><code>bash
+PrintMotd yes
+PrintLastLog yes
+</code></p>
+
+<h3>5、编辑<code>/etc/motd</code>文件，添加一些警告信息，如下</h3>
+
+<p><code>bash
+This computer system is for authorized users only. All activity
+is logged and regularly checked. Individuals using this system
+without authority or in excess of their authority are subject to
+having all their services revoked...
+</code></p>
+
+<h3>6、关闭ssh闲置会话</h3>
+
+<p><code>bash
+ClientAliveInterval 60        
+ClientAliveCountMax 5
+</code></p>
+
+<ul>
+<li>ClientAliveInterval设置表示如果超过这么长时间没有收到客户端的任何数据，将通过安全通道向客户端发送一个"alive"消息，并等候应答，单位默认为s。</li>
+<li>ClientAliveCountMax表示在未收到任何客户端回应前最多允许发送多少个"alive"消息，这是设置5次</li>
+</ul>
+
+
+<p>以上也就是客户端如果60*5=300s，即5分钟如果没有任何操作，则空闲连接会被强制断开，关闭时提示如下</p>
+
+<pre><code>Connection to x.x.x.x closed by remote host.
+Connection to x.x.x.x closed.
+</code></pre>
+
+<h3>7、开启TCPKeepAlive</h3>
+
+<p><code>bash
+TCPKeepAlive yes
+</code></p>
+
+<p>TCPKeepAlive指定系统是否向客户端发送TCP keepalive消息，这种消息可以检测到死连接、连接不当关闭、客户端崩溃等异常，避免僵尸进程产生，推荐开启。</p>
+
+<h3>8、修改ssh默认端口22</h3>
+
+<p><code>bash
+Port xxxx   #自定义端口
+</code></p>
+
+<h3>9、设置允许登录的ssh用户</h3>
+
+<p><code>bash
+AllowUsers test1 test2 test3
+</code></p>
+
+<p>也可以设置允许的组</p>
+
+<p><code>bash
+AllowGroups admin
+</code></p>
+
+<h3>10、关闭不必要的认证</h3>
+
+<p>如果可以，只允许公钥认证，关闭其它认证方式</p>
+
+<p><code>bash
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+</code></p>
+
+<p>基本的一个设置就是以上的部分了内容了，还可以结合<code>fail2ban</code>更好的保护ssh的安全。关于<code>fail2ban</code>下次介绍，其实很多网友已经写了很多相关的博文了。</p>
+
+<h3>参考文章</h3>
+
+<ul>
+<li><a href="http://blog.licess.org/sshd_config/">sshd_config配置</a></li>
+<li><a href="http://lamp.linux.gov.cn/OpenSSH/sshd_config.html">sshd_config中文手册</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/aix/library/au-sshsecurity/">SSH 安全性和配置入门</a></li>
+<li><a href="http://www.amazon.com/CentOS-6-Linux-Server-Cookbook/dp/1849519021">CentOS 6 Linux Server Cookbook </a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[30 Handy Bash Shell Aliases[译]]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/09/25/shell-alias/"/>
+    <updated>2013-09-25T10:42:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/09/25/shell-alias</id>
+    <content type="html"><![CDATA[<p>本文为 <a href="http://www.cyberciti.biz/tips/bash-aliases-mac-centos-linux-unix.html">原文地址</a> 翻译而来，有些地方稍作改动。</p>
+
+<p>一个别名就是一个命令的快捷方式，<code>alias</code>命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过<code>alias</code>命令可以显示所有已定义的别名列表。你可以在<code>~ /.bashrc</code>文件中自定义用户的别名。通过这些别名可以减少打字时间，更灵活的操作，提升工作效率。</p>
+
+<!--more-->
+
+
+<h3>Task：列出系统别名列表</h3>
+
+<p>输入以下命令：</p>
+
+<p><code>bash
+alias
+</code></p>
+
+<p>输出实例:</p>
+
+<p><code>bash
+alias cp='cp -i'
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+...
+</code></p>
+
+<p>默认<code>alias</code>命令不添加任何选项输出当前用户定义的别名。</p>
+
+<h3>Task：定义/创建一个别名(bash语法)</h3>
+
+<p>创建别名使用如下语法：</p>
+
+<p><code>bash
+alias name=value
+alias name='command'
+alias name='command arg1 arg2'
+alias name='/path/to/script'
+alias name='/path/to/script.pl arg1'
+</code></p>
+
+<p>在以下的实例中，创建一个<code>clear</code>清屏命令的别名c，输入如下命令：</p>
+
+<p><code>bash
+alias c=clear
+</code></p>
+
+<p>输入以上命令之后，如果需要清屏，只需直接输入简单的<code>c</code>来代替<code>clear</code>命令即可实现</p>
+
+<h3>Task：暂时禁用别名</h3>
+
+<p>显示别名<code>cp</code>
+<code>bash
+$ alias cp
+alias cp='cp -i'
+</code>
+<code>cp</code>命令是<code>cp -i</code>的别名，<code>-i</code>选项一定程度上能起到保护作用，但是当我们只想使用原始的cp命令的时候，我们肯定不能简单的输入<code>cp</code>命令，这里有两种方式实现</p>
+
+<ul>
+<li>使用全名</li>
+<li>或者使用\+命令</li>
+</ul>
+
+
+<p><code>bash
+$ ls a b
+a  b
+$ cp b a        #使用别名之后的cp在覆盖文件时会提示
+cp: overwrite `a'? y
+$ /bin/cp b a   #使用全称不会有提示
+$ \cp b a       #使用\cp不会有提示
+</code></p>
+
+<h3>移除alias (bash语法)</h3>
+
+<p>你需要使用<code>unalias</code>命令移除别名，语法如下：</p>
+
+<p><code>bash
+unalias aliasname
+</code></p>
+
+<p>例如，移除之前<code>clear</code>的别名<code>c</code>：</p>
+
+<p><code>bash
+unalias c
+</code></p>
+
+<p>如果你在<code>~/bashrc</code>文件中定义了别名，也需要从该文件中移除对应所在行。</p>
+
+<h3>Task：定义永久别名</h3>
+
+<p>alias c只能在当前会话中生效。当你重启或者退出当前会话的时候，就失效了。为了避免这种问题，田间别名到你的<code>~/.bashrc</code>配置文件中，输入:</p>
+
+<p><code>bash
+vi ~/.bashrc
+</code></p>
+
+<p>通过添加如下内容，对于当前用户别名c永久生效：</p>
+
+<p><code>bash
+alias c='clear'
+</code></p>
+
+<p>保存并退出这个文件，全局别名可以存放在<code>/etc/bashrc</code>文件中，请注意这个别名命令建立在各种shell中，包括ksh、csh、bash等等</p>
+
+<h3>一个关于权限访问的小贴士</h3>
+
+<p>你可以添加如下代码到<code>~/.bashrc</code>：</p>
+
+<p>``` bash</p>
+
+<h1>if user is not root, pass all commands via sudo</h1>
+
+<p>if [ $UID -ne 0 ]; then</p>
+
+<pre><code>alias reboot='sudo reboot'
+alias update='sudo yum update'
+</code></pre>
+
+<p>fi
+```</p>
+
+<h3>按照操作系统添加别名的小贴士</h3>
+
+<p>你可以添加如下代码到<code>~/.bashrc</code> <a href="http://bash.cyberciti.biz/guide/The_case_statement">case语句</a>：</p>
+
+<p>``` bash</p>
+
+<h3>Get os name via uname</h3>
+
+<p>_myos="$(uname)"</p>
+
+<h3>add alias as per os using $_myos</h3>
+
+<p>case $_myos in
+   Linux) alias foo='/path/to/linux/bin/foo';;
+   FreeBSD|OpenBSD) alias foo='/path/to/bsd/bin/foo' ;;
+   SunOS) alias foo='/path/to/sunos/bin/foo' ;;
+   *) ;;
+esac
+```</p>
+
+<h3>30个有用的别名</h3>
+
+<p>你可以定义不同类型的别名来节约时间和提升效率。</p>
+
+<h4>#1: 控制<code>ls</code>命令输出</h4>
+
+<p>给<code>ls</code>命令的输出来电颜色看看</p>
+
+<p>``` bash</p>
+
+<h2>Colorize the ls output</h2>
+
+<p>alias ls='ls --color=auto'</p>
+
+<h2>Use a long listing format</h2>
+
+<p>alias ll='ls -la'</p>
+
+<h2>Show hidden files</h2>
+
+<p>alias l.='ls -d .* --color=auto'
+```</p>
+
+<h4>#2: 调整<code>cd</code>命令习惯</h4>
+
+<p>``` bash</p>
+
+<h2>get rid of command not found</h2>
+
+<p>alias cd..='cd ..'</p>
+
+<h2>a quick way to get out of current directory</h2>
+
+<p>alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+```</p>
+
+<h4>#3：控制<code>grep</code>命令输出</h4>
+
+<p>``` bash</p>
+
+<h2>Colorize the grep command output for ease of use (good for log files)</h2>
+
+<p>alias grep='grep --color=auto'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+```</p>
+
+<h4>#4：开启计算器小数点计算</h4>
+
+<p><code>bash
+alias bc='bc -l'
+</code></p>
+
+<h4>#5：生成sha1摘要</h4>
+
+<p><code>bash
+alias sha1='openssl sha1'
+</code></p>
+
+<h4>#6、根据需要创建父目录</h4>
+
+<p><code>bash
+alias mkdir='mkdir -pv'
+</code></p>
+
+<h4>#7：有颜色的diff输出</h4>
+
+<p>``` bash</p>
+
+<h1>install  colordiff package :) 前提需要安装colordiff包</h1>
+
+<p>alias diff='colordiff'
+```</p>
+
+<h4>#8：使mount命令输出格式更漂亮以及可读性更高</h4>
+
+<p><code>bash
+alias mount='mount |column -t'
+</code></p>
+
+<h4>#9：短命令节省时间</h4>
+
+<p>``` bash</p>
+
+<h1>handy short cuts</h1>
+
+<p>alias h='history'
+alias j='jobs -l'
+```</p>
+
+<h4>#10：创建一些新的命令</h4>
+
+<p><code>bash
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+</code></p>
+
+<h4>#11：设置默认的vim</h4>
+
+<p><code>bash
+alias vi=vim
+alias svi='sudo vi'
+alias vis='vim "+set si"'
+alias edit='vim'
+</code></p>
+
+<h4>#12：ping的相关设置</h4>
+
+<p>``` bash</p>
+
+<h1>Stop after sending count ECHO_REQUEST packets</h1>
+
+<p>alias ping='ping -c 5'</p>
+
+<h1>Do not wait interval 1 second, go fast</h1>
+
+<p>alias fastping='ping -c 100 -s.2'
+```</p>
+
+<h4>#13：显示打开的端口</h4>
+
+<p><code>bash
+alias ports='netstat -tulanp'
+</code></p>
+
+<h4>#14：唤醒沉睡的服务</h4>
+
+<p><a href="http://www.cyberciti.biz/tips/linux-send-wake-on-lan-wol-magic-packets.html">Wake-on-LAN(WOL)</a>是一个以太网网络标准,允许通过一个网络信息打开服务。您可以使用以下的别名快速唤醒NAS设备和服务器<a href="http://bash.cyberciti.biz/misc-shell/simple-shell-script-to-wake-up-nas-devices-computers/">Devices Using Linux or Unix Computer</a>:</p>
+
+<p>``` bash</p>
+
+<h2>replace mac with your actual server mac address</h2>
+
+<p>alias wakeupnas01='/usr/bin/wakeonlan 00:11:32:11:15:FC'
+alias wakeupnas02='/usr/bin/wakeonlan 00:11:32:11:15:FD'
+alias wakeupnas03='/usr/bin/wakeonlan 00:11:32:11:15:FE'
+```</p>
+
+<h4>#15：控制防火墙(iptables)输出</h4>
+
+<p>``` bash</p>
+
+<h2>shortcut  for iptables and pass it via sudo</h2>
+
+<p>alias ipt='sudo /sbin/iptables'</p>
+
+<h1>display all rules</h1>
+
+<p>alias iptlist='sudo /sbin/iptables -L -n -v --line-numbers'
+alias iptlistin='sudo /sbin/iptables -L INPUT -n -v --line-numbers'
+alias iptlistout='sudo /sbin/iptables -L OUTPUT -n -v --line-numbers'
+alias iptlistfw='sudo /sbin/iptables -L FORWARD -n -v --line-numbers'
+alias firewall=iptlist
+```</p>
+
+<h4>#16：通过curl调试web服务或者CDN问题</h4>
+
+<p>``` bash</p>
+
+<h1>get web server headers</h1>
+
+<p>alias header='curl -I'</p>
+
+<h1>find out if remote server supports gzip / mod_deflate or not</h1>
+
+<p>alias headerc='curl -I --compress'
+```</p>
+
+<h4>#17：一些安全的设置</h4>
+
+<p>``` bash</p>
+
+<h1>do not delete / or prompt if deleting more than 3 files at a time</h1>
+
+<p>alias rm='rm -I --preserve-root'</p>
+
+<h1>confirmation</h1>
+
+<p>alias mv='mv -i'
+alias cp='cp -i'
+alias ln='ln -i'</p>
+
+<h1>Parenting changing perms on /</h1>
+
+<p>alias chown='chown --preserve-root'
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'
+```</p>
+
+<h4>#18：升级RHEL/CentOS/Fedora Linux 服务</h4>
+
+<p>``` bash</p>
+
+<h2>distrp specifc RHEL/CentOS</h2>
+
+<p>alias update='yum update'
+alias updatey='yum -y update'
+```</p>
+
+<h4>#19：调节sudo和su</h4>
+
+<p>``` bash</p>
+
+<h1>become root</h1>
+
+<p>alias root='sudo -i'
+alias su='sudo -i'
+```</p>
+
+<h4>#20：通过sudo关机或重启</h4>
+
+<p>``` bash</p>
+
+<h1>reboot / halt / poweroff</h1>
+
+<p>alias reboot='sudo /sbin/reboot'
+alias poweroff='sudo /sbin/poweroff'
+alias halt='sudo /sbin/halt'
+alias shutdown='sudo /sbin/shutdown'
+```</p>
+
+<h4>#21：控制web服务</h4>
+
+<p>``` bash</p>
+
+<h1>also pass it via sudo so whoever is admin can reload it without calling you</h1>
+
+<p>alias nginxreload='sudo /usr/local/nginx/sbin/nginx -s reload'
+alias nginxtest='sudo /usr/local/nginx/sbin/nginx -t'
+alias lightyload='sudo /etc/init.d/lighttpd reload'
+alias lightytest='sudo /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -t'
+alias httpdreload='sudo /usr/sbin/apachectl -k graceful'
+alias httpdtest='sudo /usr/sbin/apachectl -t &amp;&amp; /usr/sbin/apachectl -t -D DUMP_VHOSTS'
+```</p>
+
+<h4>#22：给备份做别名</h4>
+
+<p>``` bash</p>
+
+<h1>if cron fails or if you want backup on demand just run these commands #</h1>
+
+<h1>again pass it via sudo so whoever is in admin group can start the job</h1>
+
+<h1>Backup scripts</h1>
+
+<p>alias backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type local --taget /raid1/backups'
+alias nasbackup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01'
+alias s3backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01 --auth /home/scripts/admin/.authdata/amazon.keys'
+alias rsnapshothourly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotdaily='sudo  /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotweekly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias rsnapshotmonthly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
+alias amazonbackup=s3backup
+```</p>
+
+<h4>#23：系统管理员设置端口相关的命令</h4>
+
+<p>``` bash</p>
+
+<h2>All of our servers eth1 is connected to the Internets via vlan / router etc</h2>
+
+<p>alias dnstop='dnstop -l 5  eth1'
+alias vnstat='vnstat -i eth1'
+alias iftop='iftop -i eth1'
+alias tcpdump='tcpdump -i eth1'
+alias ethtool='ethtool eth1'</p>
+
+<h1>work on wlan0 by default</h1>
+
+<h1>Only useful for laptop as all servers are without wireless interface</h1>
+
+<p>alias iwconfig='iwconfig wlan0'
+```</p>
+
+<h4>#24：快速获取系统内存、cpu使用以及gpu内存信息</h4>
+
+<p>``` bash</p>
+
+<h2>pass options to free ##</h2>
+
+<p>alias meminfo='free -m -l -t'</p>
+
+<h2>get top process eating memory</h2>
+
+<p>alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'</p>
+
+<h2>get top process eating cpu</h2>
+
+<p>alias pscpu='ps auxf | sort -nr -k 3'
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10'</p>
+
+<h2>Get server cpu info</h2>
+
+<p>alias cpuinfo='lscpu'</p>
+
+<h2>older system use /proc/cpuinfo</h2>
+
+<h2>alias cpuinfo='less /proc/cpuinfo'</h2>
+
+<h2>get GPU ram on desktop / laptop##</h2>
+
+<p>alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log'
+```</p>
+
+<h4>#25：控制家庭路由器</h4>
+
+<p>``` bash</p>
+
+<h1>Reboot my home Linksys WAG160N / WAG54 / WAG320 / WAG120N Router / Gateway from *nix.</h1>
+
+<p>alias rebootlinksys="curl -u 'admin:my-super-password' 'http://192.168.1.2/setup.cgi?todo=reboot'"</p>
+
+<h1>Reboot tomato based Asus NT16 wireless bridge</h1>
+
+<p>alias reboottomato="ssh admin@192.168.1.1 /sbin/reboot"
+```</p>
+
+<h4>#26：wget续传</h4>
+
+<p>``` bash</p>
+
+<h2>this one saved by butt so many times</h2>
+
+<p>alias wget='wget -c'
+```</p>
+
+<h4>#27：使用不同的浏览器测试网页</h4>
+
+<p>``` bash</p>
+
+<h2>this one saved by butt so many times</h2>
+
+<p>alias ff4='/opt/firefox4/firefox'
+alias ff13='/opt/firefox13/firefox'
+alias chrome='/opt/google/chrome/chrome'
+alias opera='/opt/opera/opera'</p>
+
+<h1>default ff</h1>
+
+<p>alias ff=ff13</p>
+
+<h1>my default browser</h1>
+
+<p>alias browser=chrome
+```</p>
+
+<h4>#28：ssh小贴士</h4>
+
+<p>不创建别名，通过使用OpenSSH配置文件<code>~/.ssh/config</code>配置，它提供了很多选项，如：</p>
+
+<p><code>bash
+Host server10
+  Hostname 1.2.3.4
+  IdentityFile ~/backups/.ssh/id_dsa
+  user foobar
+  Port 30000
+  ForwardX11Trusted yes
+  TCPKeepAlive yes
+</code></p>
+
+<p>现在可以通过如下命令连接</p>
+
+<p><code>bash
+$ ssh server10
+</code></p>
+
+<h4>#29：现在轮到你分享了</h4>
+
+<p>``` bash</p>
+
+<h2>set some other defaults</h2>
+
+<p>alias df='df -H'
+alias du='du -ch'</p>
+
+<h1>top is atop, just like vi is vim</h1>
+
+<p>alias top='atop'</p>
+
+<h2>nfsrestart  - must be root</h2>
+
+<h2>refresh nfs mount / cache etc for Apache</h2>
+
+<p>alias nfsrestart='sync &amp;&amp; sleep 2 &amp;&amp; /etc/init.d/httpd stop &amp;&amp; umount netapp2:/exports/http &amp;&amp; sleep 2 &amp;&amp; mount -o rw,sync,rsize=32768,wsize=32768,intr,hard,proto=tcp,fsc natapp2:/exports /http/var/www/html &amp;&amp;  /etc/init.d/httpd start'</p>
+
+<h2>Memcached server status</h2>
+
+<p>alias mcdstats='/usr/bin/memcached-tool 10.10.27.11:11211 stats'
+alias mcdshow='/usr/bin/memcached-tool 10.10.27.11:11211 display'</p>
+
+<h2>quickly flush out memcached server</h2>
+
+<p>alias flushmcd='echo "flush_all" | nc 10.10.27.11 11211'</p>
+
+<h2>Remove assets quickly from Akamai / Amazon cdn</h2>
+
+<p>alias cdndel='/home/scripts/admin/cdn/purge_cdn_cache --profile akamai'
+alias amzcdndel='/home/scripts/admin/cdn/purge_cdn_cache --profile amazon'</p>
+
+<h2>supply list of urls via file or stdin</h2>
+
+<p>alias cdnmdel='/home/scripts/admin/cdn/purge_cdn_cache --profile akamai --stdin'
+alias amzcdnmdel='/home/scripts/admin/cdn/purge_cdn_cache --profile amazon --stdin'
+```</p>
+
+<h4>#30：The End Is the Beginning</h4>
+
+<p>... ...</p>
 ]]></content>
   </entry>
   

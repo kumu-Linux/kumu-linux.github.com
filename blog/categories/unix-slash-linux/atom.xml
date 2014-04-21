@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Unix/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-21T18:01:31+08:00</updated>
+  <updated>2014-04-21T18:18:42+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -153,6 +153,8 @@ $ top -p `pgrep mysql | xargs | tr " " ","` # 执行如下命令之后
 <li>4、当I/O处理增长，CPU相应的应用将会受到影响</li>
 </ul>
 
+
+<p>--EOF--</p>
 ]]></content>
   </entry>
   

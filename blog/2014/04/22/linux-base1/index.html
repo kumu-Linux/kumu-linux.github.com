@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Linux基础命令-1 - OPS Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="Linux下一切皆文件 pwd、cd 1
+2
+3
+4
+5
+6
+7
+$ pwd # 查看当前所在目录
+$ pwd -P # 获取当前真实路径，适用于软链接目录
+$ cd # 直接cd，默认到当前用户家目录下
+$ cd ~ # cd ~，到当前用户家目录下
+$ cd - # 返回到前一目录
+$ cd &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/04/22/linux-base1/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="OPS Notes By 枯木" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">OPS Notes By 枯木</a></h1>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+<div class="navi">
+<ul>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/ops">Ops Tools</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+  <li><a href="/blog/about">Author</a></li>
+</ul>
+</div>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Linux基础命令-1</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-22T11:09:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><blockquote><p>Linux下一切皆文件</p></blockquote>
+
+<!--more-->
+
+
+<h3><code>pwd</code>、<code>cd</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">pwd</span>       <span class="c"># 查看当前所在目录</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">pwd</span> -P    <span class="c"># 获取当前真实路径，适用于软链接目录</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span>        <span class="c"># 直接cd，默认到当前用户家目录下</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~      <span class="c"># cd ~，到当前用户家目录下</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> -      <span class="c"># 返回到前一目录</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ..     <span class="c"># 回到上一级目录</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~username    <span class="c"># 到某个用户的家目录下</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>mkdir</code>[创建目录]、<code>touch</code>[新建空文件]</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir /a/b/c -p       <span class="c"># 递归创建目录</span>
+</span><span class='line'><span class="nv">$ </span>mkdir -m 700 <span class="nb">test</span>     <span class="c"># 创建自定义权限目录</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>cp</code>复制命令</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cp -rpv src dst        <span class="c"># r递归复制用于复制目录，p保留文件目录属性，v显示复制状态</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>cat</code>、<code>more</code>、<code>less</code>、<code>tail</code>、<code>head</code> [查看文件内容]</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat /etc/passwd           <span class="c"># 查看文件内容</span>
+</span><span class='line'><span class="nv">$ </span>cat -n /etc/passwd        <span class="c"># -n选项显示内容所在行号</span>
+</span><span class='line'><span class="nv">$ </span>more /etc/passwd          <span class="c"># 查看文件内容，支持上下翻页</span>
+</span><span class='line'><span class="nv">$ </span>less /etc/passwd          <span class="c"># 查看文件内容，支持上下翻页，较more更灵活</span>
+</span><span class='line'><span class="nv">$ </span>head -n 10 /etc/passwd    <span class="c"># 查看头10行文件内容</span>
+</span><span class='line'><span class="nv">$ </span>tail -n 10 /etc/passwd    <span class="c"># 看看文件末尾10行内容</span>
+</span><span class='line'><span class="nv">$ </span>tail -f /var/log/messages <span class="c"># 动态查看新增日志内容，非常实用</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>ls</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls        <span class="c"># 列出当前文件</span>
+</span><span class='line'><span class="nv">$ </span>ls -l     <span class="c"># -l详细方式列出当前文件</span>
+</span><span class='line'><span class="nv">$ </span>ls -ld    <span class="c"># -d查看目录的详细属性</span>
+</span><span class='line'><span class="nv">$ </span>ls -la    <span class="c"># -a列出隐藏文件</span>
+</span><span class='line'><span class="nv">$ </span>ls -lt    <span class="c"># -t以修改时间排序文件</span>
+</span><span class='line'><span class="nv">$ </span>ls -lh    <span class="c"># -h以可读的方式显示</span>
+</span><span class='line'><span class="nv">$ </span>ls -i     <span class="c"># -i获取文件inode</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>history</code> 查看历史记录</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">history</span>            <span class="c"># 查看当前用户命令执行历史记录</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">history</span> -c         <span class="c"># 清空当前终端历史记录，</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>默认存放路径：<code>~/.bash_history</code></p>
+
+<p><code>history</code>一些有用的配置：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim ~/.bashrc
+</span><span class='line'><span class="c"># 添加如下内容</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 忽略[连续]重复命令</span>
+</span><span class='line'><span class="nv">HISTCONTROL</span><span class="o">=</span>ignoredups
+</span><span class='line'>
+</span><span class='line'><span class="c"># 清除重复命令</span>
+</span><span class='line'><span class="c"># HISTCONTROL=erasedups</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 忽略特定命令</span>
+</span><span class='line'><span class="nv">HISTIGNORE</span><span class="o">=</span><span class="s2">&quot;[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 命令历史文件大小10M</span>
+</span><span class='line'><span class="nv">HISTFILESIZE</span><span class="o">=</span>1000000000
+</span><span class='line'>
+</span><span class='line'><span class="c"># 保存历史命令条数10W</span>
+</span><span class='line'><span class="nv">HISTSIZE</span><span class="o">=</span>1000000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上配置可以<code>set | grep HIST</code>查看以上选项配置。</p>
+
+<p>当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里可以采用追加的方式避免命令历史文件 <code>.bash_history</code> 文件被覆盖。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim ~/.bashrc
+</span><span class='line'><span class="c"># 添加如下内容</span>
+</span><span class='line'><span class="nb">shopt</span> -s histappend
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>type</code> 查看命令类型</h3>
+
+<p>Linux命令分为shell内置命令和外部命令，可以通过<code>type</code>得知命令类型</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">type </span>passwd
+</span><span class='line'>passwd is /usr/bin/passwd
+</span><span class='line'><span class="nv">$ </span><span class="nb">type cd</span>
+</span><span class='line'><span class="nb">cd </span>is a shell <span class="nb">builtin</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>file</code>查看文件类型、<code>stat</code>查看文件<code>inode</code>信息</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>file /etc/passwd
+</span><span class='line'>/etc/passwd: ASCII text
+</span><span class='line'><span class="nv">$ </span>file /bin/pwd
+</span><span class='line'>/bin/pwd: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.18, stripped
+</span><span class='line'><span class="nv">$ </span>stat /bin/pwd
+</span><span class='line'>  File: <span class="sb">`</span>/bin/pwd<span class="err">&#39;</span>
+</span><span class='line'>  Size: 31656     Blocks: 64         IO Block: 4096   regular file
+</span><span class='line'>Device: 803h/2051d Inode: 1972888     Links: 1
+</span><span class='line'>Access: <span class="o">(</span>0755/-rwxr-xr-x<span class="o">)</span>  Uid: <span class="o">(</span>    0/    root<span class="o">)</span>   Gid: <span class="o">(</span>    0/    root<span class="o">)</span>
+</span><span class='line'>Access: 2014-04-05 03:07:04.983044299 +0800
+</span><span class='line'>Modify: 2013-11-22 23:36:45.000000000 +0800
+</span><span class='line'>Change: 2013-12-26 12:39:58.569332497 +0800
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3><code>man</code> 、<code>info</code> 、<code>--help</code>、<code>help</code>获取命令的帮助</h3>
+
+<p><strong>注：</strong>其中<code>help</code>只能获取shell内置命令的帮助</p>
+
+<h3><code>whereis</code>、<code>which</code></h3>
+
+<p><strong>注：</strong>两个命令只能获取非内嵌的shell命令
+<code>whereis</code>：定位命令的二进制、源码和帮助手册
+<code>which</code>：获取命令的位置，默认先获取alias别名，可以使用<code>--skip-alias</code>选项跳过别名</p>
+
+<h3><code>alias</code>、<code>unalias</code></h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">alias</span>     <span class="c"># 查看当前环境别名    </span>
+</span><span class='line'><span class="nb">alias </span>l.<span class="o">=</span><span class="s1">&#39;ls -d .* --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -l --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">ls</span><span class="o">=</span><span class="s1">&#39;ls --color=auto&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">vi</span><span class="o">=</span><span class="s1">&#39;vim&#39;</span>
+</span><span class='line'><span class="nb">alias </span><span class="nv">which</span><span class="o">=</span><span class="s1">&#39;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&#39;</span>
+</span><span class='line'><span class="c"># 此处which别名可以获知为何默认which会先展示别名再展示实际命令的位置</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">c</span><span class="o">=</span>clear <span class="c"># 设置别名c对应clear</span>
+</span><span class='line'><span class="nv">$ </span><span class="nb">unalias </span>c     <span class="c"># 取消设置的别名</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Shell下的一些快捷键</h3>
+
+<ul>
+<li> <code>Tab</code>       &#8211;  补全</li>
+<li> <code>Esc+.</code>    &#8211;  获取上个命令最后一个词</li>
+<li> <code>Ctrl+l</code>    &#8211;  清屏，类似 clear 命令</li>
+<li> <code>Ctrl+r</code>    &#8211;  查找历史命令</li>
+<li> <code>Ctrl+c</code>    &#8211;  终止</li>
+<li> <code>Ctrl+k</code>    &#8211;  删除此处至末尾所有内容</li>
+<li> <code>Ctrl+u</code>    &#8211;  删除此处至开始所有内容</li>
+<li> <code>Ctrl+a/e</code>  &#8211;  回到行首/行尾</li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/21/performance-cpu/" title="Previous Post: Linux性能优化--CPU[备忘]">&laquo; Linux性能优化--CPU[备忘]</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/04/22/linux-base1/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/04/22/linux-base1/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-21T18:25:13+08:00</updated>
+  <updated>2014-04-22T11:15:55+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,186 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux基础命令-1]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/04/22/linux-base1/"/>
+    <updated>2014-04-22T11:09:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/04/22/linux-base1</id>
+    <content type="html"><![CDATA[<blockquote><p>Linux下一切皆文件</p></blockquote>
+
+<!--more-->
+
+
+<h3><code>pwd</code>、<code>cd</code></h3>
+
+<p><code>bash
+$ pwd       # 查看当前所在目录
+$ pwd -P    # 获取当前真实路径，适用于软链接目录
+$ cd        # 直接cd，默认到当前用户家目录下
+$ cd ~      # cd ~，到当前用户家目录下
+$ cd -      # 返回到前一目录
+$ cd ..     # 回到上一级目录
+$ cd ~username    # 到某个用户的家目录下
+</code></p>
+
+<h3><code>mkdir</code>[创建目录]、<code>touch</code>[新建空文件]</h3>
+
+<p><code>bash
+$ mkdir /a/b/c -p       # 递归创建目录
+$ mkdir -m 700 test     # 创建自定义权限目录
+</code></p>
+
+<h3><code>cp</code>复制命令</h3>
+
+<p><code>bash
+$ cp -rpv src dst        # r递归复制用于复制目录，p保留文件目录属性，v显示复制状态
+</code></p>
+
+<h3><code>cat</code>、<code>more</code>、<code>less</code>、<code>tail</code>、<code>head</code> [查看文件内容]</h3>
+
+<p><code>bash
+$ cat /etc/passwd           # 查看文件内容
+$ cat -n /etc/passwd        # -n选项显示内容所在行号
+$ more /etc/passwd          # 查看文件内容，支持上下翻页
+$ less /etc/passwd          # 查看文件内容，支持上下翻页，较more更灵活
+$ head -n 10 /etc/passwd    # 查看头10行文件内容
+$ tail -n 10 /etc/passwd    # 看看文件末尾10行内容
+$ tail -f /var/log/messages # 动态查看新增日志内容，非常实用
+</code></p>
+
+<h3><code>ls</code></h3>
+
+<p><code>bash
+$ ls        # 列出当前文件
+$ ls -l     # -l详细方式列出当前文件
+$ ls -ld    # -d查看目录的详细属性
+$ ls -la    # -a列出隐藏文件
+$ ls -lt    # -t以修改时间排序文件
+$ ls -lh    # -h以可读的方式显示
+$ ls -i     # -i获取文件inode
+</code></p>
+
+<h3><code>history</code> 查看历史记录</h3>
+
+<p><code>bash
+$ history            # 查看当前用户命令执行历史记录
+$ history -c         # 清空当前终端历史记录，
+</code></p>
+
+<p>默认存放路径：<code>~/.bash_history</code></p>
+
+<p><code>history</code>一些有用的配置：</p>
+
+<p>``` bash
+$ vim ~/.bashrc</p>
+
+<h1>添加如下内容</h1>
+
+<h1>忽略[连续]重复命令</h1>
+
+<p>HISTCONTROL=ignoredups</p>
+
+<h1>清除重复命令</h1>
+
+<h1>HISTCONTROL=erasedups</h1>
+
+<h1>忽略特定命令</h1>
+
+<p>HISTIGNORE="[   ]<em>:ls:ll:cd:vi:pwd:sync:exit:history</em>"</p>
+
+<h1>命令历史文件大小10M</h1>
+
+<p>HISTFILESIZE=1000000000</p>
+
+<h1>保存历史命令条数10W</h1>
+
+<p>HISTSIZE=1000000
+```</p>
+
+<p>以上配置可以<code>set | grep HIST</code>查看以上选项配置。</p>
+
+<p>当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里可以采用追加的方式避免命令历史文件 <code>.bash_history</code> 文件被覆盖。</p>
+
+<p>``` bash
+$ vim ~/.bashrc</p>
+
+<h1>添加如下内容</h1>
+
+<p>shopt -s histappend
+```</p>
+
+<h3><code>type</code> 查看命令类型</h3>
+
+<p>Linux命令分为shell内置命令和外部命令，可以通过<code>type</code>得知命令类型</p>
+
+<p><code>bash
+$ type passwd
+passwd is /usr/bin/passwd
+$ type cd
+cd is a shell builtin
+</code></p>
+
+<h3><code>file</code>查看文件类型、<code>stat</code>查看文件<code>inode</code>信息</h3>
+
+<p><code>bash
+$ file /etc/passwd
+/etc/passwd: ASCII text
+$ file /bin/pwd
+/bin/pwd: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.18, stripped
+$ stat /bin/pwd
+  File: `/bin/pwd'
+  Size: 31656     Blocks: 64         IO Block: 4096   regular file
+Device: 803h/2051d Inode: 1972888     Links: 1
+Access: (0755/-rwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2014-04-05 03:07:04.983044299 +0800
+Modify: 2013-11-22 23:36:45.000000000 +0800
+Change: 2013-12-26 12:39:58.569332497 +0800
+</code></p>
+
+<h3><code>man</code> 、<code>info</code> 、<code>--help</code>、<code>help</code>获取命令的帮助</h3>
+
+<p><strong>注：</strong>其中<code>help</code>只能获取shell内置命令的帮助</p>
+
+<h3><code>whereis</code>、<code>which</code></h3>
+
+<p><strong>注：</strong>两个命令只能获取非内嵌的shell命令
+<code>whereis</code>：定位命令的二进制、源码和帮助手册
+<code>which</code>：获取命令的位置，默认先获取alias别名，可以使用<code>--skip-alias</code>选项跳过别名</p>
+
+<h3><code>alias</code>、<code>unalias</code></h3>
+
+<p>``` bash
+$ alias     # 查看当前环境别名  <br/>
+alias l.='ls -d .* --color=auto'
+alias ll='ls -l --color=auto'
+alias ls='ls --color=auto'
+alias vi='vim'
+alias which='alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'</p>
+
+<h1>此处which别名可以获知为何默认which会先展示别名再展示实际命令的位置</h1>
+
+<p>$ alias c=clear # 设置别名c对应clear
+$ unalias c     # 取消设置的别名
+```</p>
+
+<h3>Shell下的一些快捷键</h3>
+
+<ul>
+<li> <code>Tab</code>       --  补全</li>
+<li> <code>Esc+.</code>    --  获取上个命令最后一个词</li>
+<li> <code>Ctrl+l</code>    --  清屏，类似 clear 命令</li>
+<li> <code>Ctrl+r</code>    --  查找历史命令</li>
+<li> <code>Ctrl+c</code>    --  终止</li>
+<li> <code>Ctrl+k</code>    --  删除此处至末尾所有内容</li>
+<li> <code>Ctrl+u</code>    --  删除此处至开始所有内容</li>
+<li> <code>Ctrl+a/e</code>  --  回到行首/行尾</li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux性能优化--CPU[备忘]]]></title>
@@ -432,570 +612,6 @@ ChallengeResponseAuthentication no
 
 
 <p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[30 Handy Bash Shell Aliases[译]]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/09/25/shell-alias/"/>
-    <updated>2013-09-25T10:42:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/09/25/shell-alias</id>
-    <content type="html"><![CDATA[<p>本文为 <a href="http://www.cyberciti.biz/tips/bash-aliases-mac-centos-linux-unix.html">原文地址</a> 翻译而来，有些地方稍作改动。</p>
-
-<p>一个别名就是一个命令的快捷方式，<code>alias</code>命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过<code>alias</code>命令可以显示所有已定义的别名列表。你可以在<code>~ /.bashrc</code>文件中自定义用户的别名。通过这些别名可以减少打字时间，更灵活的操作，提升工作效率。</p>
-
-<!--more-->
-
-
-<h3>Task：列出系统别名列表</h3>
-
-<p>输入以下命令：</p>
-
-<p><code>bash
-alias
-</code></p>
-
-<p>输出实例:</p>
-
-<p><code>bash
-alias cp='cp -i'
-alias l.='ls -d .* --color=auto'
-alias ll='ls -l --color=auto'
-alias ls='ls --color=auto'
-...
-</code></p>
-
-<p>默认<code>alias</code>命令不添加任何选项输出当前用户定义的别名。</p>
-
-<h3>Task：定义/创建一个别名(bash语法)</h3>
-
-<p>创建别名使用如下语法：</p>
-
-<p><code>bash
-alias name=value
-alias name='command'
-alias name='command arg1 arg2'
-alias name='/path/to/script'
-alias name='/path/to/script.pl arg1'
-</code></p>
-
-<p>在以下的实例中，创建一个<code>clear</code>清屏命令的别名c，输入如下命令：</p>
-
-<p><code>bash
-alias c=clear
-</code></p>
-
-<p>输入以上命令之后，如果需要清屏，只需直接输入简单的<code>c</code>来代替<code>clear</code>命令即可实现</p>
-
-<h3>Task：暂时禁用别名</h3>
-
-<p>显示别名<code>cp</code>
-<code>bash
-$ alias cp
-alias cp='cp -i'
-</code>
-<code>cp</code>命令是<code>cp -i</code>的别名，<code>-i</code>选项一定程度上能起到保护作用，但是当我们只想使用原始的cp命令的时候，我们肯定不能简单的输入<code>cp</code>命令，这里有两种方式实现</p>
-
-<ul>
-<li>使用全名</li>
-<li>或者使用\+命令</li>
-</ul>
-
-
-<p><code>bash
-$ ls a b
-a  b
-$ cp b a        #使用别名之后的cp在覆盖文件时会提示
-cp: overwrite `a'? y
-$ /bin/cp b a   #使用全称不会有提示
-$ \cp b a       #使用\cp不会有提示
-</code></p>
-
-<h3>移除alias (bash语法)</h3>
-
-<p>你需要使用<code>unalias</code>命令移除别名，语法如下：</p>
-
-<p><code>bash
-unalias aliasname
-</code></p>
-
-<p>例如，移除之前<code>clear</code>的别名<code>c</code>：</p>
-
-<p><code>bash
-unalias c
-</code></p>
-
-<p>如果你在<code>~/bashrc</code>文件中定义了别名，也需要从该文件中移除对应所在行。</p>
-
-<h3>Task：定义永久别名</h3>
-
-<p>alias c只能在当前会话中生效。当你重启或者退出当前会话的时候，就失效了。为了避免这种问题，田间别名到你的<code>~/.bashrc</code>配置文件中，输入:</p>
-
-<p><code>bash
-vi ~/.bashrc
-</code></p>
-
-<p>通过添加如下内容，对于当前用户别名c永久生效：</p>
-
-<p><code>bash
-alias c='clear'
-</code></p>
-
-<p>保存并退出这个文件，全局别名可以存放在<code>/etc/bashrc</code>文件中，请注意这个别名命令建立在各种shell中，包括ksh、csh、bash等等</p>
-
-<h3>一个关于权限访问的小贴士</h3>
-
-<p>你可以添加如下代码到<code>~/.bashrc</code>：</p>
-
-<p>``` bash</p>
-
-<h1>if user is not root, pass all commands via sudo</h1>
-
-<p>if [ $UID -ne 0 ]; then</p>
-
-<pre><code>alias reboot='sudo reboot'
-alias update='sudo yum update'
-</code></pre>
-
-<p>fi
-```</p>
-
-<h3>按照操作系统添加别名的小贴士</h3>
-
-<p>你可以添加如下代码到<code>~/.bashrc</code> <a href="http://bash.cyberciti.biz/guide/The_case_statement">case语句</a>：</p>
-
-<p>``` bash</p>
-
-<h3>Get os name via uname</h3>
-
-<p>_myos="$(uname)"</p>
-
-<h3>add alias as per os using $_myos</h3>
-
-<p>case $_myos in
-   Linux) alias foo='/path/to/linux/bin/foo';;
-   FreeBSD|OpenBSD) alias foo='/path/to/bsd/bin/foo' ;;
-   SunOS) alias foo='/path/to/sunos/bin/foo' ;;
-   *) ;;
-esac
-```</p>
-
-<h3>30个有用的别名</h3>
-
-<p>你可以定义不同类型的别名来节约时间和提升效率。</p>
-
-<h4>#1: 控制<code>ls</code>命令输出</h4>
-
-<p>给<code>ls</code>命令的输出来电颜色看看</p>
-
-<p>``` bash</p>
-
-<h2>Colorize the ls output</h2>
-
-<p>alias ls='ls --color=auto'</p>
-
-<h2>Use a long listing format</h2>
-
-<p>alias ll='ls -la'</p>
-
-<h2>Show hidden files</h2>
-
-<p>alias l.='ls -d .* --color=auto'
-```</p>
-
-<h4>#2: 调整<code>cd</code>命令习惯</h4>
-
-<p>``` bash</p>
-
-<h2>get rid of command not found</h2>
-
-<p>alias cd..='cd ..'</p>
-
-<h2>a quick way to get out of current directory</h2>
-
-<p>alias ..='cd ..'
-alias ...='cd ../../../'
-alias ....='cd ../../../../'
-alias .....='cd ../../../../'
-alias .4='cd ../../../../'
-alias .5='cd ../../../../..'
-```</p>
-
-<h4>#3：控制<code>grep</code>命令输出</h4>
-
-<p>``` bash</p>
-
-<h2>Colorize the grep command output for ease of use (good for log files)</h2>
-
-<p>alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
-```</p>
-
-<h4>#4：开启计算器小数点计算</h4>
-
-<p><code>bash
-alias bc='bc -l'
-</code></p>
-
-<h4>#5：生成sha1摘要</h4>
-
-<p><code>bash
-alias sha1='openssl sha1'
-</code></p>
-
-<h4>#6、根据需要创建父目录</h4>
-
-<p><code>bash
-alias mkdir='mkdir -pv'
-</code></p>
-
-<h4>#7：有颜色的diff输出</h4>
-
-<p>``` bash</p>
-
-<h1>install  colordiff package :) 前提需要安装colordiff包</h1>
-
-<p>alias diff='colordiff'
-```</p>
-
-<h4>#8：使mount命令输出格式更漂亮以及可读性更高</h4>
-
-<p><code>bash
-alias mount='mount |column -t'
-</code></p>
-
-<h4>#9：短命令节省时间</h4>
-
-<p>``` bash</p>
-
-<h1>handy short cuts</h1>
-
-<p>alias h='history'
-alias j='jobs -l'
-```</p>
-
-<h4>#10：创建一些新的命令</h4>
-
-<p><code>bash
-alias path='echo -e ${PATH//:/\\n}'
-alias now='date +"%T'
-alias nowtime=now
-alias nowdate='date +"%d-%m-%Y"'
-</code></p>
-
-<h4>#11：设置默认的vim</h4>
-
-<p><code>bash
-alias vi=vim
-alias svi='sudo vi'
-alias vis='vim "+set si"'
-alias edit='vim'
-</code></p>
-
-<h4>#12：ping的相关设置</h4>
-
-<p>``` bash</p>
-
-<h1>Stop after sending count ECHO_REQUEST packets</h1>
-
-<p>alias ping='ping -c 5'</p>
-
-<h1>Do not wait interval 1 second, go fast</h1>
-
-<p>alias fastping='ping -c 100 -s.2'
-```</p>
-
-<h4>#13：显示打开的端口</h4>
-
-<p><code>bash
-alias ports='netstat -tulanp'
-</code></p>
-
-<h4>#14：唤醒沉睡的服务</h4>
-
-<p><a href="http://www.cyberciti.biz/tips/linux-send-wake-on-lan-wol-magic-packets.html">Wake-on-LAN(WOL)</a>是一个以太网网络标准,允许通过一个网络信息打开服务。您可以使用以下的别名快速唤醒NAS设备和服务器<a href="http://bash.cyberciti.biz/misc-shell/simple-shell-script-to-wake-up-nas-devices-computers/">Devices Using Linux or Unix Computer</a>:</p>
-
-<p>``` bash</p>
-
-<h2>replace mac with your actual server mac address</h2>
-
-<p>alias wakeupnas01='/usr/bin/wakeonlan 00:11:32:11:15:FC'
-alias wakeupnas02='/usr/bin/wakeonlan 00:11:32:11:15:FD'
-alias wakeupnas03='/usr/bin/wakeonlan 00:11:32:11:15:FE'
-```</p>
-
-<h4>#15：控制防火墙(iptables)输出</h4>
-
-<p>``` bash</p>
-
-<h2>shortcut  for iptables and pass it via sudo</h2>
-
-<p>alias ipt='sudo /sbin/iptables'</p>
-
-<h1>display all rules</h1>
-
-<p>alias iptlist='sudo /sbin/iptables -L -n -v --line-numbers'
-alias iptlistin='sudo /sbin/iptables -L INPUT -n -v --line-numbers'
-alias iptlistout='sudo /sbin/iptables -L OUTPUT -n -v --line-numbers'
-alias iptlistfw='sudo /sbin/iptables -L FORWARD -n -v --line-numbers'
-alias firewall=iptlist
-```</p>
-
-<h4>#16：通过curl调试web服务或者CDN问题</h4>
-
-<p>``` bash</p>
-
-<h1>get web server headers</h1>
-
-<p>alias header='curl -I'</p>
-
-<h1>find out if remote server supports gzip / mod_deflate or not</h1>
-
-<p>alias headerc='curl -I --compress'
-```</p>
-
-<h4>#17：一些安全的设置</h4>
-
-<p>``` bash</p>
-
-<h1>do not delete / or prompt if deleting more than 3 files at a time</h1>
-
-<p>alias rm='rm -I --preserve-root'</p>
-
-<h1>confirmation</h1>
-
-<p>alias mv='mv -i'
-alias cp='cp -i'
-alias ln='ln -i'</p>
-
-<h1>Parenting changing perms on /</h1>
-
-<p>alias chown='chown --preserve-root'
-alias chmod='chmod --preserve-root'
-alias chgrp='chgrp --preserve-root'
-```</p>
-
-<h4>#18：升级RHEL/CentOS/Fedora Linux 服务</h4>
-
-<p>``` bash</p>
-
-<h2>distrp specifc RHEL/CentOS</h2>
-
-<p>alias update='yum update'
-alias updatey='yum -y update'
-```</p>
-
-<h4>#19：调节sudo和su</h4>
-
-<p>``` bash</p>
-
-<h1>become root</h1>
-
-<p>alias root='sudo -i'
-alias su='sudo -i'
-```</p>
-
-<h4>#20：通过sudo关机或重启</h4>
-
-<p>``` bash</p>
-
-<h1>reboot / halt / poweroff</h1>
-
-<p>alias reboot='sudo /sbin/reboot'
-alias poweroff='sudo /sbin/poweroff'
-alias halt='sudo /sbin/halt'
-alias shutdown='sudo /sbin/shutdown'
-```</p>
-
-<h4>#21：控制web服务</h4>
-
-<p>``` bash</p>
-
-<h1>also pass it via sudo so whoever is admin can reload it without calling you</h1>
-
-<p>alias nginxreload='sudo /usr/local/nginx/sbin/nginx -s reload'
-alias nginxtest='sudo /usr/local/nginx/sbin/nginx -t'
-alias lightyload='sudo /etc/init.d/lighttpd reload'
-alias lightytest='sudo /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf -t'
-alias httpdreload='sudo /usr/sbin/apachectl -k graceful'
-alias httpdtest='sudo /usr/sbin/apachectl -t &amp;&amp; /usr/sbin/apachectl -t -D DUMP_VHOSTS'
-```</p>
-
-<h4>#22：给备份做别名</h4>
-
-<p>``` bash</p>
-
-<h1>if cron fails or if you want backup on demand just run these commands #</h1>
-
-<h1>again pass it via sudo so whoever is in admin group can start the job</h1>
-
-<h1>Backup scripts</h1>
-
-<p>alias backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type local --taget /raid1/backups'
-alias nasbackup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01'
-alias s3backup='sudo /home/scripts/admin/scripts/backup/wrapper.backup.sh --type nas --target nas01 --auth /home/scripts/admin/.authdata/amazon.keys'
-alias rsnapshothourly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys --config /home/scripts/admin/scripts/backup/config/adsl.conf'
-alias rsnapshotdaily='sudo  /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
-alias rsnapshotweekly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
-alias rsnapshotmonthly='sudo /home/scripts/admin/scripts/backup/wrapper.rsnapshot.sh --type remote --target nas03 --auth /home/scripts/admin/.authdata/ssh.keys  --config /home/scripts/admin/scripts/backup/config/adsl.conf'
-alias amazonbackup=s3backup
-```</p>
-
-<h4>#23：系统管理员设置端口相关的命令</h4>
-
-<p>``` bash</p>
-
-<h2>All of our servers eth1 is connected to the Internets via vlan / router etc</h2>
-
-<p>alias dnstop='dnstop -l 5  eth1'
-alias vnstat='vnstat -i eth1'
-alias iftop='iftop -i eth1'
-alias tcpdump='tcpdump -i eth1'
-alias ethtool='ethtool eth1'</p>
-
-<h1>work on wlan0 by default</h1>
-
-<h1>Only useful for laptop as all servers are without wireless interface</h1>
-
-<p>alias iwconfig='iwconfig wlan0'
-```</p>
-
-<h4>#24：快速获取系统内存、cpu使用以及gpu内存信息</h4>
-
-<p>``` bash</p>
-
-<h2>pass options to free ##</h2>
-
-<p>alias meminfo='free -m -l -t'</p>
-
-<h2>get top process eating memory</h2>
-
-<p>alias psmem='ps auxf | sort -nr -k 4'
-alias psmem10='ps auxf | sort -nr -k 4 | head -10'</p>
-
-<h2>get top process eating cpu</h2>
-
-<p>alias pscpu='ps auxf | sort -nr -k 3'
-alias pscpu10='ps auxf | sort -nr -k 3 | head -10'</p>
-
-<h2>Get server cpu info</h2>
-
-<p>alias cpuinfo='lscpu'</p>
-
-<h2>older system use /proc/cpuinfo</h2>
-
-<h2>alias cpuinfo='less /proc/cpuinfo'</h2>
-
-<h2>get GPU ram on desktop / laptop##</h2>
-
-<p>alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log'
-```</p>
-
-<h4>#25：控制家庭路由器</h4>
-
-<p>``` bash</p>
-
-<h1>Reboot my home Linksys WAG160N / WAG54 / WAG320 / WAG120N Router / Gateway from *nix.</h1>
-
-<p>alias rebootlinksys="curl -u 'admin:my-super-password' 'http://192.168.1.2/setup.cgi?todo=reboot'"</p>
-
-<h1>Reboot tomato based Asus NT16 wireless bridge</h1>
-
-<p>alias reboottomato="ssh admin@192.168.1.1 /sbin/reboot"
-```</p>
-
-<h4>#26：wget续传</h4>
-
-<p>``` bash</p>
-
-<h2>this one saved by butt so many times</h2>
-
-<p>alias wget='wget -c'
-```</p>
-
-<h4>#27：使用不同的浏览器测试网页</h4>
-
-<p>``` bash</p>
-
-<h2>this one saved by butt so many times</h2>
-
-<p>alias ff4='/opt/firefox4/firefox'
-alias ff13='/opt/firefox13/firefox'
-alias chrome='/opt/google/chrome/chrome'
-alias opera='/opt/opera/opera'</p>
-
-<h1>default ff</h1>
-
-<p>alias ff=ff13</p>
-
-<h1>my default browser</h1>
-
-<p>alias browser=chrome
-```</p>
-
-<h4>#28：ssh小贴士</h4>
-
-<p>不创建别名，通过使用OpenSSH配置文件<code>~/.ssh/config</code>配置，它提供了很多选项，如：</p>
-
-<p><code>bash
-Host server10
-  Hostname 1.2.3.4
-  IdentityFile ~/backups/.ssh/id_dsa
-  user foobar
-  Port 30000
-  ForwardX11Trusted yes
-  TCPKeepAlive yes
-</code></p>
-
-<p>现在可以通过如下命令连接</p>
-
-<p><code>bash
-$ ssh server10
-</code></p>
-
-<h4>#29：现在轮到你分享了</h4>
-
-<p>``` bash</p>
-
-<h2>set some other defaults</h2>
-
-<p>alias df='df -H'
-alias du='du -ch'</p>
-
-<h1>top is atop, just like vi is vim</h1>
-
-<p>alias top='atop'</p>
-
-<h2>nfsrestart  - must be root</h2>
-
-<h2>refresh nfs mount / cache etc for Apache</h2>
-
-<p>alias nfsrestart='sync &amp;&amp; sleep 2 &amp;&amp; /etc/init.d/httpd stop &amp;&amp; umount netapp2:/exports/http &amp;&amp; sleep 2 &amp;&amp; mount -o rw,sync,rsize=32768,wsize=32768,intr,hard,proto=tcp,fsc natapp2:/exports /http/var/www/html &amp;&amp;  /etc/init.d/httpd start'</p>
-
-<h2>Memcached server status</h2>
-
-<p>alias mcdstats='/usr/bin/memcached-tool 10.10.27.11:11211 stats'
-alias mcdshow='/usr/bin/memcached-tool 10.10.27.11:11211 display'</p>
-
-<h2>quickly flush out memcached server</h2>
-
-<p>alias flushmcd='echo "flush_all" | nc 10.10.27.11 11211'</p>
-
-<h2>Remove assets quickly from Akamai / Amazon cdn</h2>
-
-<p>alias cdndel='/home/scripts/admin/cdn/purge_cdn_cache --profile akamai'
-alias amzcdndel='/home/scripts/admin/cdn/purge_cdn_cache --profile amazon'</p>
-
-<h2>supply list of urls via file or stdin</h2>
-
-<p>alias cdnmdel='/home/scripts/admin/cdn/purge_cdn_cache --profile akamai --stdin'
-alias amzcdnmdel='/home/scripts/admin/cdn/purge_cdn_cache --profile amazon --stdin'
-```</p>
-
-<h4>#30：The End Is the Beginning</h4>
-
-<p>... ...</p>
 ]]></content>
   </entry>
   

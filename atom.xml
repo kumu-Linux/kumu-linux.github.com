@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-22T11:15:55+08:00</updated>
+  <updated>2014-04-22T11:23:59+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,247 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Linux基础命令-1]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2014/04/22/linux-base1/"/>
-    <updated>2014-04-22T11:09:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2014/04/22/linux-base1</id>
-    <content type="html"><![CDATA[<blockquote><p>Linux下一切皆文件</p></blockquote>
-
-<!--more-->
-
-
-<h3><code>pwd</code>、<code>cd</code></h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">pwd</span>       <span class="c"># 查看当前所在目录</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">pwd</span> -P    <span class="c"># 获取当前真实路径，适用于软链接目录</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span>        <span class="c"># 直接cd，默认到当前用户家目录下</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~      <span class="c"># cd ~，到当前用户家目录下</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> -      <span class="c"># 返回到前一目录</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ..     <span class="c"># 回到上一级目录</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">cd</span> ~username    <span class="c"># 到某个用户的家目录下</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>mkdir</code>[创建目录]、<code>touch</code>[新建空文件]</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>mkdir /a/b/c -p       <span class="c"># 递归创建目录</span>
-</span><span class='line'><span class="nv">$ </span>mkdir -m 700 <span class="nb">test</span>     <span class="c"># 创建自定义权限目录</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>cp</code>复制命令</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cp -rpv src dst        <span class="c"># r递归复制用于复制目录，p保留文件目录属性，v显示复制状态</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>cat</code>、<code>more</code>、<code>less</code>、<code>tail</code>、<code>head</code> [查看文件内容]</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>cat /etc/passwd           <span class="c"># 查看文件内容</span>
-</span><span class='line'><span class="nv">$ </span>cat -n /etc/passwd        <span class="c"># -n选项显示内容所在行号</span>
-</span><span class='line'><span class="nv">$ </span>more /etc/passwd          <span class="c"># 查看文件内容，支持上下翻页</span>
-</span><span class='line'><span class="nv">$ </span>less /etc/passwd          <span class="c"># 查看文件内容，支持上下翻页，较more更灵活</span>
-</span><span class='line'><span class="nv">$ </span>head -n 10 /etc/passwd    <span class="c"># 查看头10行文件内容</span>
-</span><span class='line'><span class="nv">$ </span>tail -n 10 /etc/passwd    <span class="c"># 看看文件末尾10行内容</span>
-</span><span class='line'><span class="nv">$ </span>tail -f /var/log/messages <span class="c"># 动态查看新增日志内容，非常实用</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>ls</code></h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ls        <span class="c"># 列出当前文件</span>
-</span><span class='line'><span class="nv">$ </span>ls -l     <span class="c"># -l详细方式列出当前文件</span>
-</span><span class='line'><span class="nv">$ </span>ls -ld    <span class="c"># -d查看目录的详细属性</span>
-</span><span class='line'><span class="nv">$ </span>ls -la    <span class="c"># -a列出隐藏文件</span>
-</span><span class='line'><span class="nv">$ </span>ls -lt    <span class="c"># -t以修改时间排序文件</span>
-</span><span class='line'><span class="nv">$ </span>ls -lh    <span class="c"># -h以可读的方式显示</span>
-</span><span class='line'><span class="nv">$ </span>ls -i     <span class="c"># -i获取文件inode</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>history</code> 查看历史记录</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">history</span>            <span class="c"># 查看当前用户命令执行历史记录</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">history</span> -c         <span class="c"># 清空当前终端历史记录，</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>默认存放路径：<code>~/.bash_history</code></p>
-
-<p><code>history</code>一些有用的配置：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim ~/.bashrc
-</span><span class='line'><span class="c"># 添加如下内容</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 忽略[连续]重复命令</span>
-</span><span class='line'><span class="nv">HISTCONTROL</span><span class="o">=</span>ignoredups
-</span><span class='line'>
-</span><span class='line'><span class="c"># 清除重复命令</span>
-</span><span class='line'><span class="c"># HISTCONTROL=erasedups</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 忽略特定命令</span>
-</span><span class='line'><span class="nv">HISTIGNORE</span><span class="o">=</span><span class="s2">&quot;[   ]*:ls:ll:cd:vi:pwd:sync:exit:history*&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># 命令历史文件大小10M</span>
-</span><span class='line'><span class="nv">HISTFILESIZE</span><span class="o">=</span>1000000000
-</span><span class='line'>
-</span><span class='line'><span class="c"># 保存历史命令条数10W</span>
-</span><span class='line'><span class="nv">HISTSIZE</span><span class="o">=</span>1000000
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上配置可以<code>set | grep HIST</code>查看以上选项配置。</p>
-
-<p>当打开多个终端，关闭其中一个终端时，会覆盖其他终端的命令历史， 这里可以采用追加的方式避免命令历史文件 <code>.bash_history</code> 文件被覆盖。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>vim ~/.bashrc
-</span><span class='line'><span class="c"># 添加如下内容</span>
-</span><span class='line'><span class="nb">shopt</span> -s histappend
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>type</code> 查看命令类型</h3>
-
-<p>Linux命令分为shell内置命令和外部命令，可以通过<code>type</code>得知命令类型</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">type </span>passwd
-</span><span class='line'>passwd is /usr/bin/passwd
-</span><span class='line'><span class="nv">$ </span><span class="nb">type cd</span>
-</span><span class='line'><span class="nb">cd </span>is a shell <span class="nb">builtin</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>file</code>查看文件类型、<code>stat</code>查看文件<code>inode</code>信息</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>file /etc/passwd
-</span><span class='line'>/etc/passwd: ASCII text
-</span><span class='line'><span class="nv">$ </span>file /bin/pwd
-</span><span class='line'>/bin/pwd: ELF 64-bit LSB executable, x86-64, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.18, stripped
-</span><span class='line'><span class="nv">$ </span>stat /bin/pwd
-</span><span class='line'>  File: <span class="sb">`</span>/bin/pwd<span class="err">&#39;</span>
-</span><span class='line'>  Size: 31656     Blocks: 64         IO Block: 4096   regular file
-</span><span class='line'>Device: 803h/2051d Inode: 1972888     Links: 1
-</span><span class='line'>Access: <span class="o">(</span>0755/-rwxr-xr-x<span class="o">)</span>  Uid: <span class="o">(</span>    0/    root<span class="o">)</span>   Gid: <span class="o">(</span>    0/    root<span class="o">)</span>
-</span><span class='line'>Access: 2014-04-05 03:07:04.983044299 +0800
-</span><span class='line'>Modify: 2013-11-22 23:36:45.000000000 +0800
-</span><span class='line'>Change: 2013-12-26 12:39:58.569332497 +0800
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3><code>man</code> 、<code>info</code> 、<code>--help</code>、<code>help</code>获取命令的帮助</h3>
-
-<p><strong>注：</strong>其中<code>help</code>只能获取shell内置命令的帮助</p>
-
-<h3><code>whereis</code>、<code>which</code></h3>
-
-<p><strong>注：</strong>两个命令只能获取非内嵌的shell命令
-<code>whereis</code>：定位命令的二进制、源码和帮助手册
-<code>which</code>：获取命令的位置，默认先获取alias别名，可以使用<code>--skip-alias</code>选项跳过别名</p>
-
-<h3><code>alias</code>、<code>unalias</code></h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="nb">alias</span>     <span class="c"># 查看当前环境别名    </span>
-</span><span class='line'><span class="nb">alias </span>l.<span class="o">=</span><span class="s1">&#39;ls -d .* --color=auto&#39;</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">ll</span><span class="o">=</span><span class="s1">&#39;ls -l --color=auto&#39;</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">ls</span><span class="o">=</span><span class="s1">&#39;ls --color=auto&#39;</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">vi</span><span class="o">=</span><span class="s1">&#39;vim&#39;</span>
-</span><span class='line'><span class="nb">alias </span><span class="nv">which</span><span class="o">=</span><span class="s1">&#39;alias | /usr/bin/which --tty-only --read-alias --show-dot --show-tilde&#39;</span>
-</span><span class='line'><span class="c"># 此处which别名可以获知为何默认which会先展示别名再展示实际命令的位置</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">alias </span><span class="nv">c</span><span class="o">=</span>clear <span class="c"># 设置别名c对应clear</span>
-</span><span class='line'><span class="nv">$ </span><span class="nb">unalias </span>c     <span class="c"># 取消设置的别名</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>Shell下的一些快捷键</h3>
-
-<ul>
-<li> <code>Tab</code>       &#8211;  补全</li>
-<li> <code>Esc+.</code>    &#8211;  获取上个命令最后一个词</li>
-<li> <code>Ctrl+l</code>    &#8211;  清屏，类似 clear 命令</li>
-<li> <code>Ctrl+r</code>    &#8211;  查找历史命令</li>
-<li> <code>Ctrl+c</code>    &#8211;  终止</li>
-<li> <code>Ctrl+k</code>    &#8211;  删除此处至末尾所有内容</li>
-<li> <code>Ctrl+u</code>    &#8211;  删除此处至开始所有内容</li>
-<li> <code>Ctrl+a/e</code>  &#8211;  回到行首/行尾</li>
-</ul>
-
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux性能优化--CPU[备忘]]]></title>
@@ -3657,6 +3416,199 @@ Connection to x.x.x.x closed.
 <li><a href="http://livecipher.blogspot.tw/2013/02/ssh-agent-forwarding.html">SSH key agent forwarding</a></li>
 <li><a href="https://help.github.com/articles/using-ssh-agent-forwarding">Using ssh agent forwarding</a></li>
 <li><a href="upc.lbl.gov/docs/user/sshagent.shtml">A short ssh-agent tutorial</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[rsyslog远程传输的几种方式]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote/"/>
+    <updated>2013-08-28T10:51:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2013/08/28/rsyslog-remote</id>
+    <content type="html"><![CDATA[<h3>基本介绍</h3>
+
+<p>Rsyslog是一个syslogd的多线程增强版，<a href="www.rsyslog.com/doc/rsyslog_ng_comparison.html">rsyslog vs. syslog-ng</a> 链接是rsyslog官方和syslog特性和性能上的一些对比，目前大部分Linux发行版本默认也是使用rsyslog记录日志。这里介绍rsyslog远程传输的几种方式，对远程日志传输可以有一个了解。</p>
+
+<!--more-->
+
+
+<p>rsyslog提供三个远程日志传输方式：</p>
+
+<ul>
+<li>UDP: 数据包传输可信度不高</li>
+<li>TCP: 数据包传输可信度比较高</li>
+<li>RELP: 数据包传输可信度最高，避免数据丢失，比较新的协议，目前应用较少</li>
+</ul>
+
+
+<p>以下为man手册对RELP协议的一个介绍：</p>
+
+<blockquote><p>RELP can be used instead of UDP or plain TCP syslog to  provide  reliable  delivery  of syslog  messages.  Please  note that plain TCP syslog does NOT provide truly reliable delivery, with it messages may be  lost when there is a connection problem or the server shuts down. RELP prevents message loss in hose cases.</p></blockquote>
+
+<p>关于RELP的更进一步了解可以参考 <a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a> <a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a>  <a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></p>
+
+<h3>相关配置</h3>
+
+<blockquote><p>To forward messages to another host via UDP, prepend the hostname with the at sign (&#8220;@&#8221;).  To forward it via plain tcp, prepend two at signs (&#8220;@@&#8221;). To forward via RELP, prepend the string &#8220;:omrelp:&#8221; in front of the hostname.</p></blockquote>
+
+<h4>UDP传输</h4>
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Provides UDP syslog reception</span>
+</span><span class='line'><span class="nv">$ModLoad</span> imudp
+</span><span class='line'><span class="nv">$UDPServerRun</span> 514
+</span><span class='line'><span class="nv">$AllowedSender</span> UDP, 192.168.80.0/24
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address. </span>
+</span><span class='line'><span class="c"># 根据客户端的IP单独存放主机日志在不同目录，syslog需要手动创建             </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span><span class='line'><span class="c"># 排除本地主机IP日志记录，只记录远程主机日志</span>
+</span><span class='line'><span class="c"># 注意此规则需要在其它规则之前，否则配置没有意义，远程主机的日志也会记录到Server的日志文件中</span>
+</span><span class='line'>&amp; ~ <span class="c"># 忽略之前所有的日志，远程主机日志记录完之后不再继续往下记录</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>或者把以上配置单独存放在<code>/etc/rsyslog.d/</code>中的xxx.conf配置文件中，尽量避免修改主配置文件，当然如果要独立文件主配置文件中必须含有以下配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># grep &#39;rsyslog.d&#39; /etc/rsyslog.conf </span>
+</span><span class='line'><span class="c"># Include all config files in /etc/rsyslog.d/</span>
+</span><span class='line'><span class="nv">$IncludeConfig</span> /etc/rsyslog.d/*.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.*                     @192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上配置完成之后<code>/etc/init.d/rsyslog restart</code></p>
+
+<h4>TCP传输</h4>
+
+<p>TCP配置和UDP类似，如下</p>
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Provides TCP syslog reception</span>
+</span><span class='line'><span class="nv">$ModLoad</span> imtcp
+</span><span class='line'><span class="nv">$InputTCPServerRun</span> 514
+</span><span class='line'><span class="nv">$AllowedSender</span> TCP, 192.168.80.0/24
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address.          </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span><span class='line'>&amp; ~
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>*.*                     @@192.168.80.130
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<p>关于TCP和UDP的传输方式，rsyslog官方推荐使用TCP传输方式</p>
+
+<blockquote><p>In general, we suggest to use TCP syslog. It is way more reliable than UDP syslog and still pretty fast. The main reason is, that UDP might suffer of message loss. This happens when the syslog server must receive large bursts of messages. If the system buffer for UDP is full, all other messages will be dropped. With TCP, this will not happen. But sometimes it might be good to have a UDP server configured as well. That is, because some devices (like routers) are not able to send TCP syslog by design. In that case, you would need both syslog server types to have everything covered. If you need both syslog server types configured, please make sure they run on proper ports. By default UDP syslog is received on port 514. TCP syslog needs a different port because often the RPC service is using this port as well.</p></blockquote>
+
+<h4>RELP传输</h4>
+
+<p>RELP需要安装<code>rsyslog-relp</code>相应模块</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># yum install rsyslog-relp -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Server端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ModLoad</span> imrelp <span class="c"># 加载相应模块</span>
+</span><span class='line'><span class="nv">$InputRELPServerRun</span> 20514 <span class="c"># 监听端口</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># This one is the template to generate the log filename dynamically, depending on the client&#39;s IP address.          </span>
+</span><span class='line'><span class="nv">$template</span> Remote,<span class="s2">&quot;/var/log/syslog/%fromhost-ip%/%fromhost-ip%_%$YEAR%-%$MONTH%-%$DAY%.log&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Log all messages to the dynamically formed file.</span>
+</span><span class='line'>:fromhost-ip, !isequal, <span class="s2">&quot;127.0.0.1&quot;</span> ?Remote
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>Client端配置</h5>
+
+<figure class='code'><figcaption><span>/etc/rsyslog.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ActionQueueType</span> LinkedList     <span class="c"># use asynchronous processing</span>
+</span><span class='line'><span class="nv">$ActionQueueFileName</span> srvrfwd    <span class="c"># set file name, also enables disk mode</span>
+</span><span class='line'><span class="nv">$ActionResumeRetryCount</span> -1      <span class="c"># infinite retries on insert failure</span>
+</span><span class='line'><span class="nv">$ActionQueueSaveOnShutdown</span> on   <span class="c"># save in-memory data if rsyslog shuts down</span>
+</span><span class='line'>*.* :omrelp:192.168.80.130:20514
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>客户端和服务端重启相关服务即可</p>
+
+<h3>参考和拓展资料</h3>
+
+<ul>
+<li><a href="http://www.rsyslog.com/tag/relp/">Using TLS with RELP</a></li>
+<li><a href="http://www.rsyslog.com/doc/imrelp.html">RELP Input Module</a></li>
+<li><a href="http://www.rsyslog.com/doc/omrelp.html">RELP Output Module (omrelp)</a></li>
+<li><a href="http://gertverdemme.nl/sysadm/security/rsyslog_relp_remote_logging">Rsyslog remote logging using RELP</a></li>
+<li><a href="http://www.rsyslog.com/tag/udp/">UDP Rsyslog</a></li>
+<li><a href="http://www.rsyslog.com/tag/tcp/">TCP Rsyslog</a></li>
 </ul>
 
 

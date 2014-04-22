@@ -9,7 +9,10 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Linux下一切皆文件 ">
+  <meta name="description" content="Linux性能相关可以从以下几方面入手： CPU
+Memory
+IO
+Network ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -68,51 +71,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/04/22/linux-base1/">Linux基础命令-1</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-04-22T11:09:00+08:00" pubdate data-updated="true">Apr 22<span>nd</span>, 2014</time>
-        
-         | <a href="/blog/2014/04/22/linux-base1/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>Linux下一切皆文件</p></blockquote>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/04/22/linux-base1/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
   
   
     <article>
@@ -423,6 +381,71 @@
   
     <footer>
       <a rel="full-article" href="/blog/2014/02/20/opennebula-market/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/17/mysql-rep/">MySQL复制备忘</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-17T22:50:00+08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/17/mysql-rep/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><ul>
+<li><a href="#repl1">复制的用途</a></li>
+<li><a href="#repl2">复制工作过程</a></li>
+<li><a href="#repl3">复制配置</a>
+
+<ul>
+<li><a href="#repl4">创建复制账号</a></li>
+<li><a href="#repl5">配置主库和备库</a></li>
+<li><a href="#repl6">启动复制</a></li>
+</ul>
+</li>
+<li><a href="#repl7">线上运行后主从配置</a></li>
+<li><a href="#repl8">一些重要选项</a></li>
+<li><a href="#repl9">参考</a></li>
+</ul>
+
+
+<h2 id="env">环境说明</h2>
+
+
+<p>MySQL支持两种复制方式：基于行的复制和基于语句的复制，两种方式都是通过在主库上记录二进制日志，在被库重复日志的方式来实现异步的数据复制。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/17/mysql-rep/">阅读全文 &rarr;</a>
     </footer>
   
 

@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Openebula镜像制作 - OPS Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="qemu-img和qemu-kvm命令是制作系统镜像的重要工具，在介绍这两个工具之前，稍微简单说明下虚拟机镜像格式，目前虚拟机有多种镜像格式可供选择，常见的有如raw、vdi、qcow2、vmdk、qed、vhd等格式。 qemu-img qemu-img是QEMU的磁盘管理工具， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/04/25/openebula-image/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="OPS Notes By 枯木" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">OPS Notes By 枯木</a></h1>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+<div class="navi">
+<ul>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/ops">Ops Tools</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+  <li><a href="/blog/about">Author</a></li>
+</ul>
+</div>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">Openebula镜像制作</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T20:45:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><code>qemu-img</code>和<code>qemu-kvm</code>命令是制作系统镜像的重要工具，在介绍这两个工具之前，稍微简单说明下虚拟机镜像格式，目前虚拟机有多种镜像格式可供选择，常见的有如<code>raw</code>、<code>vdi</code>、<code>qcow2</code>、<code>vmdk</code>、<code>qed</code>、<code>vhd</code>等格式。</p>
+
+<!--more-->
+
+
+<h2>qemu-img</h2>
+
+<p><code>qemu-img</code>是QEMU的磁盘管理工具，支持多种虚拟镜像格式</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>qemu-img -h | grep Supported
+</span><span class='line'>Supported formats: raw cow qcow vdi vmdk cloop dmg bochs vpc vvfat
+</span><span class='line'>qcow2 qed parallels nbd blkdebug host_cdrom host_floppy host_device file
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>qemu-img</code>默认创建的格式是<code>raw</code>，man手册中对几种格式也都有介绍。以下为对raw和qcow2镜像的详细介绍：</p>
+
+<h3>raw</h3>
+
+<p>原始的磁盘镜像格式，qemu-img默认支持的格式，它的优势在于它非常简单而且非常容易移植到其他模拟器（emulator，QEMU 也是一个emulator）上去使用。如果客户机文件系统（如Linux上的ext2/ext3/ext4、Windows的NTFS）支持“空洞” （hole），那么镜像文件只有在被写有数据的扇区才会真正占用磁盘空间，从而有节省磁盘空间的作用。<code>qemu-img</code>默认的<code>raw</code>格式的文件其实是稀疏文件（sparse file）[<em>稀疏文件就是在文件中留有很多空余空间，留备将来插入数据使用。如果这些空余空间被ASCII码的NULL字符占据，并且这些空间相当大，那么，这个文件就被称为稀疏文件，而且，并不分配相应的磁盘块。</em>]，dd命令创建的也是raw格式，不过dd一开始就让镜像实际占用了分配的空间，而没有使用稀疏文件的方式对待空洞而节省磁盘空间。尽管一开始就实际占用磁盘空间的方式没有节省磁盘的效果，不过它在写入新的数据时不需要宿主机从现有磁盘空间中分配，从而在第一次写入数据时性能会比稀疏文件的方式更好一点。简单来说，raw有以下几个特点：</p>
+
+<ul>
+<li>寻址简单，访问效率高</li>
+<li>可以通过格式转换工具方便地转换为其它格式</li>
+<li>格式实现简单，不支持压缩、快照和加密</li>
+<li>能够直接被宿主机挂载，不用开虚拟机即可在宿主和虚拟机间进行数据传输</li>
+</ul>
+
+
+<h3>qcow2</h3>
+
+<p><code>qcow2</code>是qcow的一种改进，是Qemu实现的一种虚拟机镜像格式。更小的虚拟硬盘空间（尤其是宿主分区不支持hole的情况下），支持压缩、加密、快照功能，磁盘读写性能较raw差。</p>
+
+<h3>qemu-img它支持的命令分为如下几种</h3>
+
+<ul>
+<li>（1）check [-f fmt] filename</li>
+</ul>
+
+
+<p>对磁盘镜像文件进行一致性检查，查找镜像文件中的错误，目前仅支持对<code>“qcow2”</code>、<code>“qed”</code>、<code>“vdi”</code>格式文件的检查。其中，<code>qcow2</code>是 QEMU 0.8.3版本引入的镜像文件格式，也是目前使用最广泛的格式。<code>qed</code>（QEMU enhanced disk）是从QEMU 0.14版开始加入的增强磁盘文件格式，为了避免qcow2格式的一些缺点，也为了提高性能，不过目前还不够成熟。而<code>vdi</code>（Virtual Disk Image）是Oracle的VirtualBox虚拟机中的存储格式。参数-f fmt是指定文件的格式，如果不指定格式<code>qemu-img</code>会自动检测，<code>filename</code>是磁盘镜像文件的名称（包括路径）。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>qemu-img check CentOS6.4-x86_64.qcow2
+</span><span class='line'>No errors were found on the image.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>（2）create [-f fmt] filename [size]</li>
+</ul>
+
+
+<p>创建一个格式为fmt大小为size文件名为filename的镜像文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>qemu-img create -f qcow2 test.qcow2 10G
+</span><span class='line'>Formatting <span class="s1">&#39;test.qcow2&#39;</span>, <span class="nv">fmt</span><span class="o">=</span>qcow2 <span class="nv">size</span><span class="o">=</span>10737418240 <span class="nv">encryption</span><span class="o">=</span>off <span class="nv">cluster_size</span><span class="o">=</span>65536
+</span><span class='line'><span class="nv">$ </span>qemu-img create -f qcow2 test.raw 10G
+</span><span class='line'>Formatting <span class="s1">&#39;test.raw&#39;</span>, <span class="nv">fmt</span><span class="o">=</span>qcow2 <span class="nv">size</span><span class="o">=</span>10737418240 <span class="nv">encryption</span><span class="o">=</span>off <span class="nv">cluster_size</span><span class="o">=</span>65536
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p><strong>注意</strong>：这里的qcow2后缀只是为了便于自己区分格式方便，如果不加后缀也可以通过qemu-img来获取镜像的格式。</p></blockquote>
+
+<ul>
+<li>（3）info [-f fmt] filename</li>
+</ul>
+
+
+<p>显示filename镜像文件的信息。如果文件是使用稀疏文件的存储方式，也会显示出它的本来分配的大小以及实际已占用的磁盘空间大小。如果文件中存放有客户机快照，快照的信息也会被显示出来。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>qemu-img info test.qcow2
+</span><span class='line'>image: test.qcow2
+</span><span class='line'>file format: qcow2
+</span><span class='line'>virtual size: 10G <span class="o">(</span>10737418240 bytes<span class="o">)</span>
+</span><span class='line'>disk size: 136K
+</span><span class='line'>cluster_size: 65536
+</span><span class='line'><span class="nv">$ </span>qemu-img info test.raw    //qemu-img生成raw格式镜像也是采用稀疏文件方式存储的
+</span><span class='line'>image: test.raw
+</span><span class='line'>file format: qcow2
+</span><span class='line'>virtual size: 10G <span class="o">(</span>10737418240 bytes<span class="o">)</span>
+</span><span class='line'>disk size: 136K
+</span><span class='line'>cluster_size: 65536
+</span><span class='line'><span class="nv">$ </span>dd &lt;/dev/zero &gt;test.dd <span class="nv">bs</span><span class="o">=</span>1MB <span class="nv">count</span><span class="o">=</span>1000
+</span><span class='line'>1000+0 records in
+</span><span class='line'>1000+0 records out
+</span><span class='line'>1000000000 bytes <span class="o">(</span>1.0 GB<span class="o">)</span> copied, 1.80597 s, 554 MB/s
+</span><span class='line'><span class="nv">$ </span>qemu-img info test.dd //可以看到dd产生的格式也是raw格式的，并且没有用到稀疏存储方式
+</span><span class='line'>image: test.dd
+</span><span class='line'>file format: raw
+</span><span class='line'>virtual size: 954M <span class="o">(</span>1000000000 bytes<span class="o">)</span>
+</span><span class='line'>disk size: 954M
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>（4） convert [-c] [-f fmt] [-O output_fmt] [-o options] filename [filename2 [&#8230;]] output_filename</li>
+</ul>
+
+
+<p>镜像格式转换，将fmt格式的filename镜像文件根据options选项转换为格式为<code>output_fmt</code>的名为<code>output_filename</code>的镜像文件。它支持不同格式的镜像文件之间的转换，比如可以用VMware用的vmdk格式文件转换为qcow2文件，这对从其他虚拟化方案转移到KVM上的用户非常有用。一般来说，输入文件格式fmt由qemu-img工具自动检测到，而输出文件格式output_fmt根据自己需要来指定，默认会被转换为与raw文件格式（且默认使用稀疏文件的方式存储以节省存储空间）。
+其中，<code>“-c”</code>参数是对输出的镜像文件进行压缩，不过只有qcow2和qcow格式的镜像文件才支持压缩，而且这种压缩是只读的，如果压缩的扇区被重写，则会被重写为未压缩的数据。同样可以使用<code>“-o options”</code>来指定各种选项，如：后端镜像、文件大小、是否加密等等。使用<code>backing_file</code>选项来指定后端镜像，让生成的文件是<code>copy-on-write</code>的增量文件，这时必须让转换命令中指定的后端镜像与输入文件的后端镜像的内容是相同的，尽管它们各自后端镜像的目录、格式可能不同。</p>
+
+<p>如果使用<code>qcow2</code>、<code>qcow</code>、<code>cow</code>等作为输出文件格式来转换<code>raw</code>格式的镜像文件（非稀疏文件格式），镜像转换还可以起到将镜像文件转化为更小的镜像，因为它可以将空的扇区删除使之在生成的输出文件中并不存在。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>qemu-img info test.dd
+</span><span class='line'>image: test.dd
+</span><span class='line'>file format: raw
+</span><span class='line'>virtual size: 954M <span class="o">(</span>1000000000 bytes<span class="o">)</span>
+</span><span class='line'>disk size: 954M
+</span><span class='line'><span class="nv">$ </span>qemu-img convert -O qcow2  test.dd test_qcow2.qcow2
+</span><span class='line'><span class="nv">$ </span>qemu-img info test_qcow2.qcow2
+</span><span class='line'>image: test_qcow2.qcow2
+</span><span class='line'>file format: qcow2
+</span><span class='line'>virtual size: 954M <span class="o">(</span>1000000000 bytes<span class="o">)</span>
+</span><span class='line'>disk size: 136K
+</span><span class='line'>cluster_size: 65536
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上介绍了<code>qemu-img</code>的基本使用方法之后，关于<code>qemu-img</code>的更多高级用法可以参考man手册</p>
+
+<h3>qemu-kvm</h3>
+
+<h4>新建测试镜像</h4>
+
+<p>因为qcow2的一些特性，这里采用qcow2格式制作系统镜像</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 CentOS6.4-x86_64-tpl.qcow2 8G</span>
+</span><span class='line'><span class="c"># chown oneadmin:oneadmin CentOS6.4-x86_64-tpl.qcow2</span>
+</span><span class='line'>Formatting <span class="s1">&#39;CentOS6.4-x86_64-tpl.qcow2&#39;</span>, <span class="nv">fmt</span><span class="o">=</span>qcow2 <span class="nv">size</span><span class="o">=</span>8589934592 <span class="nv">encryption</span><span class="o">=</span>off <span class="nv">cluster_size</span><span class="o">=</span>65536
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>安装系统</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># /usr/libexec/qemu-kvm -m 1024 -cdrom /data/images/CentOS-6.4-x86_64-bin-DVD1.iso -drive \</span>
+</span><span class='line'><span class="nv">file</span><span class="o">=</span>/data/images/CentOS6.4-x86_64-tpl.qcow2,if<span class="o">=</span>virtio -net nic,model<span class="o">=</span>virtio <span class="se">\</span>
+</span><span class='line'>-net tap,script<span class="o">=</span>no  -boot d -nographic -vnc :0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面命令参数解释如下：</p>
+
+<pre><code>-m                      指定内存大小
+-cdrom                  指定系统iso镜像
+-drive file=xx,if=xx    指定硬盘镜像,file=镜像文件名,if=镜像格式类型
+-net nic,model=xx       表示网卡配置,model=模拟网卡类型,默认rt18139
+-net tap,script=no      虚拟设备，桥接网络,script表启动虚拟机自动执行网络配置脚本，如果不需要启动，写no即可
+-boot d                 系统启动顺序,d表示表示cdrom
+-nographic              关闭图形输出
+-vnc :0                 开启vnc监听
+</code></pre>
+
+<p>详细的关于<code>qemu-kvm</code>的参数使用说明请参考man手册。</p>
+
+<p>输入以上命令之后，通过VNC客户端连接按照正常的安装流程安装系统即可。默认VNC端口从5900开始。</p>
+
+<h2>桥接网络</h2>
+
+<p>如果虚拟机需要和外界通信，则需要创建桥接网络，之前介绍<code>qemu-kvm</code>安装时提到<code>-net tap,script=no</code>选项，默认只是创建桥接虚拟网络，并没有启用，只有启用了才可以设置对应网络配置和外界通信。</p>
+
+<h3>手动桥接</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link show dev tap0          //使用如上方式默认创建虚拟网卡tap0，状态为DOWN</span>
+</span><span class='line'>37: tap0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN qlen 500
+</span><span class='line'>    link/ether d2:b0:af:7b:23:0f brd ff:ff:ff:ff:ff:ff
+</span><span class='line'><span class="c"># brctl show br0              //查看桥接列表，没有tap0</span>
+</span><span class='line'>bridge name   bridge id       STP enabled interfaces
+</span><span class='line'>br0       8000.b8975a626020   no      eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过以下方式桥接网络</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ip link set tap0 up            //使tap0状态变为up</span>
+</span><span class='line'><span class="c"># brctl addif br0 tap0            //桥接tap0到br0</span>
+</span><span class='line'><span class="c"># brctl show br0                  //显示tap0已经加入到桥接列表</span>
+</span><span class='line'>bridge name   bridge id       STP enabled interfaces
+</span><span class='line'>br0       8000.b8975a626020   no      eth0
+</span><span class='line'>                                       tap0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如此，配置好虚拟机的网络就可以和外界通信了。</p>
+
+<p><code>brctl delif br0 tap0</code>删除桥接网络，<code>qemu-kvm</code>工具在客户机关闭时会自动解除TAP设备的bridge绑定，所以这一步无需操作。</p>
+
+<h3>脚本实现</h3>
+
+<p>如果不想每次都手动操作，则可以通过脚本自动化实现虚拟网卡的桥接。使用选项<code>-net tap,script=/tmp/qemu-ifup.sh</code> 把之前的no替换为需要执行的脚本，以下为<code>qemu-ifup.sh</code>脚本内容</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /tmp/qemu-ifup.sh </span>
+</span><span class='line'><span class="c">#!/bin/bash</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 桥接网络设备</span>
+</span><span class='line'><span class="nv">switch</span><span class="o">=</span>br0                 //设置桥接网卡
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> -n <span class="nv">$1</span> <span class="o">]</span>; <span class="k">then</span>          //<span class="nv">$1</span>为qemu-kvm传递值，这里是tap
+</span><span class='line'>    ip link <span class="nb">set</span> <span class="nv">$1</span> up
+</span><span class='line'>    brctl addif <span class="k">${</span><span class="nv">switch</span><span class="k">}</span> <span class="nv">$1</span>
+</span><span class='line'>    <span class="nb">exit </span>0
+</span><span class='line'><span class="k">else</span>
+</span><span class='line'><span class="k">   </span><span class="nb">echo</span> <span class="s2">&quot;no interface!&quot;</span>
+</span><span class='line'>   <span class="nb">exit </span>1
+</span><span class='line'><span class="k">fi</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>系统相关优化</h2>
+
+<p>完成系统安装配置之后，需要对镜像模板系统做如下一系列优化操作：</p>
+
+<h3>selinux、iptables、服务、文件描述符设置</h3>
+
+<p># 关闭SELINUX</p>
+
+<pre><code>sed -i -c 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+</code></pre>
+
+<p># iptables根据相关需求配置，一般关闭iptables服务</p>
+
+<p># 关闭系统其它额外的服务</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">service</span><span class="o">=</span><span class="sb">`</span>chkconfig --list | grep <span class="s1">&#39;3:on&#39;</span> | awk <span class="s1">&#39;{print $1}&#39;</span><span class="sb">`</span>
+</span><span class='line'><span class="k">for </span>i in <span class="nv">$service</span>
+</span><span class='line'><span class="k">do</span>
+</span><span class='line'><span class="k">  case</span> <span class="nv">$i</span> in
+</span><span class='line'>      acpid | crond | irqbalance |  messagebus | network | sshd | rsyslog | udev-post<span class="o">)</span>
+</span><span class='line'>          chkconfig --level 2345 <span class="nv">$i</span> on
+</span><span class='line'>      ;;
+</span><span class='line'>      *<span class="o">)</span>
+</span><span class='line'>          chkconfig --level 2345 <span class="nv">$i</span> off   
+</span><span class='line'>      ;;
+</span><span class='line'>  <span class="k">esac    </span>
+</span><span class='line'><span class="k">done</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p># 文件描述符相关配置</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>cat &gt;&gt;/etc/security/limits.conf <span class="s">&lt;&lt;EOF</span>
+</span><span class='line'><span class="s">*               soft    nofile          65535</span>
+</span><span class='line'><span class="s">*               hard    nofile          65535</span>
+</span><span class='line'><span class="s">EOF</span>
+</span><span class='line'>sed -i <span class="s1">&#39;/1024/s/1024/65535/&#39;</span> /etc/security/limits.d/90-nproc.conf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<blockquote><p><strong>注：</strong> 经测试acpid服务必须安装且在虚拟机系统中开启，否则OpenNebula web端和shell终端发送关机命令无效。</p></blockquote>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/21/performance-cpu/" title="Previous Post: Linux性能优化--CPU[备忘]">&laquo; Linux性能优化--CPU[备忘]</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/04/25/openebula-image/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/04/25/openebula-image/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-23T10:19:33+08:00</updated>
+  <updated>2014-04-25T16:26:10+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -151,7 +151,7 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="k">while</span> :; <span class="k">do </span>ps eo pid,ni,pri,pcpu,psr,comm | <span class="se">\</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span><span class="k">while</span> :; <span class="k">do </span>ps -eo pid,ni,pri,pcpu,psr,comm | <span class="se">\</span>
 </span><span class='line'>grep <span class="s1">&#39;mysqld&#39;</span>; sleep 1 ;<span class="k">done</span> <span class="c"># ps通过查看psr队列获取进程占用哪个cpu</span>
 </span></code></pre></td></tr></table></div></figure>
 
@@ -159,7 +159,7 @@
 <p>top也可以实时查看占用哪个cpu</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>top -p <span class="sb">`</span>pgrep mysql | xargs | tr <span class="s2">&quot; &quot;</span> <span class="s2">&quot;,&quot;</span><span class="sb">`</span> <span class="c"># 执行如下命令之后</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>top -p <span class="sb">`</span>pgrep mysql | xargs | tr <span class="s2">&quot; &quot;</span> <span class="s2">&quot;,&quot;</span><span class="sb">`</span> <span class="c"># 执行如上命令之后输入`f`,然后输入`j`回车即可</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

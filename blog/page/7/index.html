@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="使用sed d命令，你可以删除行。请注意被删除的行只是输出流。就像其它sed命令一样，d命令也不能修改原始文件的内容。 ">
+  <meta name="description" content="使用sed w命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/05/02/sed-5/">1-5. Write Pattern Space to File[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-02T00:06:00+08:00" pubdate data-updated="true">May 2<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/02/sed-5/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>使用sed <code>w</code>命令，你可以把当前模式空间内容写入到文件。默认的每一行sed标准流都会打印输出，因此如果你想输出文件但不想打印到屏幕，那么你还是需要使用-n选项。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/02/sed-5/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -344,53 +389,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/04/24/sed-1/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/23/loganalyzer/">LogAnalyzer网页日志分析之安装篇</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-23T14:50:00+08:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/23/loganalyzer/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>LogAnalyzer简介</h2>
-
-<p>LogAnalyzer 是一个syslog和其他网络事件数据的Web前端工具，提供简单易用的日志浏览、搜索和基本分析以及图表显示，PHP语言开发。<a href="http://loganalyzer.adiscon.com/">官方地址</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/23/loganalyzer/">阅读全文 &rarr;</a>
     </footer>
   
 

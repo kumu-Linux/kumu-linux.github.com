@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="qemu-img和qemu-kvm命令是制作系统镜像的重要工具，在介绍这两个工具之前，稍微简单说明下虚拟机镜像格式，目前虚拟机有多种镜像格式可供选择，常见的有如raw、vdi、qcow2、vmdk、qed、vhd等格式。 ">
+  <meta name="description" content="新建了一个Ubuntu14.04的虚拟机，使用xshell登陆，刚输入用户名后却直接抛出了 Too many authentication failures for username 的错误。ssh登陆失败尝试次数和MaxAuthTries值相关，直接man sshd_config获取该参数说明， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,51 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/05/21/ssh-maxauthtries/">Ssh MaxAuthTries</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-21T23:05:00+08:00" pubdate data-updated="true">May 21<span>st</span>, 2014</time>
+        
+         | <a href="/blog/2014/05/21/ssh-maxauthtries/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>新建了一个Ubuntu14.04的虚拟机，使用xshell登陆，刚输入用户名后却直接抛出了 <code>Too many authentication failures for username</code> 的错误。ssh登陆失败尝试次数和<code>MaxAuthTries</code>值相关，直接<code>man sshd_config</code>获取该参数说明，得到如下内容：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/05/21/ssh-maxauthtries/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -379,51 +424,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2014/02/20/salt-install/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/02/20/opennebula-market/">Opennebula 3.8 Market兼容问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-20T16:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/02/20/opennebula-market/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/02/20/opennebula-market/">阅读全文 &rarr;</a>
     </footer>
   
 

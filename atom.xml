@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-04-25T22:03:35+08:00</updated>
+  <updated>2014-05-21T23:32:08+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ssh MaxAuthTries]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/05/21/ssh-maxauthtries/"/>
+    <updated>2014-05-21T23:05:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/05/21/ssh-maxauthtries</id>
+    <content type="html"><![CDATA[<p>新建了一个Ubuntu14.04的虚拟机，使用xshell登陆，刚输入用户名后却直接抛出了 <code>Too many authentication failures for username</code> 的错误。ssh登陆失败尝试次数和<code>MaxAuthTries</code>值相关，直接<code>man sshd_config</code>获取该参数说明，得到如下内容：</p>
+
+<!--more-->
+
+
+<blockquote><p>MaxAuthTries</p>
+
+<pre><code>Specifies the maximum number of authentication attempts permitted per connection.  
+Once the number of failures reaches half this value, 
+additional failures are logged.  The default is 6.
+</code></pre></blockquote>
+
+<p>让我很诧异的是，关键尼玛我还没有输入密码什么的啊，只是输入一个用户名就报错了。于是测试虚拟机本地ssh登陆，登陆正常，其它Linux主机登陆测试也正常，再测试xshell，依然是输入用户名之后报之前同样的错误。ssh本地<code>debug</code>模式再看下过程</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>ssh -v 127.0.0.1
+</span><span class='line'>... ...
+</span><span class='line'>debug1: Trying private key: /home/test/.ssh/id_rsa
+</span><span class='line'>debug1: Trying private key: /home/test/.ssh/id_dsa
+</span><span class='line'>debug1: Trying private key: /home/test/.ssh/id_ecdsa
+</span><span class='line'>debug1: Trying private key: /home/test/.ssh/id_ed25519
+</span><span class='line'>debug1: Next authentication method: password
+</span><span class='line'><span class="nb">test</span>@127.0.0.1<span class="err">&#39;</span>s password:
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>debug模式看到这里，我自己有点明白了，ssh验证过程是先尝试私钥再进行密码，查看Xagent开启了3个私钥agent，所以3次没有匹配到私钥之后就断开报错了。<code>MaxAuthTries</code>值默认为6，但是<code>Once the number of failures reaches half this value</code>尝试次数达到设定值一半之后就不能再尝试了。</p>
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Openebula镜像制作]]></title>
@@ -3664,108 +3710,6 @@ Connection to x.x.x.x closed.
 
 
 <p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ssh认证代理]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent/"/>
-    <updated>2013-09-09T10:55:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/09/09/ssh-agent</id>
-    <content type="html"><![CDATA[<h3>简介</h3>
-
-<p>ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon），设计它的唯一目的就是对解密的专用密钥进行高速缓存。ssh包含的内建支持允许它同ssh-agent通信，允许ssh不必每次新连接时都提示您要密码才能获取解密的专用密钥。</p>
-
-<!--more-->
-
-
-<h3>实例</h3>
-
-<h4>Before ssh-agent</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:   <span class="c"># 正常输入密码</span>
-</span><span class='line'>Last login: Sat Sep  7 12:40:02 2013 from 192.168.80.131
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>After ssh-agent</h4>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh-agent bash</span>
-</span><span class='line'><span class="c"># ssh-add       </span>
-</span><span class='line'><span class="c"># 默认ssh-add添加~/.ssh/id_rsa私钥，按提示输入密码即可，可添加多个密钥</span>
-</span><span class='line'><span class="c"># 如果要加入其它密钥直接 ssh-add 私钥文件 即可</span>
-</span><span class='line'>Enter passphrase <span class="k">for</span> /root/.ssh/id_rsa:
-</span><span class='line'>Identity added: /root/.ssh/id_rsa <span class="o">(</span>/root/.ssh/id_rsa<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh-add -l                    # 显示添加密钥添加列表</span>
-</span><span class='line'>2048 4f:a8:76:04:42:90:b4:18:c1:6b:13:06:31:c8:59:bf /root/.ssh/id_rsa <span class="o">(</span>RSA<span class="o">)</span>
-</span><span class='line'><span class="c"># ssh root@192.168.80.130       # 不需要密码登录了</span>
-</span><span class='line'>Last login: Sat Sep  7 12:58:09 2013 from 192.168.80.128
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>ssh-agent + ForwardAgent</h4>
-
-<p>A->B->C&#8230;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Last login: Sat Sep  7 14:05:34 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 默认ForwardAgent默认值为no，因此登录到B时再登录C需要密码了</span>
-</span><span class='line'>Enter passphrase <span class="k">for </span>key <span class="s1">&#39;/root/.ssh/id_rsa&#39;</span>:
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>如果想A->B->C&#8230;都不需要密码则可以设置<code>~/.ssh/config</code>如下</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>Host *
-</span><span class='line'>    ForwardAgent yes
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><strong>设置之后</strong></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ssh root@192.168.80.130</span>
-</span><span class='line'>Last login: Sat Sep  7 14:06:01 2013 from 192.168.80.128
-</span><span class='line'><span class="c"># ssh root@192.168.80.131       # 没有再次提示输入密码，直接登录</span>
-</span><span class='line'>Last login: Sat Sep  7 14:05:20 2013 from 192.168.80.130
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>参考和拓展文档</h3>
-
-<ul>
-<li><a href="http://blog.hellosa.org/2010/03/07/ssh-agent-secure.html">ssh-agent 的安全隐患</a></li>
-<li><a href="http://blog.pkufranky.com/2012/08/ssh-agent-forwarding-guide/">SSH Agent Forwarding原理</a></li>
-<li><a href="http://livecipher.blogspot.tw/2013/02/ssh-agent-forwarding.html">SSH key agent forwarding</a></li>
-<li><a href="https://help.github.com/articles/using-ssh-agent-forwarding">Using ssh agent forwarding</a></li>
-<li><a href="upc.lbl.gov/docs/user/sshagent.shtml">A short ssh-agent tutorial</a></li>
-</ul>
-
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

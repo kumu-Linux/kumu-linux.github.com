@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-05-28T12:00:52+08:00</updated>
+  <updated>2014-05-28T12:03:40+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -42,6 +42,8 @@ start: Job is already running: networking</p>
 <p>Stopping or restarting the networking job is not supported.
 Use ifdown &amp; ifup to reconfigure desired interface.
 ```</p>
+
+<p>从以上日志内容可以看出，传统的service重启和停止网络已经不再支持了，需要通过使用ifdown &amp; ifup来实现相应的操作。</p>
 
 <ul>
 <li>重启指定网卡</li>

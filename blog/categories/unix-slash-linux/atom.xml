@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-05-28T12:03:40+08:00</updated>
+  <updated>2014-05-28T19:55:13+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Ubuntu14.04重启网络问题]]></title>
+    <title type="html"><![CDATA[Ubuntu14.04重启网卡不生效]]></title>
     <link href="http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0/"/>
     <updated>2014-05-28T11:38:00+08:00</updated>
     <id>http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0</id>
@@ -24,7 +24,7 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
 <!--more-->
 
 
-<p>Ubuntu14.04重启网络出现如下问题：</p>
+<p>Ubuntu14.04修改配置，重启网卡没有生效，出现如下问题：</p>
 
 <p>``` bash</p>
 

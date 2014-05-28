@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-05-21T23:32:08+08:00</updated>
+  <updated>2014-05-28T12:00:52+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,119 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ubuntu14.04重启网络问题]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0/"/>
+    <updated>2014-05-28T11:38:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0</id>
+    <content type="html"><![CDATA[<p>Stopping or restarting the networking job is not supported.<br/>
+Use ifdown &amp; ifup to reconfigure desired interface.</p>
+
+<!--more-->
+
+
+<p>Ubuntu14.04重启网络出现如下问题：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/issue</span>
+</span><span class='line'>Ubuntu 14.04 LTS <span class="se">\n</span> <span class="se">\l</span>
+</span><span class='line'><span class="c"># service  networking restart</span>
+</span><span class='line'>stop: Job failed <span class="k">while </span>stopping
+</span><span class='line'>start: Job is already running: networking
+</span><span class='line'><span class="c"># tail -f /var/log/upstart/networking.log</span>
+</span><span class='line'>Stopping or restarting the networking job is not supported.
+</span><span class='line'>Use ifdown &amp; ifup to reconfigure desired interface.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>重启指定网卡</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifdown eth0 &amp;&amp; ifup eth0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>重启除lo网卡的所有网卡</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifdown --exclude=lo -a &amp;&amp; sudo ifup --exclude=lo -a</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>配置桥接</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># apt-get install bridge-utils</span>
+</span><span class='line'><span class="c"># cat /etc/network/interfaces</span>
+</span><span class='line'>auto lo
+</span><span class='line'>iface lo inet loopback
+</span><span class='line'>
+</span><span class='line'>auto eth0
+</span><span class='line'>iface eth0 inet manual
+</span><span class='line'>
+</span><span class='line'>auto br0
+</span><span class='line'>iface br0 inet static
+</span><span class='line'>address 192.168.0.10
+</span><span class='line'>netmask 255.255.255.0
+</span><span class='line'>gateway 192.168.1.1
+</span><span class='line'>bridge_ports eth0
+</span><span class='line'>bridge_stp off
+</span><span class='line'>bridge_fd 0
+</span><span class='line'>bridge_maxwait 0
+</span><span class='line'>dns-nameservers 192.168.1.1
+</span><span class='line'><span class="c"># ifup br0</span>
+</span><span class='line'><span class="c"># brctl  show</span>
+</span><span class='line'>bridge name   bridge id       STP enabled interfaces
+</span><span class='line'>br0       8000.02000a0080e1   no      eth0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="https://bugs.launchpad.net/ubuntu/+source/ifupdown/+bug/1301015">Networking does not restart</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ssh MaxAuthTries]]></title>
@@ -3637,81 +3750,6 @@ Connection to x.x.x.x closed.
 <h4>#30：The End Is the Beginning</h4>
 
 <p>&#8230; &#8230;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenNebula Windows Server镜像制作]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win/"/>
-    <updated>2013-09-22T11:01:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/09/22/opennebula-win</id>
-    <content type="html"><![CDATA[<p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
-
-<h3>创建虚拟机镜像文件</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<!--more-->
-
-
-<h3>安装虚拟机</h3>
-
-<p>网卡推荐使用e1000，磁盘类型使用virtio。使用virtio需要安装virtio设备驱动，否则默认是不能识别virtio设备的。</p>
-
-<h4>下载fedora项目组最新的virtio驱动iso</h4>
-
-<ul>
-<li><a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/">virtio官网地址</a> 目前的提供virtio最新驱动iso为 <a href="http://alt.fedoraproject.org/pub/alt/virtio-win/latest/images/bin/virtio-win-0.1-65.iso">virtio-win-0.1-65.iso</a> ，下载之后使用如下方式安装</li>
-</ul>
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># kvm -m 2048 -cdrom cn_windows_server_2008_r2.iso \</span>
-</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>/data/virtio-win-0.1-65.iso,media<span class="o">=</span>cdrom <span class="se">\</span>
-</span><span class='line'>-drive <span class="nv">file</span><span class="o">=</span>win_2008.qcow2,if<span class="o">=</span>virtio <span class="se">\</span>
-</span><span class='line'>-net nic,model<span class="o">=</span>e1000 -net tap,ifname<span class="o">=</span>tap0,script<span class="o">=</span>no <span class="se">\</span>
-</span><span class='line'>-boot d -nographic -vnc :0
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>客户端通过VNC连接，启动之后virtio的硬盘是不能被识别的，如下图</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win1.jpg" width="500" /></center>
-
-
-
-
-<p></p>
-
-
-<p>此时，需要安装virtio驱动，点击加载驱动程序，Windows Server 2008对应win7版本</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win2.jpg" width="500" /></center>
-
-
-<p></p>
-
-
-<p>选择之后，按提示操作安装，安装完之后就会识别之前建立的磁盘</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_win3.jpg" width="500" /></center>
-
-
-<p></p>
-
-
-<p>磁盘识别之后就可以之后的完整系统安装，关于Windows Server 2008的安装步骤这里不再赘述。</p>
-
-<p>&#8211;EOF&#8211;</p>
 ]]></content>
   </entry>
   

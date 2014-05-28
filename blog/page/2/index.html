@@ -9,7 +9,10 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作 ">
+  <meta name="description" content="Install First => repl源 rhel6 1
+2
+rpm -ivh \
+http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +72,63 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/20/salt-install/">[1]salt Install</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-20T21:57:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/20/salt-install/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Install</h2>
+
+<p>First => repl源</p>
+
+<p>rhel6</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rpm -ivh \
+</span><span class='line'>http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/20/salt-install/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -362,51 +422,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/11/07/opennubula-node/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/rsync/">修改CentOS/RHEL Rsync监听地址</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T10:35:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/07/rsync/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件<code>rsyncd.conf</code>中加入<code>address = 192.168.80.128</code>，重启xinetd服务，发现修改没有生效。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/rsync/">阅读全文 &rarr;</a>
     </footer>
   
 

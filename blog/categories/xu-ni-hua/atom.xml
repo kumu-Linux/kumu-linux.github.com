@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-04T17:39:14+08:00</updated>
+  <updated>2014-06-04T17:51:02+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -140,8 +140,8 @@ $ sudo gunicorn -k gevent --max-requests 100 --graceful-timeout 3600 \
 <h4>提交指定容器到私有库</h4>
 
 <p><code>bash
-$ docker tag 74fe38d11401 10.0.128.219:5000/ubuntu:12.04
-$ docker push 10.0.128.219:5000/ubuntu
+$ docker tag 74fe38d11401 192.168.0.219:5000/ubuntu:12.04
+$ docker push 192.168.0.219:5000/ubuntu
 </code></p>
 
 <h3>参考</h3>

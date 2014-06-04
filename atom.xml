@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-04T17:39:14+08:00</updated>
+  <updated>2014-06-04T17:51:02+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -168,8 +168,8 @@
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>docker tag 74fe38d11401 10.0.128.219:5000/ubuntu:12.04
-</span><span class='line'><span class="nv">$ </span>docker push 10.0.128.219:5000/ubuntu
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>docker tag 74fe38d11401 192.168.0.219:5000/ubuntu:12.04
+</span><span class='line'><span class="nv">$ </span>docker push 192.168.0.219:5000/ubuntu
 </span></code></pre></td></tr></table></div></figure>
 
 

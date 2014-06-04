@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 虚拟化 | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/xu-ni-hua/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-05-28T19:55:13+08:00</updated>
+  <updated>2014-06-04T17:35:27+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,257 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用pipework桥接docker]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/06/04/docker-pipework/"/>
+    <updated>2014-06-04T17:24:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/06/04/docker-pipework</id>
+    <content type="html"><![CDATA[<p>docker创建的时候，默认是接入docker0，只能单主机进行工作，但是在生产环境中往往不同主机的docker也是需要通信的，所以这里要借助另外一个工具，那就是pipework。</p>
+
+<!--more-->
+
+
+<h3>安装pipework</h3>
+
+<p><code>bash
+$ git clone https://github.com/jpetazzo/pipework.git
+$ sudo cp -rp pipework/pipework /usr/local/bin/
+</code></p>
+
+<h3>安装相应依赖软件</h3>
+
+<p><code>bash
+$ sudo apt-get install apring bridge-utils -y
+</code></p>
+
+<h3>桥接网络</h3>
+
+<p>Ubuntu14.04</p>
+
+<p>``` bash</p>
+
+<h1>cat /etc/network/interfaces</h1>
+
+<p>auto lo
+iface lo inet loopback</p>
+
+<p>auto eth0
+iface eth0 inet manual</p>
+
+<p>auto br0
+iface br0 inet static
+address 192.168.0.219
+netmask 255.255.255.0
+gateway 192.168.0.254
+bridge_ports eth0
+bridge_stp off
+bridge_fd 0
+bridge_maxwait 0
+dns-nameservers 192.168.0.254
+```</p>
+
+<h3>启动br0，使桥接生效</h3>
+
+<p>``` bash</p>
+
+<h1>ifup br0</h1>
+
+<h1>Bash=$(docker run -i -d -t 192.168.0.219:5000/ubuntu:14.04 /bin/bash)</h1>
+
+<h1>pipework br0 $Bash 192.168.0.223/24</h1>
+
+<h1>给指定容器添加虚拟网卡并桥接到br0，如此不同主机间的docker便可以通过br0通信了</h1>
+
+<p>```</p>
+
+<h3>拓展</h3>
+
+<p>关于进一步的内容[vlan| Open vSwitch | etc..]可以参考以下两篇文章：</p>
+
+<ul>
+<li><a href="https://github.com/jpetazzo/pipework/blob/master/README.md">pipework readme</a></li>
+<li><a href="http://peerxu.github.io/blog/2014/04/07/docker-with-openvswitch.html">pipework-docker网络增强工具</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[构建docker私有库]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/06/04/docker-registry/"/>
+    <updated>2014-06-04T17:08:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/06/04/docker-registry</id>
+    <content type="html"><![CDATA[<p>为方便管理，我们需要对官方的镜像做一些定制，我们可以构建私有的<code>docker registry</code></p>
+
+<!--more-->
+
+
+<h3>快速构建</h3>
+
+<p>The fastest way to get running:</p>
+
+<ul>
+<li>install docker：<code>apt-get install docker.io</code></li>
+<li>run the registry: <code>docker run -p 5000:5000 registry</code></li>
+</ul>
+
+
+<p>That will use the official image from the Docker index.[因为国内被墙的原因，速度比较慢，推荐第二种方式]</p>
+
+<h3>传统构建方式</h3>
+
+<p><code>bash
+$ sudo apt-get install build-essential python-dev libevent-dev python-pip liblzma-dev
+$ git clone https://github.com/dotcloud/docker-registry.git
+$ cd docker-registry/
+$ cp config/config_sample.yml config/config.yml
+$ mkdir /data/registry -p
+$ pip install .
+</code></p>
+
+<h4>启动</h4>
+
+<p><code>bash
+$ sudo gunicorn --access-logfile - --debug -k gevent -b 0.0.0.0:5000 \
+-w 1 docker_registry.wsgi:application
+</code></p>
+
+<p>生产环境可以通过如supervisord创建8个workers，或者通过nginx和apache来管理，具体可以参考<a href="https://github.com/dotcloud/docker-registry">docker-registry readme</a>。</p>
+
+<p><code>bash
+$ sudo gunicorn -k gevent --max-requests 100 --graceful-timeout 3600 \
+-t 3600 -b localhost:5000 -w 8 docker_registry.wsgi:application
+</code></p>
+
+<h4>提交指定容器到私有库</h4>
+
+<p><code>bash
+$ docker tag 74fe38d11401 10.0.128.219:5000/ubuntu:12.04
+$ docker push 10.0.128.219:5000/ubuntu
+</code></p>
+
+<h3>参考</h3>
+
+<ul>
+<li><a href="https://github.com/dotcloud/docker-registry">docker-registry readme</a></li>
+<li><a href="http://blog.docker.io/2013/07/how-to-use-your-own-registry/">How to use your own Registry</a></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[开始docker]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/06/04/docker-install-index/"/>
+    <updated>2014-06-04T17:03:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/06/04/docker-install-index</id>
+    <content type="html"><![CDATA[<p>Dokcer的基本原理这里不作介绍，网上已经说的很清楚了，这里就不废话了，可以参考以下几篇文章的介绍。</p>
+
+<ul>
+<li><a href="http://tiewei.github.io/cloud/Docker-Getting-Start/">Docker Getting Start: Related Knowledge </a></li>
+<li><a href="http://code.csdn.net/news/2819773">谁是容器中的“战斗机”？Docker与Chef、LXC等容器对比</a></li>
+<li><a href="http://www.infoq.com/cn/articles/docker-containers">Docker：利用Linux容器实现可移植的应用部署</a></li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>Docker install</h2>
+
+<p>Docker的安装非常简单，这里只介绍Ubuntu 14.04的安装，其他发行版本的安装可以参考官网手册。</p>
+
+<p><code>bash
+$ sudo apt-get update
+$ sudo apt-get install docker.io
+$ sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker
+</code></p>
+
+<p>获取当前docker版本</p>
+
+<p><code>bash
+$ sudo docker version
+Client version: 0.9.1
+Go version (client): go1.2.1
+Git commit (client): 3600720
+Server version: 0.9.1
+Git commit (server): 3600720
+Go version (server): go1.2.1
+Last stable version: 0.11.1, please update docker
+</code></p>
+
+<ul>
+<li><a href="http://docs.docker.io/installation/ubuntulinux/">Docker install on ubuntu</a></li>
+</ul>
+
+
+<h2>Docker images</h2>
+
+<ul>
+<li><a href="https://index.docker.io/">Docker index</a> Docker镜像首页，包括官方镜像和其它公开镜像</li>
+</ul>
+
+
+<h3>Search index images</h3>
+
+<p><code>bash
+$ sudo docker search ubuntu
+</code></p>
+
+<h3>Pull images</h3>
+
+<p><code>bash
+$ sudo docker pull ubuntu # remote index 获取ubuntu官方镜像
+$ sudo docker images # 查看当前镜像列表
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+ubuntu              13.10               5e019ab7bf6d        3 weeks ago         180 MB
+ubuntu              saucy               5e019ab7bf6d        3 weeks ago         180 MB
+ubuntu              12.04               74fe38d11401        3 weeks ago         209.6 MB
+... ...
+</code></p>
+
+<p>Docker index被墙？[FUCK GFW!!! %&amp;$#&amp;...]，可绑定host解决，亲测可用，不过可能还是比较慢。</p>
+
+<p>``` bash</p>
+
+<h1>加入以下内容到/etc/hosts下就可以了</h1>
+
+<p>54.234.135.251  get.docker.io
+54.234.135.251  cdn-registry-1.docker.io
+```</p>
+
+<h3>Running an interactive shell</h3>
+
+<p><code>bash
+$ sudo docker run -i -t ubuntu:14.04 /bin/bash
+</code></p>
+
+<ul>
+<li>ubuntu会有多个版本，通过指定tag来启动特定的版本[image]:[tag]</li>
+</ul>
+
+
+<p><code>bash
+$ sudo docker ps # 查看当前运行的容器, ps -a列出当前系统所有的容器
+CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+6c9129e9df10        ubuntu:14.04        /bin/bash           6 minutes ago       Up 6 minutes                            cranky_babbage
+</code></p>
+
+<ul>
+<li>退出：<code>Ctrl-D</code> or <code>exit</code></li>
+<li>detach：<code>Ctrl-p + Ctrl-q</code></li>
+<li>attach: <code>docker attach CONTAINER ID</code></li>
+</ul>
+
+
+<p>--EOF--</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Openebula镜像制作]]></title>
@@ -328,524 +579,6 @@ quit
 </code></p></li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ssh X11Forawarding占用OpenNebula kvm端口]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port/"/>
-    <updated>2014-03-24T17:04:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2014/03/24/opennebula-port</id>
-    <content type="html"><![CDATA[<p>虚拟机重建出现如下错误：
-<code>bash
-$ virsh create deployment.0
-error: Failed to create domain from deployment.0
-error: Unable to read from monitor: Connection reset by peer
-</code></p>
-
-<!--more-->
-
-
-<p>通过日志发现kvm端口被ssh占用
-``` bash</p>
-
-<h1>tail -f /var/log/libvirt/qemu/one-120.log</h1>
-
-<p>… …
-inet_listen_opts: bind(ipv4,0.0.0.0,6010): Address already in use
-… …</p>
-
-<h1>netstat -tulnp | grep 6010</h1>
-
-<p>tcp        0      0 127.0.0.1:6010          0.0.0.0:*               LISTEN      28575/5</p>
-
-<h1>ps -ef | grep 28575</h1>
-
-<p>root     28575  0.0  0.0  73484  3656 ?        Ss   13:03   0:00 sshd: root@pts/5
-```</p>
-
-<p>后查明原因是sshd_config配置文件默认开启<code>X11Forawarding</code>，<code>X11Forawarding</code>默认占用端口为6010开始，和OpenNebula kvm端口占用有冲突。另外，如果连接工具没有开启<code>X11Forawarding</code>，Server端也不会开启转发占用端口的，根本解决方法就是禁用<code>X11Forawarding</code>。</p>
-
-<p>``` bash</p>
-
-<h1>grep X11Forwarding /etc/ssh/sshd_config</h1>
-
-<p>X11Forwarding no</p>
-
-<h1>/etc/init.d/sshd restart</h1>
-
-<p>```</p>
-
-<p>退出已登录的ssh连接，重新登录就不会出现端口占用的问题了，推荐默认关闭X11Forawarding，这在之前的文章<a href="http://kumu-linux.github.io/blog/2013/09/26/ssh-safe/">ssh的一些安全设定</a>已经介绍过了。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[opennebula 3.8 market兼容问题]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market/"/>
-    <updated>2014-02-20T16:12:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2014/02/20/opennebula-market</id>
-    <content type="html"><![CDATA[<p>今天下午发现公司所有的OpenNebula Sunstone访问出错，而且错误界面关闭不了，严重影响操作</p>
-
-<!--more-->
-
-
-
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err.png" /></center>
-
-
-<p>Firebug获知锁定错误为market插件</p>
-
-<center><img src="http://kumu-Linux.github.io/images/OpenNebula/OpenNebula_market_err2.png" /></center>
-
-
-<p>Google获知原因所在，具体问题可以参见<a href="http://www.marshut.com/iqmmzn/opennebula-3-8-and-market-compatiable-problem.html">opennebula-3-8-and-market-compatiable-problem</a> ，解决方法是关闭sunstone的Market plugins，修改<code>etc/sunstone-plugins.yaml</code>配置文件，修改下行从<code>True</code>变为<code>false</code>，如下：
-``` ruby
-- plugins/marketplace-tab.js:</p>
-
-<pre><code>:ALL: false
-:user:
-</code></pre>
-
-<p>:group:
-```</p>
-
-<p>完成之后刷新页面即可恢复正常</p>
-
-<p>--EOF--</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[OpenNebula4.4入门之安装和节点配置]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/12/19/opennebula4-dot-4/"/>
-    <updated>2013-12-19T10:51:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/12/19/opennebula4-dot-4</id>
-    <content type="html"><![CDATA[<p>OpenNebula入门的PDF文档已可下载，<a href="http://vdisk.weibo.com/s/EKoLFfHiE-oT/1387002741">OpenNebula4.4入门配置</a>，本博客连载更新相关内容</p>
-
-<!--more-->
-
-
-<p><strong>本文内容目录组成如下</strong>：</p>
-
-<ul>
-<li><a href="#env">环境说明</a></li>
-<li><a href="#soft">软件包组成</a></li>
-<li><a href="#server">Server端安装和配置</a></li>
-<li><a href="#node_server">节点端安装配置</a></li>
-<li><a href="#node_add">添加节点</a>
-
-<ul>
-<li><a href="#onehost">onehost</a></li>
-</ul>
-</li>
-</ul>
-
-
-<h2 id="env">环境说明</h2>
-
-
-<p>因为CentOS6.4虚拟化有很大的一个提升，所以系统环境管理端和节点宿主机都采用CentOS6.4 x86_64</p>
-
-<h2 id="soft">软件包组成</h2>
-
-
-<p>从OpenNebula官网下载<a href="http://downloads.opennebula.org/packages/opennebula-4.4.0/CentOS-6/CentOS-6-opennebula-4.4.0-1.tar.gz">CentOS/RHEL 6</a>对应软件包或者加入OpenNebula源，直接下载软件包这里不再赘述，添加OpenNebula源方法如下：
-``` bash</p>
-
-<h1>cat &lt;&lt; EOT > /etc/yum.repos.d/opennebula.repo</h1>
-
-<p>[opennebula]
-name=opennebula
-baseurl=http://downloads.opennebula.org/repo/CentOS/6/stable/\$basearch
-enabled=1
-gpgcheck=0
-EOT
-```</p>
-
-<p>OpenNebula4.4主要有以下几个软件组成：
-``` bash</p>
-
-<h1>ls opennebula-*</h1>
-
-<p>opennebula-4.4.0-1.x86_64.rpm           //OpenNebula命令行指令
-opennebula-flow-4.4.0-1.x86_64.rpm      //管理OpenNebula服务
-opennebula-java-4.4.0-1.x86_64.rpm      //OpenNebula Java Api
-opennebula-ozones-4.4.0-1.x86_64.rpm    //OpenNebula网页使用界面
-opennebula-server-4.4.0-1.x86_64.rpm    //OpenNebula Server守护进程
-opennebula-common-4.4.0-1.x86_64.rpm    //基本依赖性组件
-opennebula-gate-4.4.0-1.x86_64.rpm      //使虚拟机和OpenNebula之间的通信
-opennebula-node-kvm-4.4.0-1.x86_64.rpm  //元软件包，包括安装oneadmin用户、libvirt和kvm
-opennebula-ruby-4.4.0-1.x86_64.rpm      //ruby依赖性组件
-opennebula-sunstone-4.4.0-1.x86_64.rpm  //OpenNebula网页使用界面
-opennebula-context-4.4.0-1.x86_64.rpm   //context组件
-```</p>
-
-<h2 id="server">Server端安装和配置</h2>
-
-
-<p>为解决一些依赖关系，安装之前可以激活epel源，因为测试为CentOS6.4，因此激活方式如下：
-``` bash</p>
-
-<h1>rpm -ivh http://dl.fedoraproject.org/pub/epel/6Server/x86_64/epel-release-6-8.noarch.rpm</h1>
-
-<p>```</p>
-
-<p>如果下载的是OpenNebula软件包，则进入解压目录，安装方式如下 [以下安装为组成Server端最基本的软件]：
-``` bash</p>
-
-<h1>yum localinstall opennebula-server-4.4.0-1.x86_64.rpm  \</h1>
-
-<p>opennebula-4.4.0-1.x86_64.rpm opennebula-common-4.4.0-1.x86_64.rpm \
-opennebula-ruby-4.4.0-1.x86_64.rpm opennebula-sunstone-4.4.0-1.x86_64 -y
-```</p>
-
-<p>如果使用OpenNebula的源，安装如下：
-``` bash</p>
-
-<h1>yum install opennebula-server opennebula-sunstone -y</h1>
-
-<p>```</p>
-
-<p>安装完成之后创建如下用户以及目录文件：
-``` bash</p>
-
-<h1>grep oneadmin /etc/passwd</h1>
-
-<p>oneadmin:x:9869:9869::/var/lib/one:/bin/bash</p>
-
-<h1>ls -ld /etc/one/  //OpenNebula相关配置文件所在目录</h1>
-
-<p>drwxr-x---. 11 root oneadmin 4096 Aug 20 11:35 /etc/one/</p>
-
-<h1>ls /etc/init.d/opennebula*</h1>
-
-<p>/etc/init.d/opennebula  /etc/init.d/opennebula-occi  /etc/init.d/opennebula-sunstone</p>
-
-<h1>ls -ld /var/log/one/</h1>
-
-<p>drwxr-x---. 2 oneadmin oneadmin 4096 Jul 25 01:13 /var/log/one/
-```</p>
-
-<p>默认OpenNebula数据存储使用sqlite，如果需要使用MySQL，则需要做如下操作：<br/>
-<strong>1.</strong>  创建相关数据库：
-``` bash
-mysql> create database opennebula;
-Query OK, 1 row affected (0.00 sec)</p>
-
-<p>mysql> grant all privileges on opennebula.* to oneadmin@'localhost' identified by 'oneadmin';
-Query OK, 0 rows affected (0.00 sec)</p>
-
-<p>mysql> flush privileges;
-Query OK, 0 rows affected (0.00 sec)
-```</p>
-
-<p><strong>2.</strong>  修改配置文件如下 [用户、端口、密码、库名和实际情况对应修改]：
-``` bash</p>
-
-<h1>vim /etc/one/oned.conf</h1>
-
-<p>… …</p>
-
-<h1>DB = [ backend = "sqlite" ]</h1>
-
-<h1>Sample configuration for MySQL</h1>
-
-<p>DB = [ backend = "mysql",</p>
-
-<pre><code>   server  = "localhost",
-   port    = 3306,
-   user    = "oneadmin", 
-   passwd  = "oneadmin", 
-   db_name = "opennebula" ]
-</code></pre>
-
-<p>… …
-```</p>
-
-<p>修改sunstone默认监听IP:
-``` bash</p>
-
-<h1>grep ':host' /etc/one/sunstone-server.conf</h1>
-
-<p>:host: 127.0.0.1</p>
-
-<h1>sed -i '/:host/s/127.0.0.1/192.168.80.130/g' /etc/one/sunstone-server.conf</h1>
-
-<h1>grep ':host' /etc/one/sunstone-server.conf</h1>
-
-<p>:host: 192.168.80.130
-```</p>
-
-<p>启动相关服务:
-``` bash</p>
-
-<h1>/etc/init.d/opennebula start</h1>
-
-<h1>/etc/init.d/opennebula-sunstone start</h1>
-
-<h1>lsof -i:9869</h1>
-
-<p>COMMAND   PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
-ruby    22266 oneadmin    6u  IPv4 106746      0t0  TCP 192.168.80.130:9869 (LISTEN)
-```</p>
-
-<p>修改datastore:</p>
-
-<p>OpenNebula默认用的是Shared Transfer Driver，这种模式比较适合快速部署和热迁移，只是要配置网络文件系统。如果没有网络文件系统，不想做热迁移，那么可以换成SSH Transfer Driver测试部署。
-<code>bash
-$ onedatastore list
-  ID NAME                SIZE AVAIL CLUSTER      IMAGES TYPE DS       TM      
-   0 system                0M -     -                 0 sys  -        shared
-   1 default            98.4G 85%   -                 1 img  fs       shared
-   2 files              98.4G 85%   -                 0 fil  fs       ssh
-$ onedatastore update 1
-CLONE_TARGET="SYSTEM"
-DISK_TYPE="FILE"
-DS_MAD="fs"
-LN_TARGET="SYSTEM"
-TM_MAD="ssh"
-TYPE="IMAGE_DS"
-$ onedatastore list
-  ID NAME                SIZE AVAIL CLUSTER      IMAGES TYPE DS       TM      
-   0 system                0M -     -                 0 sys  -        shared
-   1 default            98.4G 85%   -                 1 img  fs       ssh
-   2 files              98.4G 85%   -                 0 fil  fs       ssh
-</code></p>
-
-<p>修改过程产生如下错误：
-<code>bash
-$ onedatastore update 1
-Editor not defined
-</code></p>
-
-<p>这是因为如下原因，CentOS默认vi位置是/bin/vi，添加相关链接即可
-``` bash</p>
-
-<h1>grep -i editor_path= /usr/lib/one/ruby/cli/one_helper.rb</h1>
-
-<p>EDITOR_PATH='/usr/bin/vi'</p>
-
-<h1>ln -s /bin/vi /usr/bin/vi</h1>
-
-<p>```</p>
-
-<p>用户名和密码通过以下方式获得：
-``` bash</p>
-
-<h1>cat /var/lib/one/.one/one_auth</h1>
-
-<p>oneadmin:cd24c3a59c9fd8a7ab853b10247e8147
-```</p>
-
-<p><strong>注</strong>：测试过程中因为测试环境服务端时间不对，导致cookie被忽略，OpenNebula Sunstone选择Keep me logged in一直登陆不上或者直接登陆很快退出，寻找原因花了很长时间，最后调整到正确时间，登陆显示ok。P.S: 时间是一个非常容易被我们忽略的问题，切记切记!</p>
-
-<p>完成以上步骤之后，浏览器登陆 <a href="http://ip:9869">http://ip:9869</a> 即可</p>
-
-<h2 id="node_server">节点端安装配置</h2>
-
-
-<p>软件包下载见Server端安装章节，节点只需要安装以下两个软件</p>
-
-<pre><code>opennebula-node-kvm-4.4.0-1.x86_64.rpm  
-opennebula-common-4.4.0-1.x86_64.rpm
-</code></pre>
-
-<p>yum安装以上软件即可，安装过程同时会安装虚拟化相关组件，包括bridge-utils、libvirt、qemu-kvm、qemu-img等。</p>
-
-<p>桥接网络：
-``` bash</p>
-
-<h1>cat /etc/sysconfig/network-scripts/ifcfg-eth0</h1>
-
-<p>DEVICE=eth0
-TYPE=Ethernet
-ONBOOT=yes
-BRIDGE=br0
-NAME="System eth0"</p>
-
-<h1>cat /etc/sysconfig/network-scripts/ifcfg-br0</h1>
-
-<p>DEVICE=br0
-ONBOOT=yes
-TYPE=Bridge
-BOOTPROTO=static
-IPADDR=192.168.80.131
-NETMASK=255.255.255.0
-GATEWAY=192.168.80.2
-```</p>
-
-<p>修改之后，重启网络并查看确认：
-``` bash</p>
-
-<h1>service network restart</h1>
-
-<h1>brctl show</h1>
-
-<p>bridge name bridge id       STP enabled interfaces
-br0     8000.000c2942e561   no      eth0
-```</p>
-
-<p>修改/etc/libvirt/qemu.conf的相关配置：
-<code>bash
-user  = "oneadmin"
-group = "oneadmin"
-dynamic_ownership = 0
-</code></p>
-
-<p>修改/etc/libvirt/libvirtd.conf相关配置：
-<code>bash
-listen_tcp = 1          //OpenNebula使用libvirt提供的TCP协议
-listen_tls = 0
-</code></p>
-
-<p>修改/etc/sysconfig/libvirtd开启监听选项：
-<code>bash
-LIBVIRTD_ARGS="--listen"
-</code></p>
-
-<p>启动libvirtd服务：
-``` bash</p>
-
-<h1>/etc/init.d/libvirtd start</h1>
-
-<h1>netstat -tulnp | grep libvirt</h1>
-
-<p>tcp        0      0 0.0.0.0:16509               0.0.0.0:*                   LISTEN      2664/libvirtd
-```</p>
-
-<p>ssh无密码登陆：</p>
-
-<p>ssh使用公钥认证无密码登陆这个比较简单，顺带也提一下，方法如下：</p>
-
-<p><strong>管理端</strong>
-``` bash</p>
-
-<h1>su - oneadmin</h1>
-
-<p>$ cat ~/.ssh/config     //增加超时时间，不询问直接添加主机到known_hosts文件
-ConnectTimeout 5
-Host *</p>
-
-<pre><code>StrictHostKeyChecking no
-UserKnownHostsFile /dev/null
-</code></pre>
-
-<p>```</p>
-
-<p><strong>节点端</strong>
-``` bash</p>
-
-<h1>su - oneadmin</h1>
-
-<p>$ vim .ssh/authorized_keys          //把管理端ssh公钥加入节点.ssh/authorized_keys文件
-$ chmod 400 .ssh/authorized_keys
-```</p>
-
-<p>如此，Server端的oneadmin用户就可以无密码登陆节点oneadmin了。</p>
-
-<h2 id="node_add">添加节点</h2>
-
-
-<p>节点如此安装软件和配置之后便可以在Server端添加了，可以使用web添加，也可以使用命令添加。关于web界面的添加可以参考本人共享的pdf文档，这里不作具体的介绍，只介绍命令添加。</p>
-
-<h3 id="onehost">onehost命令</h3>
-
-
-<p>使用命令行添加主机也比较简单，这里使用的命令是<strong>onehost</strong></p>
-
-<p>使用onehost命令删除之前web创建的主机，如下：
-<code>bash
-$ su - oneadmin
-$ onehost list
-  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM STAT  
-   1 192.168.80.131  -           0       0 / 400 (0%)     0K / 3.7G (0%) on    
-$ onehost delete 1      //删除主机，可以是ID也可以是NAME
-$ onehost list
-  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM static
-</code></p>
-
-<p>当然删除之后我们还是需要再创建一遍，虽然很无聊，But你懂的，如下
-<code>bash
-$ onehost create 192.168.80.131 --im kvm --vm kvm --net dummy
-ID: 2
-$ onehost list
-  ID NAME            CLUSTER   RVM      ALLOCATED_CPU      ALLOCATED_MEM STAT  
-   2 192.168.80.131  -           0       0 / 400 (0%)     0K / 3.7G (0%) on    
-</code></p>
-
-<pre><code>--im/-i:信息管理driver. 可选: kvm, xen, vmware, ec2, ganglia, dummy.
---vm/-v: 虚拟化管理driver. 可选: kvm, xen, vmware, ec2, dummy.
---net/-n: 虚拟网络driver. 可选: 802.1Q,dummy,ebtables,fw,ovswitch,vmware.
-</code></pre>
-
-<p>查看主机的详细信息 <strong>onehost show</strong>
-```
-$ onehost show 2
-HOST 2 INFORMATION                                                            <br/>
-ID                    : 2                 <br/>
-NAME                  : 192.168.80.131    <br/>
-CLUSTER               : -                 <br/>
-STATE                 : MONITORED         <br/>
-IM_MAD                : kvm               <br/>
-VM_MAD                : kvm               <br/>
-VN_MAD                : dummy             <br/>
-LAST MONITORING TIME  : 11/29 22:19:21</p>
-
-<p>HOST SHARES                                                                   <br/>
-TOTAL MEM             : 3.7G              <br/>
-USED MEM (REAL)       : 111M              <br/>
-USED MEM (ALLOCATED)  : 0K                <br/>
-TOTAL CPU             : 400               <br/>
-USED CPU (REAL)       : 0                 <br/>
-USED CPU (ALLOCATED)  : 0                 <br/>
-RUNNING VMS           : 0</p>
-
-<p>… …
-```</p>
-
-<p>通过-x选项还可以以xml的格式显示主机相关信息
-```
-$ onehost show -x 2
-<HOST>
-  <ID>2</ID>
-  <NAME>192.168.80.131</NAME>
-  <STATE>2</STATE>
-  <IM_MAD>kvm</IM_MAD>
-  <VM_MAD>kvm</VM_MAD>
-  <VN_MAD>dummy</VN_MAD>
-  <LAST_MON_TIME>1385735001</LAST_MON_TIME>
-  <CLUSTER_ID>-1</CLUSTER_ID>
-  <CLUSTER/>
-  <HOST_SHARE></p>
-
-<pre><code>&lt;DISK_USAGE&gt;0&lt;/DISK_USAGE&gt;
-&lt;MEM_USAGE&gt;0&lt;/MEM_USAGE&gt;
-&lt;CPU_USAGE&gt;0&lt;/CPU_USAGE&gt;
-&lt;MAX_DISK&gt;0&lt;/MAX_DISK&gt;
-&lt;MAX_MEM&gt;3916984&lt;/MAX_MEM&gt;
-&lt;MAX_CPU&gt;400&lt;/MAX_CPU&gt;
-&lt;FREE_DISK&gt;0&lt;/FREE_DISK&gt;
-&lt;FREE_MEM&gt;3803128&lt;/FREE_MEM&gt;
-&lt;FREE_CPU&gt;399&lt;/FREE_CPU&gt;
-&lt;USED_DISK&gt;0&lt;/USED_DISK&gt;
-&lt;USED_MEM&gt;113856&lt;/USED_MEM&gt;
-&lt;USED_CPU&gt;0&lt;/USED_CPU&gt;
-&lt;RUNNING_VMS&gt;0&lt;/RUNNING_VMS&gt;
-</code></pre>
-
-<p>  </HOST_SHARE>
-… …
-```</p>
-
-<p>onehost还有两个选项,disable和enable，disable表示不再监控该物理主机，但是不影响正在运行的虚拟机，enable表示开启监控
-<code>bash
-$ onehost disable 0
-$ onehost enable 0
-</code></p>
-
-<p>--EOF--</p>
 ]]></content>
   </entry>
   

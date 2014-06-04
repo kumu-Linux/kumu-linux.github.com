@@ -5,12 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Ubuntu14.04重启网卡不生效 - OPS Notes By 枯木</title>
+  <title>使用pipework桥接docker - OPS Notes By 枯木</title>
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Stopping or restarting the networking job is not supported.
-Use ifdown &amp; ifup to reconfigure desired interface. Ubuntu14.04修改配置，重启网卡没有生效，出现如下问题： &hellip;">
+  <meta name="description" content="docker创建的时候，默认是接入docker0，只能单主机进行工作，但是在生产环境中往往不同主机的docker也是需要通信的，所以这里要借助另外一个工具，那就是pipework。 安装pipework 1
+2
+$ git clone https://github.com/jpetazzo/ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +20,7 @@ Use ifdown &amp; ifup to reconfigure desired interface. Ubuntu14.04修改配置�
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0/">
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/06/04/docker-pipework/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -74,7 +75,7 @@ Use ifdown &amp; ifup to reconfigure desired interface. Ubuntu14.04修改配置�
   <header>
     
       
-        <h1 class="entry-title">Ubuntu14.04重启网卡不生效</h1>
+        <h1 class="entry-title">使用pipework桥接docker</h1>
       
     
     
@@ -91,7 +92,7 @@ Use ifdown &amp; ifup to reconfigure desired interface. Ubuntu14.04修改配置�
   
 
 
-<time datetime="2014-05-28T11:38:00+08:00" pubdate data-updated="true">May 28<span>th</span>, 2014</time>
+<time datetime="2014-06-04T17:24:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
         
          | <a href="#disqus_thread">Comments</a>
         
@@ -100,59 +101,30 @@ Use ifdown &amp; ifup to reconfigure desired interface. Ubuntu14.04修改配置�
   </header>
 
 
-<div class="entry-content"><p>Stopping or restarting the networking job is not supported.<br/>
-Use ifdown &amp; ifup to reconfigure desired interface.</p>
+<div class="entry-content"><p>docker创建的时候，默认是接入docker0，只能单主机进行工作，但是在生产环境中往往不同主机的docker也是需要通信的，所以这里要借助另外一个工具，那就是pipework。</p>
 
 <!--more-->
 
 
-<p>Ubuntu14.04修改配置，重启网卡没有生效，出现如下问题：</p>
+<h3>安装pipework</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/issue</span>
-</span><span class='line'>Ubuntu 14.04 LTS <span class="se">\n</span> <span class="se">\l</span>
-</span><span class='line'><span class="c"># service  networking restart</span>
-</span><span class='line'>stop: Job failed <span class="k">while </span>stopping
-</span><span class='line'>start: Job is already running: networking
-</span><span class='line'><span class="c"># tail -f /var/log/upstart/networking.log</span>
-</span><span class='line'>Stopping or restarting the networking job is not supported.
-</span><span class='line'>Use ifdown &amp; ifup to reconfigure desired interface.
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>git clone https://github.com/jpetazzo/pipework.git
+</span><span class='line'><span class="nv">$ </span>sudo cp -rp pipework/pipework /usr/local/bin/
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>从以上日志内容可以看出，传统的service重启和停止网络已经不再支持了，需要通过使用ifdown &amp; ifup来实现相应的操作。</p>
-
-<ul>
-<li>重启指定网卡</li>
-</ul>
-
+<h3>安装相应依赖软件</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifdown eth0 &amp;&amp; ifup eth0</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo apt-get install apring bridge-utils -y
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ul>
-<li>重启除lo网卡的所有网卡</li>
-</ul>
+<h3>桥接网络</h3>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifdown --exclude=lo -a &amp;&amp; sudo ifup --exclude=lo -a</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<ul>
-<li>配置桥接</li>
-</ul>
-
+<p>Ubuntu14.04</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -171,13 +143,7 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># apt-get install bridge-utils</span>
-</span><span class='line'><span class="c"># cat /etc/network/interfaces</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># cat /etc/network/interfaces</span>
 </span><span class='line'>auto lo
 </span><span class='line'>iface lo inet loopback
 </span><span class='line'>
@@ -186,23 +152,37 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
 </span><span class='line'>
 </span><span class='line'>auto br0
 </span><span class='line'>iface br0 inet static
-</span><span class='line'>address 192.168.0.10
+</span><span class='line'>address 192.168.0.219
 </span><span class='line'>netmask 255.255.255.0
-</span><span class='line'>gateway 192.168.1.1
+</span><span class='line'>gateway 192.168.0.254
 </span><span class='line'>bridge_ports eth0
 </span><span class='line'>bridge_stp off
 </span><span class='line'>bridge_fd 0
 </span><span class='line'>bridge_maxwait 0
-</span><span class='line'>dns-nameservers 192.168.1.1
-</span><span class='line'><span class="c"># ifup br0</span>
-</span><span class='line'><span class="c"># brctl  show</span>
-</span><span class='line'>bridge name   bridge id       STP enabled interfaces
-</span><span class='line'>br0       8000.02000a0080e1   no      eth0
+</span><span class='line'>dns-nameservers 192.168.0.254
 </span></code></pre></td></tr></table></div></figure>
 
 
+<h3>启动br0，使桥接生效</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># ifup br0</span>
+</span><span class='line'><span class="c"># Bash=$(docker run -i -d -t 192.168.0.219:5000/ubuntu:14.04 /bin/bash)</span>
+</span><span class='line'><span class="c"># pipework br0 $Bash 192.168.0.223/24 </span>
+</span><span class='line'><span class="c"># 给指定容器添加虚拟网卡并桥接到br0，如此不同主机间的docker便可以通过br0通信了</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>拓展</h3>
+
+<p>关于进一步的内容[vlan| Open vSwitch | etc..]可以参考以下两篇文章：</p>
+
 <ul>
-<li><a href="https://bugs.launchpad.net/ubuntu/+source/ifupdown/+bug/1301015">Networking does not restart</a></li>
+<li><a href="https://github.com/jpetazzo/pipework/blob/master/README.md">pipework readme</a></li>
+<li><a href="http://peerxu.github.io/blog/2014/04/07/docker-with-openvswitch.html">pipework-docker网络增强工具</a></li>
 </ul>
 
 
@@ -213,10 +193,8 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
   <footer>
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/05/21/ssh-maxauthtries/" title="Previous Post: ssh MaxAuthTries">&laquo; ssh MaxAuthTries</a>
+        <a class="basic-alignment left" href="/blog/2014/06/04/docker-registry/" title="Previous Post: 构建docker私有库">&laquo; 构建docker私有库</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/06/04/docker-install-index/" title="Next Post: 开始docker">开始docker &raquo;</a>
       
     </p>
   </footer>
@@ -253,8 +231,8 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0/';
-        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/05/28/ubuntu-network-br0/';
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/06/04/docker-pipework/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/06/04/docker-pipework/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -9,8 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Stopping or restarting the networking job is not supported.
-Use ifdown &amp; ifup to reconfigure desired interface. ">
+  <meta name="description" content="docker创建的时候，默认是接入docker0，只能单主机进行工作，但是在生产环境中往往不同主机的docker也是需要通信的，所以这里要借助另外一个工具，那就是pipework。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -70,6 +69,148 @@ Use ifdown &amp; ifup to reconfigure desired interface. ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/04/docker-pipework/">使用pipework桥接docker</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T17:24:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/06/04/docker-pipework/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>docker创建的时候，默认是接入docker0，只能单主机进行工作，但是在生产环境中往往不同主机的docker也是需要通信的，所以这里要借助另外一个工具，那就是pipework。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/04/docker-pipework/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/04/docker-registry/">构建docker私有库</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T17:08:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/06/04/docker-registry/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>为方便管理，我们需要对官方的镜像做一些定制，我们可以构建私有的<code>docker registry</code></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/04/docker-registry/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/06/04/docker-install-index/">开始docker</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T17:03:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/06/04/docker-install-index/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Dokcer的基本原理这里不作介绍，网上已经说的很清楚了，这里就不废话了，可以参考以下几篇文章的介绍。</p>
+
+<ul>
+<li><a href="http://tiewei.github.io/cloud/Docker-Getting-Start/">Docker Getting Start: Related Knowledge </a></li>
+<li><a href="http://code.csdn.net/news/2819773">谁是容器中的“战斗机”？Docker与Chef、LXC等容器对比</a></li>
+<li><a href="http://www.infoq.com/cn/articles/docker-containers">Docker：利用Linux容器实现可移植的应用部署</a></li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/06/04/docker-install-index/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -254,166 +395,6 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
   
     <footer>
       <a rel="full-article" href="/blog/2014/04/21/performance-cpu/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/26/grub-virtio/">Grub Install With Kvm Virtio Disk</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-26T14:31:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/03/26/grub-virtio/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>grub-install ERROR: not suitable driver was found</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/26/grub-virtio/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/03/24/opennebula-port/">Ssh X11Forawarding占用OpenNebula Kvm端口</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-03-24T17:04:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/03/24/opennebula-port/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>虚拟机重建出现如下错误：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>virsh create deployment.0
-</span><span class='line'>error: Failed to create domain from deployment.0
-</span><span class='line'>error: Unable to <span class="nb">read </span>from monitor: Connection reset by peer
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/03/24/opennebula-port/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/02/20/salt-file-manager/">[2]salt文件分发</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-20T22:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/02/20/salt-file-manager/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
-</span><span class='line'>file_roots:
-</span><span class='line'>  base:
-</span><span class='line'>    - /srv/salt
-</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/02/20/salt-file-manager/">阅读全文 &rarr;</a>
     </footer>
   
 

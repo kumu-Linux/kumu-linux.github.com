@@ -9,9 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="本章节的目的是为了让你更熟悉sed语法和命令结构。这并不表示介绍单个的sed命令使用方法，后面的章节将会作详细的介绍。
-基本的语法： 1
-sed [options] {sed-commands} {input-file} ">
+  <meta name="description" content="在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +69,141 @@ sed [options] {sed-commands} {input-file} ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/27/dmidecode/">Dmidecode</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/27/dmidecode/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/27/dmidecode/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/26/sed-2/">1-2、Sed Scripting Flow[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-26T16:28:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/26/sed-2/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用<code>REPE</code>首字母缩写来记住sed的执行流程。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/26/sed-2/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/25/github-drinkup/">Github Drinkup</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-25T19:52:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/25/github-drinkup/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>昨天晚上在北京贝塔咖啡参加了InfoQ主办的GitHub首届中国Drinkup活动，作为一个伪码农能够参加这样的晚会感觉还是非常荣幸的。首先自己之前也从未参加类似的活动，其次这样的活动会有技术圈内很多技术达人，再次是这样的活动可以说是一个学习交流的好机会。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/25/github-drinkup/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -258,162 +391,6 @@ sed [options] {sed-commands} {input-file} ">
   
     <footer>
       <a rel="full-article" href="/blog/2013/04/16/snmpd/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/09/sed-link/">Sed -i修改链接文件注意问题</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-09T23:23:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/09/sed-link/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>问题重现</h2>
-
-<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'>lrwxrwxrwx. 1 root root 19 2月  20 20:34 /etc/sysconfig/selinux -&gt; /etc/selinux/config
-</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
-</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
-</span><span class='line'>-rw-r--r-- 1 root root 457 2月  20 22:50 /etc/sysconfig/selinux
-</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c">#   </span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/09/sed-link/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/09/sed/">Sed远程替换的一个错误</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-09T15:17:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/09/sed/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/09/sed/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/08/lsof/">lsof在Linux中的10个例子<译></a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-08T10:19:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/08/lsof/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文主要是介绍lsof相关使用方法，原文主要是10个例子的讲解，笔者又新增了一些实用案例，<a href="http://www.tecmint.com/10-lsof-command-examples-in-linux/">原文地址</a> 。</p>
-
-<p>lsof的意思是&#8217;列出打开的文件&#8217;，用于找出哪些文件被哪些进程打开或是占用。我们都知道Linux/UNIX的理念就是一切皆文件(包括pipes管道、sockets、directories目录、devices设备等等)。使用lsof命令的原因之一就是，当一个磁盘不能被卸载时，借助lsof这个命令我们可以轻易的识别哪些文件正在被占用。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/08/lsof/">阅读全文 &rarr;</a>
     </footer>
   
 

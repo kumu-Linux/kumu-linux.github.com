@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="获取dmi系统硬件信息的方法有很多，之前笔者在Dmidecode 一文中介绍了命令dmidecode获取dmi硬件信息的方法。本文补充另外一种获取dmi硬件信息的方法，主要是通过查看sys文件系统的文件获取。关于sysfs的具体信息可以参考维基百科sysfs ">
+  <meta name="description" content="rsync是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下： ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,152 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/05/06/rsync-ssh/">Rsync备份之ssh篇</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-06T20:19:00+08:00" pubdate data-updated="true">May 6<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/06/rsync-ssh/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><code>rsync</code>是类unix系统下的数据镜像备份工具，从软件的命名上就可以看出来了——remote sync。它的特性如下：</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/06/rsync-ssh/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/05/05/sed-7/">2-2、Global Flag (G Flag)[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-05T09:15:00+08:00" pubdate data-updated="true">May 5<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/05/sed-7/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>SED替代标志g表示全局。sed默认替换命令将只替换每一行第一个出现的{original-string}。如果你想改变所有出现的{original-string}在行中变为{replacement-string}，你应该使用全局标志g。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/05/sed-7/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/05/04/sed-6/">2-1、Sed Substitute Command[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-04T23:29:00+08:00" pubdate data-updated="true">May 4<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/04/sed-6/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>Sed 替换命令语法</h2>
+
+<p>Sed替换命令语法如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sed <span class="s1">&#39;[address-range|pattern-range] s/originalstring/</span>
+</span><span class='line'><span class="s1">replacement-string/[substitute-flags]&#39;</span> inputfile
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/04/sed-6/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -248,141 +394,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/04/28/sed-3/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/27/dmidecode/">Dmidecode</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-27T07:39:00+08:00" pubdate data-updated="true">Apr 27<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/27/dmidecode/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在介绍dmidecode命令之前，先介绍一下DMI。所谓DMI，即DesktopManagement Interface。也有被称为SMBIOS，即System Management BIOS。DMI表的意义在于让我们在不探测硬件实体的情况下获取硬件的部分信息，方便了用户，但也同时表明，表中的信息可能是不可靠的。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/27/dmidecode/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/26/sed-2/">1-2、Sed Scripting Flow[译]</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-26T16:28:00+08:00" pubdate data-updated="true">Apr 26<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/26/sed-2/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Sed脚本遵循易容易记住的顺序阅读、执行、输出、重复。可以使用<code>REPE</code>首字母缩写来记住sed的执行流程。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/26/sed-2/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/04/25/github-drinkup/">Github Drinkup</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-04-25T19:52:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/04/25/github-drinkup/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>昨天晚上在北京贝塔咖啡参加了InfoQ主办的GitHub首届中国Drinkup活动，作为一个伪码农能够参加这样的晚会感觉还是非常荣幸的。首先自己之前也从未参加类似的活动，其次这样的活动会有技术圈内很多技术达人，再次是这样的活动可以说是一个学习交流的好机会。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/04/25/github-drinkup/">阅读全文 &rarr;</a>
     </footer>
   
 

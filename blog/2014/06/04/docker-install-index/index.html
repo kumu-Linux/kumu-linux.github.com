@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>开始docker - OPS Notes By 枯木</title>
+  <meta name="author" content="枯木">
+
+  
+  <meta name="description" content="Dokcer的基本原理这里不作介绍，网上已经说的很清楚了，这里就不废话了，可以参考以下几篇文章的介绍。 Docker Getting Start: Related Knowledge 谁是容器中的“战斗机”？Docker与Chef、LXC等容器对比
+Docker： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://kumu-Linux.github.io/blog/2014/06/04/docker-install-index/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="OPS Notes By 枯木" type="application/atom+xml">
+  <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39949989-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="collapse-sidebar sidebar-footer" >
+  <header role="banner"><hgroup>
+  <h1><a href="/">OPS Notes By 枯木</a></h1>
+  
+  <div class="clear"></div>
+</hgroup>
+
+</header>
+<div class="navi">
+<ul>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/ops">Ops Tools</a></li>
+  <li><a href="/blog/tips">Linux Tips</a></li>
+  <li><a href="/blog/books">Books</a></li>
+  <li><a href="/blog/about">Author</a></li>
+</ul>
+</div>
+
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      
+        <h1 class="entry-title">开始docker</h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-04T17:03:00+08:00" pubdate data-updated="true">Jun 4<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Dokcer的基本原理这里不作介绍，网上已经说的很清楚了，这里就不废话了，可以参考以下几篇文章的介绍。</p>
+
+<ul>
+<li><a href="http://tiewei.github.io/cloud/Docker-Getting-Start/">Docker Getting Start: Related Knowledge </a></li>
+<li><a href="http://code.csdn.net/news/2819773">谁是容器中的“战斗机”？Docker与Chef、LXC等容器对比</a></li>
+<li><a href="http://www.infoq.com/cn/articles/docker-containers">Docker：利用Linux容器实现可移植的应用部署</a></li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>Docker install</h2>
+
+<p>Docker的安装非常简单，这里只介绍Ubuntu 14.04的安装，其他发行版本的安装可以参考官网手册。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo apt-get update
+</span><span class='line'><span class="nv">$ </span>sudo apt-get install docker.io
+</span><span class='line'><span class="nv">$ </span>sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>获取当前docker版本</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker version
+</span><span class='line'>Client version: 0.9.1
+</span><span class='line'>Go version <span class="o">(</span>client<span class="o">)</span>: go1.2.1
+</span><span class='line'>Git commit <span class="o">(</span>client<span class="o">)</span>: 3600720
+</span><span class='line'>Server version: 0.9.1
+</span><span class='line'>Git commit <span class="o">(</span>server<span class="o">)</span>: 3600720
+</span><span class='line'>Go version <span class="o">(</span>server<span class="o">)</span>: go1.2.1
+</span><span class='line'>Last stable version: 0.11.1, please update docker
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li><a href="http://docs.docker.io/installation/ubuntulinux/">Docker install on ubuntu</a></li>
+</ul>
+
+
+<h2>Docker images</h2>
+
+<ul>
+<li><a href="https://index.docker.io/">Docker index</a> Docker镜像首页，包括官方镜像和其它公开镜像</li>
+</ul>
+
+
+<h3>Search index images</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker search ubuntu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Pull images</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker pull ubuntu <span class="c"># remote index 获取ubuntu官方镜像</span>
+</span><span class='line'><span class="nv">$ </span>sudo docker images <span class="c"># 查看当前镜像列表</span>
+</span><span class='line'>REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+</span><span class='line'>ubuntu              13.10               5e019ab7bf6d        3 weeks ago         180 MB
+</span><span class='line'>ubuntu              saucy               5e019ab7bf6d        3 weeks ago         180 MB
+</span><span class='line'>ubuntu              12.04               74fe38d11401        3 weeks ago         209.6 MB
+</span><span class='line'>... ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Docker index被墙？[FUCK GFW!!! %&amp;$#&amp;&#8230;]，可绑定host解决，亲测可用，不过可能还是比较慢。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># 加入以下内容到/etc/hosts下就可以了</span>
+</span><span class='line'>54.234.135.251  get.docker.io
+</span><span class='line'>54.234.135.251  cdn-registry-1.docker.io
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Running an interactive shell</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker run -i -t ubuntu:14.04 /bin/bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>ubuntu会有多个版本，通过指定tag来启动特定的版本[image]:[tag]</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker ps <span class="c"># 查看当前运行的容器, ps -a列出当前系统所有的容器</span>
+</span><span class='line'>CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+</span><span class='line'>6c9129e9df10        ubuntu:14.04        /bin/bash           6 minutes ago       Up 6 minutes                            cranky_babbage
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>退出：<code>Ctrl-D</code> or <code>exit</code></li>
+<li>detach：<code>Ctrl-p + Ctrl-q</code></li>
+<li>attach: <code>docker attach CONTAINER ID</code></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/28/ubuntu-network-br0/" title="Previous Post: Ubuntu14.04重启网卡不生效">&laquo; Ubuntu14.04重启网卡不生效</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/04/docker-registry/" title="Next Post: 构建docker私有库">构建docker私有库 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 枯木 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'kumusanotes';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://kumu-Linux.github.io/blog/2014/06/04/docker-install-index/';
+        var disqus_url = 'http://kumu-Linux.github.io/blog/2014/06/04/docker-install-index/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

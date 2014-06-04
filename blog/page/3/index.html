@@ -9,7 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="为了安全起见，服务器不对外提供的服务尽量不监听外网地址的，rsync也不例外。由于CentOS/RHEL中rpm安装的rsync为非独立进程，需要依赖xinetd进程。笔者一开始尝试修改rsync的配置文件rsyncd.conf中加入address = 192.168.80.128， &hellip;">
+  <meta name="description" content="">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +69,149 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/10/kvm-tap/">Qemu-kvm桥接网络</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-10T22:22:00+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/12/10/kvm-tap/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"></div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/12/10/kvm-tap/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/12/09/svn-git/">Svn and Git Server备忘</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-12-09T13:58:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/12/09/svn-git/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2><u>Git Server with ssh</u></h2>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/12/09/svn-git/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/07/opennubula-node/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>需求</h3>
+
+<p>The hosts must have a working installation of KVM, that usually requires:</p>
+
+<ul>
+<li>CPU with VT extensions</li>
+<li>libvirt >= 0.4.0</li>
+<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
+<li>the qemu user-land tools</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/11/07/opennubula-node/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -250,165 +393,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/09/26/ssh-safe/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/09/25/kvm-disk-hotplug/">OpenNebula KVM磁盘热插拔</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-25T15:22:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/09/25/kvm-disk-hotplug/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>KVM支持以下两种磁盘类型的热插拔：</p>
-
-<ul>
-<li>sd: SCSI (default).</li>
-<li>vd: virtio.</li>
-</ul>
-
-
-<p>KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项：</p>
-
-<ul>
-<li>FEATURES = [ acpi=&#8221;yes&#8221; ]</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/09/25/kvm-disk-hotplug/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/09/25/shell-alias/">30 Handy Bash Shell Aliases[译]</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-25T10:42:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/09/25/shell-alias/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>本文为 <a href="http://www.cyberciti.biz/tips/bash-aliases-mac-centos-linux-unix.html">原文地址</a> 翻译而来，有些地方稍作改动。</p>
-
-<p>一个别名就是一个命令的快捷方式，<code>alias</code>命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过<code>alias</code>命令可以显示所有已定义的别名列表。你可以在<code>~ /.bashrc</code>文件中自定义用户的别名。通过这些别名可以减少打字时间，更灵活的操作，提升工作效率。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/09/25/shell-alias/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/09/22/opennebula-win/">OpenNebula Windows Server镜像制作</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-22T11:01:00+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/09/22/opennebula-win/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
-
-<h3>创建虚拟机镜像文件</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/09/22/opennebula-win/">阅读全文 &rarr;</a>
     </footer>
   
 

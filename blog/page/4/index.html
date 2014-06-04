@@ -9,7 +9,8 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="简介 ssh允许用户把密钥存储在内存中，这就是ssh认证代理[ssh-agent]。认证代理为用户提供了使用RSA密钥而不必随时键入口令字的能力，这对于不必在所有登录、X会话或运行脚本时都要键入口令字提供便利是很有效的。ssh-agent是个长时间持续运行的守护进程（daemon）， &hellip;">
+  <meta name="description" content="KVM支持以下两种磁盘类型的热插拔： sd: SCSI (default).
+vd: virtio. KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项： FEATURES = [ acpi=&#8221;yes&#8221; ] ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +70,165 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/09/25/kvm-disk-hotplug/">OpenNebula KVM磁盘热插拔</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-25T15:22:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/09/25/kvm-disk-hotplug/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>KVM支持以下两种磁盘类型的热插拔：</p>
+
+<ul>
+<li>sd: SCSI (default).</li>
+<li>vd: virtio.</li>
+</ul>
+
+
+<p>KVM虚拟机需要开启acpi才支持磁盘的热插拔，使用OpenNebula安装虚拟机的时候需要设置如下选项：</p>
+
+<ul>
+<li>FEATURES = [ acpi=&#8221;yes&#8221; ]</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/25/kvm-disk-hotplug/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/09/25/shell-alias/">30 Handy Bash Shell Aliases[译]</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-25T10:42:00+08:00" pubdate data-updated="true">Sep 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/09/25/shell-alias/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文为 <a href="http://www.cyberciti.biz/tips/bash-aliases-mac-centos-linux-unix.html">原文地址</a> 翻译而来，有些地方稍作改动。</p>
+
+<p>一个别名就是一个命令的快捷方式，<code>alias</code>命令允许用户通过输入一个词启动任何命令或一组命令(包括选项和文件名)。通过<code>alias</code>命令可以显示所有已定义的别名列表。你可以在<code>~ /.bashrc</code>文件中自定义用户的别名。通过这些别名可以减少打字时间，更灵活的操作，提升工作效率。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/25/shell-alias/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/09/22/opennebula-win/">OpenNebula Windows Server镜像制作</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-22T11:01:00+08:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/09/22/opennebula-win/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Windows镜像制作的方法和Linux其实类似，主要注意的是，Windows需要安装virtio设备驱动。以下主要介绍驱动的安装方法，其它类似镜像导入和模板制作都和Linux方法一样。</p>
+
+<h3>创建虚拟机镜像文件</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-img create -f qcow2 win_2008.qcow2 50G</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/09/22/opennebula-win/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -265,151 +425,6 @@
   
     <footer>
       <a rel="full-article" href="/blog/2013/08/22/opennebula-install/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/08/12/pssh/">Pssh使用方法</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-12T14:53:00+08:00" pubdate data-updated="true">Aug 12<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/12/pssh/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>pssh是一个python编写可以在多台服务器上执行命令的工具，同时支持拷贝文件，是同类工具中很出色的，类似pdsh <a href="http://kumu-linux.github.io/blog/2013/06/19/pdsh/">pdsh使用方法</a> 。为方便操作，使用前请在各个服务器上配置好密钥认证访问。项目地址: <a href="https://code.google.com/p/parallel-ssh/">parallel-ssh</a></p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/12/pssh/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/08/06/tmux/">Linux下终端利器tmux</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-06T11:05:00+08:00" pubdate data-updated="true">Aug 6<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/06/tmux/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><blockquote><p>&#8220;君子生非异也，善假于物也&#8221; 。&#8211;语出《荀子·劝学》</p></blockquote>
-
-<p>如果记得没错的话，《荀子·劝学》我们这一代高中的时候应该都读过这篇文章。原意大概是君子的资质与一般人没有什么区别，君子之所以高于一般人，是因为他能善于利用外物。对于技术人来说，好工具的选择和使用往往可以省去很多不必要的麻烦，好的开源工具很多，看你如何去使用。对于终端复用工具这里推荐使用tmux，当然此类工具比较好的还有screen，不过相对<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-screen/">screen</a> 这里我更倾向于推荐tmux[强悍的分屏等]。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/06/tmux/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/08/02/journey/">旅途</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-02T17:50:00+08:00" pubdate data-updated="true">Aug 2<span>nd</span>, 2013</time>
-        
-         | <a href="/blog/2013/08/02/journey/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><center><img src="/images/journey.png" alt="journey" title="journey" width="500" /></center>
-
-
-
-
-<p></p>
-
-
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/08/02/journey/">阅读全文 &rarr;</a>
     </footer>
   
 

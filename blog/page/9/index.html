@@ -9,9 +9,13 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="关于Octopress+GitHub+Markdown环境的搭建其实已经有很多写的很好的教程了，这里算是作一个总结吧，把遇到的一些问题说明注解一下。 优点： 1. 用文件方式储存数据，无需数据库
-2. 以静态方式发布，直接托管github
-3. 用markdown格式写博客，可轻松配置和发布 ">
+  <meta name="description" content="问题重现 因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果： 1
+2
+3
+4
+5
+6
+[root@node1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +75,162 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/09/sed-link/">Sed -i修改链接文件注意问题</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-09T23:23:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/09/sed-link/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>问题重现</h2>
+
+<p>因为sed -i /etc/sysconfig/selinux(selinux文件是/etc/selinux/config的软链接)配置文件重启SELINUX没有关闭，才发现原来sed -i是不能直接修改软链接文件的，如下我修改之后的后果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>lrwxrwxrwx. 1 root root 19 2月  20 20:34 /etc/sysconfig/selinux -&gt; /etc/selinux/config
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># sed -i &quot;s/SELINUX=enforcing/SELINUX=disabled/g&quot; /etc/sysconfig/selinux  </span>
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c"># ll /etc/sysconfig/selinux   </span>
+</span><span class='line'>-rw-r--r-- 1 root root 457 2月  20 22:50 /etc/sysconfig/selinux
+</span><span class='line'><span class="o">[</span>root@node1 ~<span class="o">]</span><span class="c">#   </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/09/sed-link/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/09/sed/">Sed远程替换的一个错误</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-09T15:17:00+08:00" pubdate data-updated="true">Apr 9<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/09/sed/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天在工作中pssh远程批量执行sed替换文本时出现sed执行失败的问题 [ssh已做公钥验证，所以下例中无密码提示] ，如下:</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/09/sed/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2013/04/08/lsof/">lsof在Linux中的10个例子<译></a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-04-08T10:19:00+08:00" pubdate data-updated="true">Apr 8<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/04/08/lsof/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>本文主要是介绍lsof相关使用方法，原文主要是10个例子的讲解，笔者又新增了一些实用案例，<a href="http://www.tecmint.com/10-lsof-command-examples-in-linux/">原文地址</a> 。</p>
+
+<p>lsof的意思是&#8217;列出打开的文件&#8217;，用于找出哪些文件被哪些进程打开或是占用。我们都知道Linux/UNIX的理念就是一切皆文件(包括pipes管道、sockets、directories目录、devices设备等等)。使用lsof命令的原因之一就是，当一个磁盘不能被卸载时，借助lsof这个命令我们可以轻易的识别哪些文件正在被占用。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/04/08/lsof/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>

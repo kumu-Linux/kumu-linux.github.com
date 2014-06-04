@@ -9,10 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Install First => repl源 rhel6 1
-2
-rpm -ivh \
-http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm ">
+  <meta name="description" content="grub-install ERROR: not suitable driver was found ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -72,6 +69,166 @@ http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/03/26/grub-virtio/">Grub Install With Kvm Virtio Disk</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-26T14:31:00+08:00" pubdate data-updated="true">Mar 26<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/03/26/grub-virtio/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>grub-install ERROR: not suitable driver was found</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/03/26/grub-virtio/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/03/24/opennebula-port/">Ssh X11Forawarding占用OpenNebula Kvm端口</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-24T17:04:00+08:00" pubdate data-updated="true">Mar 24<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/03/24/opennebula-port/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>虚拟机重建出现如下错误：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>virsh create deployment.0
+</span><span class='line'>error: Failed to create domain from deployment.0
+</span><span class='line'>error: Unable to <span class="nb">read </span>from monitor: Connection reset by peer
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/03/24/opennebula-port/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/02/20/salt-file-manager/">[2]salt文件分发</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-20T22:12:00+08:00" pubdate data-updated="true">Feb 20<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/02/20/salt-file-manager/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>取消配置文件<code>/etc/salt/master</code>以下注释</strong></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... ...
+</span><span class='line'>file_roots:
+</span><span class='line'>  base:
+</span><span class='line'>    - /srv/salt
+</span><span class='line'>... ...</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/02/20/salt-file-manager/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -279,149 +436,6 @@ http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm ">
   
     <footer>
       <a rel="full-article" href="/blog/2013/12/19/opennebula4-dot-4/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/10/kvm-tap/">Qemu-kvm桥接网络</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-10T22:22:00+08:00" pubdate data-updated="true">Dec 10<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/12/10/kvm-tap/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"></div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/12/10/kvm-tap/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/12/09/svn-git/">Svn and Git Server备忘</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-12-09T13:58:00+08:00" pubdate data-updated="true">Dec 9<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/12/09/svn-git/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2><u>Git Server with ssh</u></h2>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/12/09/svn-git/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2013/11/07/opennubula-node/">OpenNebula添加节点</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-11-07T15:14:00+08:00" pubdate data-updated="true">Nov 7<span>th</span>, 2013</time>
-        
-         | <a href="/blog/2013/11/07/opennubula-node/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3>需求</h3>
-
-<p>The hosts must have a working installation of KVM, that usually requires:</p>
-
-<ul>
-<li>CPU with VT extensions</li>
-<li>libvirt >= 0.4.0</li>
-<li>kvm kernel modules (kvm.ko, kvm-{intel,amd}.ko). Available from kernel 2.6.20 onwards.</li>
-<li>the qemu user-land tools</li>
-</ul>
-
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2013/11/07/opennubula-node/">阅读全文 &rarr;</a>
     </footer>
   
 

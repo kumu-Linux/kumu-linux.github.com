@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-04T17:51:02+08:00</updated>
+  <updated>2014-06-04T19:47:35+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[test]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/06/04/test/"/>
+    <updated>2014-06-04T19:46:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/06/04/test</id>
+    <content type="html"><![CDATA[<p>doubanclaim0c049b69a6168670</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用pipework桥接docker]]></title>
@@ -2998,53 +3007,6 @@ opennebula-common-4.4.0-1.x86_64.rpm
 </span><span class='line'>    <span class="n">paramiko_ssh</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">ssh_cmd</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Xshell基本设置备忘]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/"/>
-    <updated>2013-10-17T15:41:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/10/17/xshell</id>
-    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/xshell/xshell6.png" width="400"></center>
-
-
-<p>类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。</p>
-
-<!--more-->
-
-
-<h3>选项</h3>
-
-<p>菜单栏&#8211;工具&#8211;选项</p>
-
-<p>选中复制，中键粘贴</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell4.png" width="400"></p>
-
-<p>窗口透明【Alt+R快捷键启用和关闭】</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell2.png" width="400"></p>
-
-<p>关闭警告声</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell3.png" width="400"></p>
-
-<h3>属性</h3>
-
-<p>菜单栏&#8211;文件&#8211;属性【Alt+p快速打开】</p>
-
-<p>backspace 按键乱码，属性&#8211;终端&#8211;键盘</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell1.png" width="400"></p>
-
-<p>Xshell启用Xagent，属性&#8211;ssh</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
-
-<p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

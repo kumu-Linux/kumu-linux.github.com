@@ -188,12 +188,12 @@ Use ifdown &amp; ifup to reconfigure desired interface.</p>
 </span><span class='line'>iface br0 inet static
 </span><span class='line'>address 192.168.0.10
 </span><span class='line'>netmask 255.255.255.0
-</span><span class='line'>gateway 192.168.1.1
+</span><span class='line'>gateway 192.168.0.1
 </span><span class='line'>bridge_ports eth0
 </span><span class='line'>bridge_stp off
 </span><span class='line'>bridge_fd 0
 </span><span class='line'>bridge_maxwait 0
-</span><span class='line'>dns-nameservers 192.168.1.1
+</span><span class='line'>dns-nameservers 192.168.0.1
 </span><span class='line'><span class="c"># ifup br0</span>
 </span><span class='line'><span class="c"># brctl  show</span>
 </span><span class='line'>bridge name   bridge id       STP enabled interfaces

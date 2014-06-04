@@ -4,7 +4,7 @@
   <title><![CDATA[Category: UNIX/Linux | OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/blog/categories/unix-slash-linux/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-04T17:35:27+08:00</updated>
+  <updated>2014-06-04T17:39:14+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -88,12 +88,12 @@ iface eth0 inet manual</p>
 iface br0 inet static
 address 192.168.0.10
 netmask 255.255.255.0
-gateway 192.168.1.1
+gateway 192.168.0.1
 bridge_ports eth0
 bridge_stp off
 bridge_fd 0
 bridge_maxwait 0
-dns-nameservers 192.168.1.1</p>
+dns-nameservers 192.168.0.1</p>
 
 <h1>ifup br0</h1>
 

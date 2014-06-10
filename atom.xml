@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-04T19:50:51+08:00</updated>
+  <updated>2014-06-10T09:49:33+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -1214,7 +1214,7 @@ additional failures are logged.  The default is 6.
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>rpm -ivh \
-</span><span class='line'>http://dl.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm</span></code></pre></td></tr></table></div></figure>
 
 
 

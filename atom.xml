@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-19T09:48:02+08:00</updated>
+  <updated>2014-06-23T17:56:44+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,235 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[fsck修复qcow2]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/06/23/fsck-qcow2/"/>
+    <updated>2014-06-23T16:36:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/06/23/fsck-qcow2</id>
+    <content type="html"><![CDATA[<p>因为一些原因导致若干kvm虚拟机出现启动不了的情况，如下图：</p>
+
+<!--more-->
+
+
+<p><img src="http://kumu-Linux.github.io/images/boot_trouble.png"></p>
+
+<p>这应该是文件系统破坏的问题，一般情况下还可以在虚拟机中fsck修复文件系统，但是这种情况在虚拟机中根本就没有机会fsck，所以想到通过外界方法对虚拟磁盘进行fsck。创建虚拟机使用的虚拟磁盘的类型是qcow2，开机无法fsck的话，可以通过如下两种方式:</p>
+
+<ul>
+<li>通过启动其它虚拟机的时候指定损坏虚拟磁盘启动再修复</li>
+<li>通过qemu-nbd工具本地宿主机上修复qcow2</li>
+</ul>
+
+
+<p>这里介绍第二种方式，直接在宿主机上修复损坏qcow2磁盘，利用qemu-nbd把qcow2映射为网络设备<a href="http://en.wikipedia.org/wiki/Network_block_device">Network block device</a>。</p>
+
+<h2>加载nbd</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># modprobe nbd max_part=8 # max_part表示每个设备的分区，根据实际情况修改，默认为0</span>
+</span><span class='line'><span class="c"># modinfo nbd   # 查看nbd相关信息</span>
+</span><span class='line'>filename:       /lib/modules/3.5.0-23-generic/kernel/drivers/block/nbd.ko
+</span><span class='line'>license:        GPL
+</span><span class='line'>description:    Network Block Device
+</span><span class='line'>srcversion:     B540FE0119F7C28B9D15C21
+</span><span class='line'>depends:
+</span><span class='line'>intree:         Y
+</span><span class='line'>vermagic:       3.5.0-23-generic SMP mod_unload modversions
+</span><span class='line'>parm:           nbds_max:number of network block devices to initialize <span class="o">(</span>default: 16<span class="o">)</span> <span class="o">(</span>int<span class="o">)</span>
+</span><span class='line'>parm:           max_part:number of partitions per device <span class="o">(</span>default: 0<span class="o">)</span> <span class="o">(</span>int<span class="o">)</span>
+</span><span class='line'>parm:           debugflags:flags <span class="k">for </span>controlling debug output <span class="o">(</span>int<span class="o">)</span>
+</span><span class='line'><span class="c"># ls /dev/nbd* # 默认有16个nbd设备文件</span>
+</span><span class='line'>/dev/nbd0  /dev/nbd1  /dev/nbd10  /dev/nbd11  /dev/nbd12  /dev/nbd13
+</span><span class='line'>/dev/nbd14  /dev/nbd15  /dev/nbd2  /dev/nbd3  /dev/nbd4  /dev/nbd5
+</span><span class='line'>/dev/nbd6 /dev/nbd7  /dev/nbd8  /dev/nbd9
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>映射损坏qcow2磁盘为nbd</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-nbd --connect=/dev/nbd0 /data/0/41/disk.qcow2 </span>
+</span><span class='line'><span class="c"># 映射disk.qcow2为本地的nbd0设备，qcow2需要为绝对路径</span>
+</span><span class='line'><span class="c"># ls /dev/nbd0* # 映射虚拟磁盘有两个分区</span>
+</span><span class='line'>/dev/nbd0  /dev/nbd0p1  /dev/nbd0p2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本来准备修复了，但是发现发现之前的虚拟机分区是LVM设备，如果是正常分区直接修复就可以了，而LVM需要先LVM设备激活。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fdisk -l /dev/nbd0</span>
+</span><span class='line'>
+</span><span class='line'>Disk /dev/nbd0: 32.2 GB, 32212254720 bytes
+</span><span class='line'>255 heads, 63 sectors/track, 3916 cylinders, total 62914560 sectors
+</span><span class='line'><span class="nv">Units</span> <span class="o">=</span> sectors of 1 * <span class="nv">512</span> <span class="o">=</span> 512 bytes
+</span><span class='line'>Sector size <span class="o">(</span>logical/physical<span class="o">)</span>: 512 bytes / 512 bytes
+</span><span class='line'>I/O size <span class="o">(</span>minimum/optimal<span class="o">)</span>: 512 bytes / 512 bytes
+</span><span class='line'>Disk identifier: 0x00065194
+</span><span class='line'>
+</span><span class='line'>     Device Boot      Start         End      Blocks   Id  System
+</span><span class='line'>/dev/nbd0p1   *          63      208844      104391   83  Linux
+</span><span class='line'>/dev/nbd0p2          208845    62910539    31350847+  8e  Linux LVM
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>激活LVM</h2>
+
+<h3>安装lvm</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># mount /dev/nbd0p2 /mnt/ # 说明没有安装LVM</span>
+</span><span class='line'>mount: unknown filesystem <span class="nb">type</span> <span class="s1">&#39;LVM2_member&#39;</span>
+</span><span class='line'><span class="c"># apt-get install lvm2 -y</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>激活LVM</h3>
+
+<p>默认状态可能LVM没有激活，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># lvdisplay </span>
+</span><span class='line'>  --- Logical volume ---
+</span><span class='line'>  LV Name                /dev/VolGroup00/LogVol00
+</span><span class='line'>  VG Name                VolGroup00
+</span><span class='line'>  LV UUID                VJkt2b-zSeD-DB23-XcfZ-1OHn-s0Ju-u7sXAN
+</span><span class='line'>  LV Write Access        <span class="nb">read</span>/write
+</span><span class='line'>  LV Status              NOT available
+</span><span class='line'>  LV Size                21.91 GiB
+</span><span class='line'>  Current LE             701
+</span><span class='line'>  Segments               1
+</span><span class='line'>  Allocation             inherit
+</span><span class='line'>  Read ahead sectors     auto
+</span><span class='line'>
+</span><span class='line'>  --- Logical volume ---
+</span><span class='line'>  LV Name                /dev/VolGroup00/LogVol01
+</span><span class='line'>  VG Name                VolGroup00
+</span><span class='line'>  LV UUID                kIOZsr-0uYd-FFud-yEnk-x6x7-1GxC-Q1yEOJ
+</span><span class='line'>  LV Write Access        <span class="nb">read</span>/write
+</span><span class='line'>  LV Status              NOT available
+</span><span class='line'>  LV Size                7.97 GiB
+</span><span class='line'>  Current LE             255
+</span><span class='line'>  Segments               1
+</span><span class='line'>  Allocation             inherit
+</span><span class='line'>  Read ahead sectors     auto
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>激活方式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># vgchange -ay /dev/VolGroup00</span>
+</span><span class='line'>  2 logical volume<span class="o">(</span>s<span class="o">)</span> in volume group <span class="s2">&quot;VolGroup00&quot;</span> now active
+</span><span class='line'><span class="c"># ls /dev/VolGroup00/*</span>
+</span><span class='line'>/dev/VolGroup00/LogVol00  /dev/VolGroup00/LogVol01
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>修复指定分区</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># fsck -y /dev/VolGroup00/LogVol0</span>
+</span><span class='line'>... ...
+</span><span class='line'>Free blocks count wrong <span class="o">(</span>5069553, <span class="nv">counted</span><span class="o">=</span>5070543<span class="o">)</span>.
+</span><span class='line'>Fix? yes
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>/dev/mapper/VolGroup00-LogVol00: ***** FILE SYSTEM WAS MODIFIED *****
+</span><span class='line'>/dev/mapper/VolGroup00-LogVol00: 79036/5744640 files <span class="o">(</span>0.7% non-contiguous<span class="o">)</span>, 672049/5742592 blocks
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上结果，最终修复磁盘成功。</p>
+
+<h2>取消映射</h2>
+
+<p>修复完成之后取消nbd映射，开启虚拟机即可，取消映射方法如下命令。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># qemu-nbd --disconnect /dev/nbd0</span>
+</span><span class='line'>/dev/nbd0 disconnected
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>修复之后，顺利启动相关虚拟机，推荐开机之后再<code>shutdown -F now</code>强制修复一下，以防万一。</p>
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://www.randomhacks.co.uk/how-to-recover-fsck-a-qcow2-file/">How to recover a qcow2 file using fsck</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用pipework桥接docker]]></title>
@@ -2998,53 +3227,6 @@ opennebula-common-4.4.0-1.x86_64.rpm
 </span><span class='line'>    <span class="n">paramiko_ssh</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">ssh_cmd</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Xshell基本设置备忘]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/10/17/xshell/"/>
-    <updated>2013-10-17T15:41:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/10/17/xshell</id>
-    <content type="html"><![CDATA[<center><img src="http://kumu-Linux.github.io/images/xshell/xshell6.png" width="400"></center>
-
-
-<p>类似xshell的终端连接工具有很多，比如putty、securecrt，xshell算是一个新秀，具体怎么使用完全看个人爱好，没有什么可以争议的。</p>
-
-<!--more-->
-
-
-<h3>选项</h3>
-
-<p>菜单栏&#8211;工具&#8211;选项</p>
-
-<p>选中复制，中键粘贴</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell4.png" width="400"></p>
-
-<p>窗口透明【Alt+R快捷键启用和关闭】</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell2.png" width="400"></p>
-
-<p>关闭警告声</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell3.png" width="400"></p>
-
-<h3>属性</h3>
-
-<p>菜单栏&#8211;文件&#8211;属性【Alt+p快速打开】</p>
-
-<p>backspace 按键乱码，属性&#8211;终端&#8211;键盘</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell1.png" width="400"></p>
-
-<p>Xshell启用Xagent，属性&#8211;ssh</p>
-
-<p><img src="http://kumu-Linux.github.io/images/xshell/xshell5.png" width="400"></p>
-
-<p><strong>注</strong>：<s>Win8和Win8.1测试发现在xshell上中文输入乱码，最后确认得知是自带输入法的问题，禁用自带输入法选择第三方输入法即可</s></p>
 
 <p>&#8211;EOF&#8211;</p>
 ]]></content>

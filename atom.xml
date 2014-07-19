@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-07-19T16:20:33+08:00</updated>
+  <updated>2014-07-19T16:28:19+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -430,9 +430,6 @@
 <span class='line-number'>38</span>
 <span class='line-number'>39</span>
 <span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker run
 </span><span class='line'>
 </span><span class='line'>Usage: docker run <span class="o">[</span>OPTIONS<span class="o">]</span> IMAGE <span class="o">[</span>COMMAND<span class="o">]</span> <span class="o">[</span>ARG...<span class="o">]</span>
@@ -473,31 +470,43 @@
 </span><span class='line'>  -v, --volume<span class="o">=[]</span>            Bind mount a volume <span class="o">(</span>e.g., from the host: -v /host:/container, from docker: -v /container<span class="o">)</span>     <span class="c"># 挂载卷[这个会专门章节讲解]</span>
 </span><span class='line'>  --volumes-from<span class="o">=[]</span>          Mount volumes from the specified container<span class="o">(</span>s<span class="o">)</span>      <span class="c"># 从指定容器挂载卷</span>
 </span><span class='line'>  -w, --workdir<span class="o">=</span><span class="s2">&quot;&quot;</span>           Working directory inside the container             <span class="c"># 指定容器工作目录</span>
-</span><span class='line'>  <span class="sb">```</span>
-</span><span class='line'>
-</span><span class='line'>示例：
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p> bash
-$ sudo docker images ubuntu
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-ubuntu              14.04               e54ca5efa2e9        4 weeks ago         276.5 MB
-&#8230; &#8230;
-$ sudo docker run -t -i -c 100 -m 512MB -h test1 -d &#8211;name=&#8221;docker_test1&#8221; ubuntu /bin/bash</p>
+<p>示例：</p>
 
-<h1>创建一个cpu优先级为1，内存限制512MB，主机名为test1，名为docker_test1后台运行bash的容器</h1>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker images ubuntu
+</span><span class='line'>REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+</span><span class='line'>ubuntu              14.04               e54ca5efa2e9        4 weeks ago         276.5 MB
+</span><span class='line'>... ...
+</span><span class='line'><span class="nv">$ </span>sudo docker run -t -i -c 100 -m 512MB -h test1 -d --name<span class="o">=</span><span class="s2">&quot;docker_test1&quot;</span> ubuntu /bin/bash
+</span><span class='line'><span class="c"># 创建一个cpu优先级为1，内存限制512MB，主机名为test1，名为docker_test1后台运行bash的容器</span>
+</span><span class='line'>a424ca613c9f2247cd3ede95adfbaf8d28400cbcb1d5f9b69a7b56f97b2b52e5
+</span><span class='line'><span class="nv">$ </span>sudo docker ps
+</span><span class='line'>CONTAINER ID        IMAGE           COMMAND         CREATED             STATUS              PORTS       NAMES
+</span><span class='line'>a424ca613c9f        ubuntu:14.04    /bin/bash       6 seconds ago       Up 5 seconds                    docker_test1
+</span><span class='line'><span class="nv">$ </span>sudo docker attach docker_test1
+</span><span class='line'>root@test1:/# <span class="nb">pwd</span>
+</span><span class='line'>/
+</span><span class='line'>root@test1:/# <span class="nb">exit</span>
+</span><span class='line'><span class="nb">exit</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>a424ca613c9f2247cd3ede95adfbaf8d28400cbcb1d5f9b69a7b56f97b2b52e5
-$ sudo docker ps
-CONTAINER ID        IMAGE           COMMAND         CREATED             STATUS              PORTS       NAMES
-a424ca613c9f        ubuntu:14.04    /bin/bash       6 seconds ago       Up 5 seconds                    docker_test1
-$ sudo docker attach docker_test1
-root@test1:/# pwd
-/
-root@test1:/# exit
-exit
-&#8220;`</p>
 
 <p><strong>关于cpu优先级:</strong></p>
 
@@ -523,7 +532,7 @@ exit
 <li>docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]] # 提交指定容器为镜像
 
 <ul>
-<li>-a, &#8211;author=&#8221;&#8221;     Author (e.g., &#8220;John Hannibal Smith <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#x3a;&#104;&#97;&#110;&#110;&#105;&#x62;&#97;&#x6c;&#64;&#97;&#x2d;&#116;&#x65;&#97;&#x6d;&#x2e;&#99;&#x6f;&#109;">&#104;&#x61;&#x6e;&#110;&#105;&#98;&#97;&#x6c;&#64;&#x61;&#x2d;&#x74;&#101;&#x61;&#x6d;&#x2e;&#x63;&#111;&#x6d;</a>&#8221;)</li>
+<li>-a, &#8211;author=&#8221;&#8221;     Author (e.g., &#8220;John Hannibal Smith <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#x3a;&#x68;&#97;&#110;&#x6e;&#x69;&#x62;&#97;&#x6c;&#x40;&#97;&#45;&#116;&#101;&#97;&#109;&#x2e;&#99;&#x6f;&#x6d;">&#x68;&#x61;&#110;&#110;&#x69;&#98;&#x61;&#108;&#64;&#97;&#45;&#116;&#x65;&#x61;&#x6d;&#46;&#99;&#x6f;&#x6d;</a>&#8221;)</li>
 <li>-m, &#8211;message=&#8221;&#8221;    Commit message</li>
 <li>-p, &#8211;pause=true    Pause container during commit # 默认commit是暂停状态</li>
 </ul>

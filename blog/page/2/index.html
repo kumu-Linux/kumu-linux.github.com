@@ -9,10 +9,7 @@
   <meta name="author" content="枯木">
 
   
-  <meta name="description" content="Linux性能相关可以从以下几方面入手： CPU
-Memory
-IO
-Network ">
+  <meta name="description" content="qemu-img和qemu-kvm命令是制作系统镜像的重要工具，在介绍这两个工具之前，稍微简单说明下虚拟机镜像格式，目前虚拟机有多种镜像格式可供选择，常见的有如raw、vdi、qcow2、vmdk、qed、vhd等格式。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +74,51 @@ Network ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
+        <h1 class="entry-title"><a href="/blog/2014/04/25/openebula-image/">Openebula镜像制作</a></h1>
+      
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-25T20:45:00+08:00" pubdate data-updated="true">Apr 25<span>th</span>, 2014</time>
+        
+         | <a href="/blog/2014/04/25/openebula-image/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><code>qemu-img</code>和<code>qemu-kvm</code>命令是制作系统镜像的重要工具，在介绍这两个工具之前，稍微简单说明下虚拟机镜像格式，目前虚拟机有多种镜像格式可供选择，常见的有如<code>raw</code>、<code>vdi</code>、<code>qcow2</code>、<code>vmdk</code>、<code>qed</code>、<code>vhd</code>等格式。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/04/25/openebula-image/">阅读全文 &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -387,71 +429,6 @@ Network ">
   
     <footer>
       <a rel="full-article" href="/blog/2014/02/20/opennebula-market/">阅读全文 &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <!-- Now we're back to normal posts. Note the links used under href in both headers.-->
-        <h1 class="entry-title"><a href="/blog/2014/02/17/mysql-rep/">MySQL复制备忘</a></h1>
-      
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-02-17T22:50:00+08:00" pubdate data-updated="true">Feb 17<span>th</span>, 2014</time>
-        
-         | <a href="/blog/2014/02/17/mysql-rep/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li><a href="#repl1">复制的用途</a></li>
-<li><a href="#repl2">复制工作过程</a></li>
-<li><a href="#repl3">复制配置</a>
-
-<ul>
-<li><a href="#repl4">创建复制账号</a></li>
-<li><a href="#repl5">配置主库和备库</a></li>
-<li><a href="#repl6">启动复制</a></li>
-</ul>
-</li>
-<li><a href="#repl7">线上运行后主从配置</a></li>
-<li><a href="#repl8">一些重要选项</a></li>
-<li><a href="#repl9">参考</a></li>
-</ul>
-
-
-<h2 id="env">环境说明</h2>
-
-
-<p>MySQL支持两种复制方式：基于行的复制和基于语句的复制，两种方式都是通过在主库上记录二进制日志，在被库重复日志的方式来实现异步的数据复制。</p>
-
-</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/02/17/mysql-rep/">阅读全文 &rarr;</a>
     </footer>
   
 

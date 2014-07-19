@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-06-23T19:34:04+08:00</updated>
+  <updated>2014-07-19T16:20:33+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -12,6 +12,536 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[docker相关命令]]></title>
+    <link href="http://kumu-Linux.github.io/blog/2014/07/19/docker-cmd/"/>
+    <updated>2014-07-19T16:13:00+08:00</updated>
+    <id>http://kumu-Linux.github.io/blog/2014/07/19/docker-cmd</id>
+    <content type="html"><![CDATA[<h2>docker help</h2>
+
+<p>容器日常的管理过程中，docker的相关命令还是非常有必要的，另外把docker相关的命令熟悉一遍，对docker相关功能也会有一个全面理解的。</p>
+
+<!--more-->
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker   <span class="c"># docker命令帮助</span>
+</span><span class='line'>Usage: docker <span class="o">[</span>OPTIONS<span class="o">]</span> COMMAND <span class="o">[</span>arg...<span class="o">]</span>
+</span><span class='line'> -H<span class="o">=[</span>unix:///var/run/docker.sock<span class="o">]</span>: tcp://host:port to <span class="nb">bind</span>/connect to or unix://path/to/socket to use
+</span><span class='line'>
+</span><span class='line'>A self-sufficient runtime <span class="k">for </span>linux containers.
+</span><span class='line'>
+</span><span class='line'>Commands:
+</span><span class='line'>    attach    Attach to a running container                 <span class="c"># 当前shell下attach连接指定运行镜像</span>
+</span><span class='line'>    build     Build an image from a Dockerfile              <span class="c"># 通过Dockerfile定制镜像</span>
+</span><span class='line'>    commit    Create a new image from a container<span class="s1">&#39;s changes # 提交当前容器为新的镜像</span>
+</span><span class='line'><span class="s1">    cp        Copy files/folders from the containers filesystem to the host path</span>
+</span><span class='line'><span class="s1">              # 从容器中拷贝指定文件或者目录到宿主机中</span>
+</span><span class='line'><span class="s1">    diff      Inspect changes on a container&#39;</span>s filesystem   <span class="c"># 查看docker容器变化</span>
+</span><span class='line'>    events    Get real <span class="nb">time </span>events from the server          <span class="c"># 从docker服务获取容器实时事件</span>
+</span><span class='line'>    <span class="nb">export    </span>Stream the contents of a container as a tar archive
+</span><span class='line'>              <span class="c"># 导出容器的内容流作为一个tar归档文件[对应import]</span>
+</span><span class='line'>    <span class="nb">history   </span>Show the <span class="nb">history </span>of an image  <span class="c"># 展示一个镜像形成历史</span>
+</span><span class='line'>    images    List images                   <span class="c"># 列出系统当前镜像</span>
+</span><span class='line'>    import    Create a new filesystem image from the contents of a tarball
+</span><span class='line'>              <span class="c"># 从tar包中的内容创建一个新的文件系统映像[对应export]</span>
+</span><span class='line'>    info      Display system-wide information               <span class="c"># 显示系统相关信息</span>
+</span><span class='line'>    inspect   Return low-level information on a container   <span class="c"># 查看容器详细信息</span>
+</span><span class='line'>    <span class="nb">kill      </span>Kill a running container                      <span class="c"># kill指定docker容器</span>
+</span><span class='line'>    load      Load an image from a tar archive              <span class="c"># 从一个tar包中加载一个镜像[对应save]</span>
+</span><span class='line'>    login     Register or Login to the docker registry server
+</span><span class='line'>              <span class="c"># 注册或者登陆一个docker源服务器</span>
+</span><span class='line'>    logs      Fetch the logs of a container             <span class="c"># 输出当前容器日志信息</span>
+</span><span class='line'>    port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
+</span><span class='line'>              <span class="c"># 查看映射端口对应的容器内部源端口</span>
+</span><span class='line'>    pause     Pause all processes within a container    <span class="c"># 暂停容器</span>
+</span><span class='line'>    ps        List containers                           <span class="c"># 列出容器列表</span>
+</span><span class='line'>    pull      Pull an image or a repository from the docker registry server
+</span><span class='line'>              <span class="c"># 从docker镜像源服务器拉取指定镜像或者库镜像</span>
+</span><span class='line'>    push      Push an image or a repository to the docker registry server
+</span><span class='line'>              <span class="c"># 推送指定镜像或者库镜像至docker源服务器</span>
+</span><span class='line'>    restart   Restart a running container               <span class="c"># 重启运行的容器</span>
+</span><span class='line'>    rm        Remove one or more containers             <span class="c"># 移除一个或者多个容器</span>
+</span><span class='line'>    rmi       Remove one or more images
+</span><span class='line'>              <span class="c"># 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或-f强制删除]</span>
+</span><span class='line'>    run       Run a <span class="nb">command </span>in a new container
+</span><span class='line'>              <span class="c"># 在一个新的容器中运行一个命令</span>
+</span><span class='line'>    save      Save an image to a tar archive            <span class="c"># 保存一个镜像为一个tar包[对应load]</span>
+</span><span class='line'>    search    Search <span class="k">for </span>an image in the docker index   <span class="c"># 在docker index中搜索镜像</span>
+</span><span class='line'>    start     Start a stopped containers    <span class="c"># 启动容器</span>
+</span><span class='line'>    stop      Stop a running containers     <span class="c"># 停止容器</span>
+</span><span class='line'>    tag       Tag an image into a repository        <span class="c"># 给源中镜像打标签</span>
+</span><span class='line'>    top       Lookup the running processes of a container <span class="c"># 查看容器中运行的进程信息</span>
+</span><span class='line'>    unpause   Unpause a paused container            <span class="c"># 取消暂停容器</span>
+</span><span class='line'>    version   Show the docker version information   <span class="c"># 查看docker版本号</span>
+</span><span class='line'>    <span class="nb">wait      </span>Block <span class="k">until </span>a container stops, <span class="k">then </span>print its <span class="nb">exit </span>code
+</span><span class='line'>              <span class="c"># 截取容器停止时的退出状态值</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>docker选项帮助</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker --help
+</span><span class='line'>Usage of docker:
+</span><span class='line'>  --api-enable-cors<span class="o">=</span><span class="nb">false                </span>Enable CORS headers in the remote API                  <span class="c"># 远程API中开启CORS头</span>
+</span><span class='line'>  -b, --bridge<span class="o">=</span><span class="s2">&quot;&quot;</span>                        Attach containers to a pre-existing network bridge     <span class="c"># 桥接网络</span>
+</span><span class='line'>                                           use <span class="s1">&#39;none&#39;</span> to disable container networking
+</span><span class='line'>  --bip<span class="o">=</span><span class="s2">&quot;&quot;</span>                               Use this CIDR notation address <span class="k">for </span>the network bridge<span class="s1">&#39;s IP, not compatible with -b</span>
+</span><span class='line'><span class="s1">                                         # 和-b选项不兼容，具体没有测试过</span>
+</span><span class='line'><span class="s1">  -d, --daemon=false                     Enable daemon mode     # daemon模式</span>
+</span><span class='line'><span class="s1">  -D, --debug=false                      Enable debug mode      # debug模式</span>
+</span><span class='line'><span class="s1">  --dns=[]                               Force docker to use specific DNS servers           # 强制docker使用指定dns服务器</span>
+</span><span class='line'><span class="s1">  --dns-search=[]                        Force Docker to use specific DNS search domains    # 强制docker使用指定dns搜索域</span>
+</span><span class='line'><span class="s1">  -e, --exec-driver=&quot;native&quot;             Force the docker runtime to use a specific exec driver  # 强制docker运行时使用指定执行驱动器</span>
+</span><span class='line'><span class="s1">  -G, --group=&quot;docker&quot;                   Group to assign the unix socket specified by -H when running in daemon mode</span>
+</span><span class='line'><span class="s1">                                           use &#39;&#39; (the empty string) to disable setting of a group</span>
+</span><span class='line'><span class="s1">  -g, --graph=&quot;/var/lib/docker&quot;          Path to use as the root of the docker runtime      # 容器运行的根目录路径</span>
+</span><span class='line'><span class="s1">  -H, --host=[]                          The socket(s) to bind to in daemon mode            # daemon模式下docker指定绑定方式[tcp or 本地socket]</span>
+</span><span class='line'><span class="s1">                                           specified using one or more tcp://host:port, unix:///path/to/socket, fd://* or fd://socketfd.</span>
+</span><span class='line'><span class="s1">  --icc=true                             Enable inter-container communication                       # 跨容器通信</span>
+</span><span class='line'><span class="s1">  --ip=&quot;0.0.0.0&quot;                         Default IP address to use when binding container ports     # 指定监听地址，默认所有ip</span>
+</span><span class='line'><span class="s1">  --ip-forward=true                      Enable net.ipv4.ip_forward                                 # 开启转发</span>
+</span><span class='line'><span class="s1">  --iptables=true                        Enable Docker&#39;</span>s addition of iptables rules                 <span class="c"># 添加对应iptables规则</span>
+</span><span class='line'>  --mtu<span class="o">=</span>0                                Set the containers network MTU                             <span class="c"># 设置网络mtu</span>
+</span><span class='line'>                                           <span class="k">if </span>no value is provided: default to the default route MTU or 1500 <span class="k">if </span>no default route is available
+</span><span class='line'>  -p, --pidfile<span class="o">=</span><span class="s2">&quot;/var/run/docker.pid&quot;</span>    Path to use <span class="k">for </span>daemon PID file                            <span class="c"># 指定pid文件位置</span>
+</span><span class='line'>  -r, --restart<span class="o">=</span><span class="nb">true                     </span>Restart previously running containers                      <span class="c"># 重新启动以前运行的容器                     </span>
+</span><span class='line'>  -s, --storage-driver<span class="o">=</span><span class="s2">&quot;&quot;</span>                Force the docker runtime to use a specific storage driver  <span class="c"># 强制docker运行时使用指定存储驱动</span>
+</span><span class='line'>  --selinux-enabled<span class="o">=</span><span class="nb">false                </span>Enable selinux support                                     <span class="c"># 开启selinux支持</span>
+</span><span class='line'>  --storage-opt<span class="o">=[]</span>                       Set storage driver options                                 <span class="c"># 设置存储驱动选项</span>
+</span><span class='line'>  --tls<span class="o">=</span><span class="nb">false                            </span>Use TLS; implied by tls-verify flags                       <span class="c"># 开启tls</span>
+</span><span class='line'>  --tlscacert<span class="o">=</span><span class="s2">&quot;/root/.docker/ca.pem&quot;</span>     Trust only remotes providing a certificate signed by the CA given here
+</span><span class='line'>  --tlscert<span class="o">=</span><span class="s2">&quot;/root/.docker/cert.pem&quot;</span>     Path to TLS certificate file                               <span class="c"># tls证书文件位置</span>
+</span><span class='line'>  --tlskey<span class="o">=</span><span class="s2">&quot;/root/.docker/key.pem&quot;</span>       Path to TLS key file                                       <span class="c"># tls key文件位置</span>
+</span><span class='line'>  --tlsverify<span class="o">=</span><span class="nb">false                      </span>Use TLS and verify the remote <span class="o">(</span>daemon: verify client, client: verify daemon<span class="o">)</span> <span class="c"># 使用tls并确认远程控制主机</span>
+</span><span class='line'>  -v, --version<span class="o">=</span><span class="nb">false                    </span>Print version information and quit                         <span class="c"># 输出docker版本信息</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>docker search</h3>
+
+<p>官方镜像源地址：<a href="https://registry.hub.docker.com/">registry.hub.docker.com</a></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker search
+</span><span class='line'>
+</span><span class='line'>Usage: docker search TERM
+</span><span class='line'>
+</span><span class='line'>Search the docker index <span class="k">for </span>images      <span class="c"># 从docker镜像主页搜索镜像</span>
+</span><span class='line'>
+</span><span class='line'>  --automated<span class="o">=</span><span class="nb">false    </span>Only show automated builds
+</span><span class='line'>  --no-trunc<span class="o">=</span><span class="nb">false     </span>Don<span class="err">&#39;</span>t truncate output
+</span><span class='line'>  -s, --stars<span class="o">=</span>0        Only displays with at least xxx stars
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>示例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker search -s 100 ubuntu
+</span><span class='line'><span class="c"># 查找star数至少为100的镜像，找出只有官方镜像start数超过100，默认不加s选项找出所有相关ubuntu镜像</span>
+</span><span class='line'>NAME      DESCRIPTION                  STARS     OFFICIAL   AUTOMATED
+</span><span class='line'>ubuntu    Official Ubuntu base image   425       <span class="o">[</span>OK<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>docker info</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker info
+</span><span class='line'>Containers: 7           <span class="c"># 容器个数</span>
+</span><span class='line'>Images: 102             <span class="c"># 镜像个数</span>
+</span><span class='line'>Storage Driver: aufs    <span class="c"># 存储驱动，默认aufs</span>
+</span><span class='line'> Root Dir: /var/lib/docker/aufs     <span class="c"># 根目录</span>
+</span><span class='line'> Dirs: 116
+</span><span class='line'>Execution Driver: native-0.2        <span class="c"># 执行驱动</span>
+</span><span class='line'>Kernel Version: 3.13.0-24-generic
+</span><span class='line'>WARNING: No swap limit support
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>docker pull &amp;&amp; docker push</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker pull                  <span class="c"># pull拉取镜像</span>
+</span><span class='line'>
+</span><span class='line'>Usage: docker pull NAME<span class="o">[</span>:TAG<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>Pull an image or a repository from the registry
+</span><span class='line'>
+</span><span class='line'><span class="nv">$ </span>sudo docker push                  <span class="c"># push推送指定镜像</span>
+</span><span class='line'>
+</span><span class='line'>Usage: docker push NAME<span class="o">[</span>:TAG<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>Push an image or a repository to the registry
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>示例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker pull ubuntu           <span class="c"># 下载官方ubuntu docker镜像，默认下载所有ubuntu官方库镜像</span>
+</span><span class='line'><span class="nv">$ </span>sudo docker pull ubuntu:14.04     <span class="c"># 下载指定版本ubuntu官方镜像</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker push 192.168.0.100:5000/ubuntu
+</span><span class='line'><span class="c"># 推送镜像库到私有源[可注册docker官方账户，推送到官方自有账户]</span>
+</span><span class='line'><span class="nv">$ </span>sudo docker push 192.168.0.100:5000/ubuntu:14.04
+</span><span class='line'><span class="c"># 推送指定镜像到私有源</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>docker images</h3>
+
+<p>列出当前系统镜像</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker images -h
+</span><span class='line'>
+</span><span class='line'>Usage: docker images <span class="o">[</span>OPTIONS<span class="o">]</span> <span class="o">[</span>NAME<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>List images
+</span><span class='line'>
+</span><span class='line'>  -a, --all<span class="o">=</span><span class="nb">false      </span>Show all images <span class="o">(</span>by default filter out the intermediate image layers<span class="o">)</span>
+</span><span class='line'>  <span class="c"># -a显示当前系统的所有镜像，包括过渡层镜像，默认docker images显示最终镜像，不包括过渡层镜像</span>
+</span><span class='line'>  -f, --filter<span class="o">=[]</span>      Provide filter values <span class="o">(</span>i.e. <span class="s1">&#39;dangling=true&#39;</span><span class="o">)</span>
+</span><span class='line'>  --no-trunc<span class="o">=</span><span class="nb">false     </span>Don<span class="err">&#39;</span>t truncate output
+</span><span class='line'>  -q, --quiet<span class="o">=</span><span class="nb">false    </span>Only show numeric IDs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>示例：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker images            <span class="c"># 显示当前系统镜像，不包括过渡层镜像</span>
+</span><span class='line'><span class="nv">$ </span>sudo docker images -a         <span class="c"># 显示当前系统所有镜像，包括过渡层镜像</span>
+</span><span class='line'><span class="nv">$ </span>sudo docker images ubuntu     <span class="c"># 显示当前系统docker ubuntu库中的所有镜像</span>
+</span><span class='line'>REPOSITORY                 TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+</span><span class='line'>ubuntu                     12.04               ebe4be4dd427        4 weeks ago         210.6 MB
+</span><span class='line'>ubuntu                     14.04               e54ca5efa2e9        4 weeks ago         276.5 MB
+</span><span class='line'>ubuntu                     14.04-ssh           6334d3ac099a        7 weeks ago         383.2 MB
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>docker rmi</h3>
+
+<p>删除一个或者多个镜像</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker rmi
+</span><span class='line'>
+</span><span class='line'>Usage: docker rmi IMAGE <span class="o">[</span>IMAGE...<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>Remove one or more images
+</span><span class='line'>
+</span><span class='line'>  -f, --force<span class="o">=</span><span class="nb">false    </span>Force removal of the image       <span class="c"># 强制移除镜像不管是否有容器使用该镜像</span>
+</span><span class='line'>  --no-prune<span class="o">=</span><span class="nb">false     </span>Do not delete untagged parents   <span class="c"># 不要删除未标记的父镜像</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h3>docker run</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sudo docker run
+</span><span class='line'>
+</span><span class='line'>Usage: docker run <span class="o">[</span>OPTIONS<span class="o">]</span> IMAGE <span class="o">[</span>COMMAND<span class="o">]</span> <span class="o">[</span>ARG...<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>Run a <span class="nb">command </span>in a new container
+</span><span class='line'>
+</span><span class='line'>  -a, --attach<span class="o">=[]</span>            Attach to stdin, stdout or stderr.
+</span><span class='line'>  -c, --cpu-shares<span class="o">=</span>0         CPU shares <span class="o">(</span>relative weight<span class="o">)</span>                   <span class="c"># 设置cpu使用权重</span>
+</span><span class='line'>  --cidfile<span class="o">=</span><span class="s2">&quot;&quot;</span>               Write the container ID to the file             <span class="c"># 把容器id写入到指定文件</span>
+</span><span class='line'>  --cpuset<span class="o">=</span><span class="s2">&quot;&quot;</span>                CPUs in which to allow execution <span class="o">(</span>0-3, 0,1<span class="o">)</span>    <span class="c"># cpu绑定</span>
+</span><span class='line'>  -d, --detach<span class="o">=</span><span class="nb">false         </span>Detached mode: Run container in the background, print new container id <span class="c"># 后台运行容器</span>
+</span><span class='line'>  --dns<span class="o">=[]</span>                   Set custom dns servers             <span class="c"># 设置dns</span>
+</span><span class='line'>  --dns-search<span class="o">=[]</span>            Set custom dns search domains      <span class="c"># 设置dns域搜索</span>
+</span><span class='line'>  -e, --env<span class="o">=[]</span>               Set environment variables          <span class="c"># 定义环境变量</span>
+</span><span class='line'>  --entrypoint<span class="o">=</span><span class="s2">&quot;&quot;</span>            Overwrite the default entrypoint of the image      <span class="c"># ？</span>
+</span><span class='line'>  --env-file<span class="o">=[]</span>              Read in a line delimited file of ENV variables     <span class="c"># 从指定文件读取变量值</span>
+</span><span class='line'>  --expose<span class="o">=[]</span>                Expose a port from the container without publishing it to your host    <span class="c"># 指定对外提供服务端口</span>
+</span><span class='line'>  -h, --hostname<span class="o">=</span><span class="s2">&quot;&quot;</span>          Container host name    <span class="c"># 设置容器主机名</span>
+</span><span class='line'>  -i, --interactive<span class="o">=</span><span class="nb">false    </span>Keep stdin open even <span class="k">if </span>not attached           <span class="c"># 保持标准输出开启即使没有attached</span>
+</span><span class='line'>  --link<span class="o">=[]</span>                  Add link to another container <span class="o">(</span>name:alias<span class="o">)</span>     <span class="c"># 添加链接到另外一个容器[这个会专门章节讲解]</span>
+</span><span class='line'>  --lxc-conf<span class="o">=[]</span>              <span class="o">(</span>lxc <span class="nb">exec</span>-driver only<span class="o">)</span> Add custom lxc options --lxc-conf<span class="o">=</span><span class="s2">&quot;lxc.cgroup.cpuset.cpus = 0,1&quot;</span>
+</span><span class='line'>  -m, --memory<span class="o">=</span><span class="s2">&quot;&quot;</span>            Memory limit <span class="o">(</span>format: &lt;number&gt;&lt;optional unit&gt;, where <span class="nv">unit</span> <span class="o">=</span> b, k, m or g<span class="o">)</span> <span class="c"># 内存限制</span>
+</span><span class='line'>  --name<span class="o">=</span><span class="s2">&quot;&quot;</span>                  Assign a name to the container     <span class="c"># 设置容器名</span>
+</span><span class='line'>  --net<span class="o">=</span><span class="s2">&quot;bridge&quot;</span>             Set the Network mode <span class="k">for </span>the container     <span class="c"># 设置容器网络模式</span>
+</span><span class='line'>                               <span class="s1">&#39;bridge&#39;</span>: creates a new network stack <span class="k">for </span>the container on the docker bridge
+</span><span class='line'>                               <span class="s1">&#39;none&#39;</span>: no networking <span class="k">for </span>this container
+</span><span class='line'>                               <span class="s1">&#39;container:&lt;name|id&gt;&#39;</span>: reuses another container network stack
+</span><span class='line'>                               <span class="s1">&#39;host&#39;</span>: use the host network stack inside the container.  Note: the host mode gives the container full access to <span class="nb">local </span>system services such as D-bus and is therefore considered insecure.
+</span><span class='line'>  -P, --publish-all<span class="o">=</span><span class="nb">false    </span>Publish all exposed ports to the host interfaces   <span class="c"># 自动映射容器对外提供服务的端口</span>
+</span><span class='line'>  -p, --publish<span class="o">=[]</span>           Publish a container<span class="s1">&#39;s port to the host             # 指定端口映射</span>
+</span><span class='line'><span class="s1">                               format: ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort</span>
+</span><span class='line'><span class="s1">                               (use &#39;</span>docker port<span class="err">&#39;</span> to see the actual mapping<span class="o">)</span>
+</span><span class='line'>  --privileged<span class="o">=</span><span class="nb">false         </span>Give extended privileges to this container         <span class="c"># 提供更多的权限给容器</span>
+</span><span class='line'>  --rm<span class="o">=</span><span class="nb">false                 </span>Automatically remove the container when it exits <span class="o">(</span>incompatible with -d<span class="o">)</span> <span class="c"># 如果容器退出自动移除和-d选项冲突</span>
+</span><span class='line'>  --sig-proxy<span class="o">=</span><span class="nb">true           </span>Proxify received signals to the process <span class="o">(</span>even in non-tty mode<span class="o">)</span>. SIGCHLD is not proxied. <span class="c"># ？</span>
+</span><span class='line'>  -t, --tty<span class="o">=</span><span class="nb">false            </span>Allocate a pseudo-tty                              <span class="c"># 分配伪终端</span>
+</span><span class='line'>  -u, --user<span class="o">=</span><span class="s2">&quot;&quot;</span>              Username or UID                                    <span class="c"># 指定运行容器的用户uid或者用户名</span>
+</span><span class='line'>  -v, --volume<span class="o">=[]</span>            Bind mount a volume <span class="o">(</span>e.g., from the host: -v /host:/container, from docker: -v /container<span class="o">)</span>     <span class="c"># 挂载卷[这个会专门章节讲解]</span>
+</span><span class='line'>  --volumes-from<span class="o">=[]</span>          Mount volumes from the specified container<span class="o">(</span>s<span class="o">)</span>      <span class="c"># 从指定容器挂载卷</span>
+</span><span class='line'>  -w, --workdir<span class="o">=</span><span class="s2">&quot;&quot;</span>           Working directory inside the container             <span class="c"># 指定容器工作目录</span>
+</span><span class='line'>  <span class="sb">```</span>
+</span><span class='line'>
+</span><span class='line'>示例：
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> bash
+$ sudo docker images ubuntu
+REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+ubuntu              14.04               e54ca5efa2e9        4 weeks ago         276.5 MB
+&#8230; &#8230;
+$ sudo docker run -t -i -c 100 -m 512MB -h test1 -d &#8211;name=&#8221;docker_test1&#8221; ubuntu /bin/bash</p>
+
+<h1>创建一个cpu优先级为1，内存限制512MB，主机名为test1，名为docker_test1后台运行bash的容器</h1>
+
+<p>a424ca613c9f2247cd3ede95adfbaf8d28400cbcb1d5f9b69a7b56f97b2b52e5
+$ sudo docker ps
+CONTAINER ID        IMAGE           COMMAND         CREATED             STATUS              PORTS       NAMES
+a424ca613c9f        ubuntu:14.04    /bin/bash       6 seconds ago       Up 5 seconds                    docker_test1
+$ sudo docker attach docker_test1
+root@test1:/# pwd
+/
+root@test1:/# exit
+exit
+&#8220;`</p>
+
+<p><strong>关于cpu优先级:</strong></p>
+
+<blockquote><p>By default all groups have 1024 shares. A group with 100 shares will get a ~10% portion of the CPU time:</p></blockquote>
+
+<h3>docker start|stop|kill|restart|pause|unpause|rm|commit|inspect</h3>
+
+<ul>
+<li>docker start CONTAINER [CONTAINER&#8230;] # 运行一个或多个停止的容器</li>
+<li>docker stop CONTAINER [CONTAINER&#8230;]  # 停掉一个或多个运行的容器 <code>-t</code>选项可指定超时时间</li>
+<li>docker kill [OPTIONS] CONTAINER [CONTAINER&#8230;] # 默认kill发送SIGKILL信号 <code>-s</code>可以指定发送kill信号类型</li>
+<li>docker restart [OPTIONS] CONTAINER [CONTAINER&#8230;] # 重启一个或多个运行的容器 <code>-t</code>选项可指定超时时间</li>
+<li>docker pause CONTAINER                # 暂停一个容器，方便commit</li>
+<li>docker unpause CONTAINER              # 继续暂停的容器</li>
+<li>docker rm [OPTIONS] CONTAINER [CONTAINER&#8230;] # 移除一个或多个容器
+
+<ul>
+<li>-f, &#8211;force=false      Force removal of running container</li>
+<li>-l, &#8211;link=false       Remove the specified link and not the underlying container</li>
+<li>-v, &#8211;volumes=false    Remove the volumes associated with the container</li>
+</ul>
+</li>
+<li>docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]] # 提交指定容器为镜像
+
+<ul>
+<li>-a, &#8211;author=&#8221;&#8221;     Author (e.g., &#8220;John Hannibal Smith <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#x3a;&#104;&#97;&#110;&#110;&#105;&#x62;&#97;&#x6c;&#64;&#97;&#x2d;&#116;&#x65;&#97;&#x6d;&#x2e;&#99;&#x6f;&#109;">&#104;&#x61;&#x6e;&#110;&#105;&#98;&#97;&#x6c;&#64;&#x61;&#x2d;&#x74;&#101;&#x61;&#x6d;&#x2e;&#x63;&#111;&#x6d;</a>&#8221;)</li>
+<li>-m, &#8211;message=&#8221;&#8221;    Commit message</li>
+<li>-p, &#8211;pause=true    Pause container during commit # 默认commit是暂停状态</li>
+</ul>
+</li>
+<li>docker inspect CONTAINER|IMAGE [CONTAINER|IMAGE&#8230;]   # 查看容器或者镜像的详细信息</li>
+</ul>
+
+
+<h2>参考文档</h2>
+
+<ul>
+<li><a href="https://docs.docker.com/reference/run/">Docker Run Reference</a></li>
+</ul>
+
+
+<p>&#8211;EOF&#8211;</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[本地fsck修复qcow2]]></title>
@@ -3103,128 +3633,6 @@ opennebula-common-4.4.0-1.x86_64.rpm
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>rsync --address<span class="o">=</span>192.168.80.128 --config<span class="o">=</span>/etc/rsyncd.conf --daemon
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8211;EOF&#8211;</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[paramiko解析AES加密算法]]></title>
-    <link href="http://kumu-Linux.github.io/blog/2013/11/05/paramiko/"/>
-    <updated>2013-11-05T21:01:00+08:00</updated>
-    <id>http://kumu-Linux.github.io/blog/2013/11/05/paramiko</id>
-    <content type="html"><![CDATA[<blockquote><p>对等加密（Reciprocal cipher）又称为对称密钥加密（Symmetric-key algorithm）、对称加密、私钥加密、共享密钥加密，是密码学中的一类加密算法。该类密码的加密算法是它自己本身的逆反函数，所以其解密算法等同于加密算法，也就是说，要还原对等加密的密文，套用加密同样的算法即可得到明文。换句话说，若参数（或密钥）合适的话，两次连续的对等加密运算后会回复原始文字。在数学上，这有时称之为对合。在实际应用中，体现为加密和解密使用同一个密钥，或者知道一方密钥能够轻易计算出另一方密钥。常见的对称加密算法有DES、3DES、AES、Blowfish、IDEA、RC4、RC5、RC6。</p></blockquote>
-
-<!--more-->
-
-
-<p>在说明问题之前，引用维基百科对对称加密的一个说明。今天使用paramiko解析DSA密钥时出现如下ERROR：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>... ...
-</span><span class='line'>paramiko.SSHException: Unknown private key cipher <span class="s2">&quot;AES-128-CBC&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>DSA密钥内容如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>-----BEGIN DSA PRIVATE KEY-----
-</span><span class='line'>Proc-Type: 4,ENCRYPTED
-</span><span class='line'>DEK-Info: AES-128-CBC,381624AF862F1717C46EF898D9E1FA92
-</span><span class='line'>
-</span><span class='line'>... ...
-</span><span class='line'>OCGYNLsO68FToi8qJEP1DI9Jvk6tpU3y4ebBqSZnX7jr1M5+Hj5rfMqv7+kp3T4R
-</span><span class='line'>314ae9Ism9AXLIK2miTAcvbexZpbcesadqvo69DMsfhSmKKJYABK3eRYaDlUwkzN
-</span><span class='line'>... ...
-</span><span class='line'>-----END DSA PRIVATE KEY-----
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>使用<code>ssh-keygen -t rsa</code>测试没有问题，后来得知之前的DSA密钥时使用Secure CRT生成的，查了相关AES算法加密，发现paramiko默认并不支持AES算法，所以出现之前的<code>Unknown Error</code>错误。后来借助Google找到了相关的答案，<a href="http://comments.gmane.org/gmane.comp.python.paramiko/479">Unknown private key cipher AES-128-CBC</a> ，顺便记录下。</p>
-
-<p>解决方法需要修改<code>paramiko</code>代码，打开<code>/usr/lib/pythonX.X/site-packages/paramiko/pkey.py</code>修改如下：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">...</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">DES3</span><span class="p">,</span> <span class="n">AES</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">...</span>
-</span><span class='line'>    <span class="n">_CIPHER_TABLE</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>        <span class="s">&#39;AES-128-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">},</span>
-</span><span class='line'>        <span class="s">&#39;DES-EDE3-CBC&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&#39;cipher&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="p">,</span> <span class="s">&#39;keysize&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s">&#39;blocksize&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s">&#39;mode&#39;</span><span class="p">:</span> <span class="n">DES3</span><span class="o">.</span><span class="n">MODE_CBC</span> <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="o">...</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>以上修改，保存之后退出即可。</p>
-
-<p>顺便附带我的paramiko测试代码</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">#!/usr/bin/env python</span>
-</span><span class='line'><span class="c"># -*- coding: utf-8 -*-</span>
-</span><span class='line'>
-</span><span class='line'><span class="kn">import</span> <span class="nn">paramiko</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">paramiko_ssh</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">pkey_file</span> <span class="o">=</span> <span class="s">&#39;/root/.ssh/dsa&#39;</span>
-</span><span class='line'>    <span class="n">pkey_pass</span> <span class="o">=</span> <span class="s">&#39;123321&#39;</span>
-</span><span class='line'>    <span class="n">ssh_port</span> <span class="o">=</span> <span class="mi">22</span>
-</span><span class='line'>    <span class="n">ssh_user</span> <span class="o">=</span> <span class="s">&#39;root&#39;</span>
-</span><span class='line'>    <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">DSSKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span><span class="n">pkey_file</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">pkey_pass</span><span class="p">)</span>
-</span><span class='line'>    <span class="c"># 如果是RSA KEY，上一行修改DSS为RSA</span>
-</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
-</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">hostip</span><span class="p">,</span> <span class="n">ssh_port</span><span class="p">,</span> <span class="n">ssh_user</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">print</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">ssh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">ssh_cmd</span><span class="o">=</span><span class="s">&#39;touch /tmp/test&#39;</span>
-</span><span class='line'>    <span class="n">paramiko_ssh</span><span class="p">(</span><span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">ssh_cmd</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

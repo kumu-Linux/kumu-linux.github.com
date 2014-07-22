@@ -4,7 +4,7 @@
   <title><![CDATA[OPS Notes By 枯木]]></title>
   <link href="http://kumu-Linux.github.io/atom.xml" rel="self"/>
   <link href="http://kumu-Linux.github.io/"/>
-  <updated>2014-07-19T16:35:46+08:00</updated>
+  <updated>2014-07-22T14:53:42+08:00</updated>
   <id>http://kumu-Linux.github.io/</id>
   <author>
     <name><![CDATA[枯木]]></name>
@@ -532,12 +532,20 @@
 <li>docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]] # 提交指定容器为镜像
 
 <ul>
-<li>-a, &#8211;author=&#8221;&#8221;     Author (e.g., &#8220;John Hannibal Smith <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#104;&#97;&#110;&#110;&#x69;&#98;&#97;&#108;&#64;&#x61;&#x2d;&#116;&#101;&#97;&#109;&#x2e;&#99;&#x6f;&#109;">&#104;&#x61;&#x6e;&#110;&#105;&#x62;&#x61;&#x6c;&#x40;&#x61;&#x2d;&#116;&#101;&#x61;&#x6d;&#x2e;&#x63;&#111;&#109;</a>&#8221;)</li>
+<li>-a, &#8211;author=&#8221;&#8221;     Author (e.g., &#8220;John Hannibal Smith <a href="&#109;&#97;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#104;&#x61;&#110;&#110;&#105;&#98;&#97;&#x6c;&#64;&#x61;&#x2d;&#x74;&#x65;&#97;&#109;&#x2e;&#x63;&#x6f;&#109;">&#x68;&#97;&#x6e;&#x6e;&#105;&#x62;&#97;&#x6c;&#x40;&#x61;&#x2d;&#x74;&#x65;&#97;&#x6d;&#x2e;&#x63;&#111;&#x6d;</a>&#8221;)</li>
 <li>-m, &#8211;message=&#8221;&#8221;    Commit message</li>
 <li>-p, &#8211;pause=true    Pause container during commit # 默认commit是暂停状态</li>
 </ul>
 </li>
 <li>docker inspect CONTAINER|IMAGE [CONTAINER|IMAGE&#8230;]   # 查看容器或者镜像的详细信息</li>
+<li>docker logs CONTAINER                                 # 输出指定容器日志信息
+
+<ul>
+<li>-f, &#8211;follow=false        Follow log output       # 类似tail -f</li>
+<li>-t, &#8211;timestamps=false    Show timestamps</li>
+<li>&#8211;tail=&#8221;all&#8221;              Output the specified number of lines at the end of logs (defaults to all logs)</li>
+</ul>
+</li>
 </ul>
 
 
